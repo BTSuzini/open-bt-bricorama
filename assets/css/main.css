@@ -1,0 +1,120 @@
+:root{
+  --max: 980px;
+  --green: #1f7a3a;
+  --green-dark: #16602d;
+  --text: #111;
+  --muted: #666;
+  --border: #e8e8e8;
+  --card: #fff;
+  --bg: #f6f7f8;
+}
+
+*{ box-sizing:border-box; }
+body{
+  margin:0;
+  font-family:-apple-system, system-ui, Segoe UI, Roboto, Arial, sans-serif;
+  line-height:1.4;
+  color:var(--text);
+  background:var(--bg);
+}
+a{ color:inherit; text-decoration:none; }
+
+.container{
+  max-width:var(--max);
+  margin:0 auto;
+  padding:16px;
+}
+
+.topbar{
+  background: linear-gradient(180deg, var(--green), var(--green-dark));
+  color:#fff;
+}
+.topbar .container{ padding:14px 16px 16px; }
+
+.topbar-row{
+  display:grid;
+  grid-template-columns: 56px 1fr 56px;
+  align-items:center;
+  gap:12px;
+}
+.brand-title{
+  margin:0;
+  text-align:center;
+  font-weight:900;
+  font-size:20px;
+}
+.subtitle{
+  margin:8px 0 0;
+  text-align:center;
+  opacity:.95;
+  font-size:14px;
+}
+
+.brand-logo{
+  width:56px;
+  height:56px;
+  border-radius:14px;
+  background: rgba(255,255,255,.12);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+.brand-logo img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+}
+
+.card{
+  border:1px solid var(--border);
+  background:var(--card);
+  border-radius:14px;
+  padding:16px;
+  margin:14px 0;
+}
+
+.card h2{ margin:0 0 10px 0; font-size:20px; }
+
+.grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:10px;
+}
+.btn{
+  display:block;
+  padding:12px 14px;
+  border-radius:12px;
+  border:1px solid #ddd;
+  background:#fafafa;
+  font-weight:600;
+  text-align:center;
+}
+.btn:hover{ background:#f2f2f2; }
+.btn.primary{
+  background:#111;
+  border-color:#111;
+  color:#fff;
+}
+.btn.primary:hover{ filter:brightness(1.05); }
+
+.list{ display:grid; gap:8px; }
+.item{
+  padding:10px 12px;
+  border:1px solid #eee;
+  border-radius:12px;
+  background:#fff;
+}
+.muted{ margin:10px 0 0; color:var(--muted); font-size:14px; }
+
+.footer{
+  padding:20px 0;
+  color:var(--muted);
+  font-size:13px;
+  text-align:center;
+}
+
+@media (min-width: 780px){
+  .grid{ grid-template-columns:1fr 1fr; }
+}
