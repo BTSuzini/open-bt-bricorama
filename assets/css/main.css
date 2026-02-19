@@ -1,9 +1,13 @@
 :root{
   --max: 980px;
 
-  /* === Couleurs par défaut (à surcharger si besoin) === */
-  --brand: #1f7a3a;
-  --brand-dark: #16602d;
+  /* ======================================
+     THEME OPEN BT BRICORAMA
+     ====================================== */
+
+  /* Jaune principal (propre, chaud, pas fluo) */
+  --brand: #f4c400;
+  --brand-dark: #e2b000;
 
   --text: #111;
   --muted: #666;
@@ -22,9 +26,10 @@
   --topbar-gap: 16px;
   --topbar-shadow: 0 8px 18px rgba(0,0,0,.10);
 
-  --pill-border: rgba(255,255,255,.25);
-  --pill-bg: rgba(255,255,255,.10);
-  --pill-bg-hover: rgba(255,255,255,.18);
+  /* Pills sur fond jaune */
+  --pill-border: rgba(0,0,0,.25);
+  --pill-bg: rgba(0,0,0,.08);
+  --pill-bg-hover: rgba(0,0,0,.14);
 
   --radius-card: 16px;
   --radius-btn: 14px;
@@ -53,7 +58,7 @@ a, a:visited, a:hover, a:active{
 }
 
 /* ======================================
-   BANDEAU
+   BANDEAU JAUNE
 ====================================== */
 
 .topbar{
@@ -61,7 +66,7 @@ a, a:visited, a:hover, a:active{
   top: 0;
   z-index: 50;
   background: linear-gradient(180deg, var(--brand), var(--brand-dark));
-  color:#fff;
+  color:#111; /* Texte noir */
   box-shadow: var(--topbar-shadow);
 }
 
@@ -90,7 +95,7 @@ a, a:visited, a:hover, a:active{
   height:100%;
   object-fit:contain;
   display:block;
-  transform: scale(1); /* 🔥 plus de compensation */
+  transform: scale(1); /* plus de compensation */
 }
 
 .brand-title{
@@ -100,11 +105,10 @@ a, a:visited, a:hover, a:active{
   font-size:var(--title-size);
   line-height:1.15;
   letter-spacing:.2px;
-  text-shadow: 0 1px 0 rgba(0,0,0,.15);
 }
 
 /* ======================================
-   NAV PILLS
+   NAV PILLS (noir sur jaune)
 ====================================== */
 
 .nav{
@@ -116,7 +120,7 @@ a, a:visited, a:hover, a:active{
 }
 
 .nav a{
-  color:#fff;
+  color:#111;
   font-size:var(--nav-font);
   padding:9px 16px;
   border-radius:999px;
