@@ -1,70 +1,127 @@
-/* =========================
-   RESET SIMPLE
-========================= */
+:root{
+  --max: 980px;
 
-*{
-  box-sizing:border-box;
+  /* ======================================
+     THEME OPEN BT BRICORAMA
+     -> Bandeau jaune / texte noir
+  ====================================== */
+
+  /* Jaune bandeau */
+  --brand: #f5c400;
+  --brand-dark: #e0ad00;
+
+  /* Textes */
+  --text: #111;
+  --muted: #666;
+
+  /* UI */
+  --border: #e8e8e8;
+  --card: #fff;
+  --bg: #f6f7f8;
+
+  /* Logos plus grands (iPhone -> desktop) */
+  --logo-size: clamp(86px, 17vw, 130px);
+
+  /* Bandeau un peu plus discret */
+  --title-size: clamp(16px, 3.0vw, 22px);
+  --nav-font: clamp(13px, 2.4vw, 15px);
+
+  --topbar-pad-y: 14px;
+  --topbar-gap: 16px;
+  --topbar-shadow: 0 8px 18px rgba(0,0,0,.10);
+
+  /* Pills sur fond jaune */
+  --pill-border: rgba(0,0,0,.22);
+  --pill-bg: rgba(0,0,0,.08);
+  --pill-bg-hover: rgba(0,0,0,.14);
+
+  --radius-card: 16px;
+  --radius-btn: 14px;
 }
+
+*{ box-sizing:border-box; }
 
 body{
   margin:0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background:#f2f2f2;
-  color:#111;
+  font-family:-apple-system, system-ui, Segoe UI, Roboto, Arial, sans-serif;
+  line-height:1.45;
+  color:var(--text);
+  background:var(--bg);
 }
 
-/* =========================
-   LAYOUT
-========================= */
+/* ✅ Anti “liens bleus iOS” (blindé) */
+a, a:visited, a:hover, a:active{
+  color:inherit;
+  text-decoration:none;
+}
 
 .container{
-  max-width:980px;
+  max-width:var(--max);
   margin:0 auto;
-  padding:0 16px;
+  padding:16px;
 }
 
-/* =========================
-   HEADER JAUNE OPEN BT
-========================= */
+/* ======================================
+   BANDEAU (JAUNE / NOIR)
+====================================== */
 
 .topbar{
-  background:#ffd400;
-  padding:20px 0 16px;
-  text-align:center;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: linear-gradient(180deg, var(--brand), var(--brand-dark));
+  color: #111;
+  box-shadow: var(--topbar-shadow);
+}
+
+.topbar .container{
+  padding: var(--topbar-pad-y) 16px;
 }
 
 .topbar-row{
-  display:flex;
+  display:grid;
+  grid-template-columns: var(--logo-size) 1fr var(--logo-size);
   align-items:center;
-  justify-content:space-between;
-  gap:10px;
+  gap: var(--topbar-gap);
 }
 
+.brand-logo{
+  width:var(--logo-size);
+  height:var(--logo-size);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden; /* pas de cadre, juste l’image */
+}
+
+/* Remplit davantage les logos (réduit la marge “vide” des PNG)
+   -> même rendu que le challenge
+*/
 .brand-logo img{
-  height:60px;
-  width:auto;
+  width:100%;
+  height:100%;
+  object-fit:contain;
   display:block;
+  transform: scale(1.30);
 }
 
 .brand-title{
-  font-size:24px;
-  font-weight:900;
   margin:0;
-  color:#111;
+  text-align:center;
+  font-weight:900;
+  font-size:var(--title-size);
+  line-height:1.15;
+  letter-spacing:.2px;
+  /* léger relief lisible sur jaune */
+  text-shadow: 0 1px 0 rgba(255,255,255,.35);
 }
 
-.subtitle{
-  margin:8px 0 0;
-  font-weight:600;
-  opacity:.85;
-}
-
-/* =========================
-   NAVIGATION
-========================= */
+/* ======================================
+   NAV PILLS
+====================================== */
 
 .nav{
-  margin-top:14px;
+  margin-top:12px;
   display:flex;
   justify-content:center;
   gap:10px;
@@ -72,90 +129,108 @@ body{
 }
 
 .nav a{
-  padding:10px 16px;
-  border-radius:999px;
-  border:1px solid rgba(0,0,0,.25);
-  text-decoration:none;
-  font-weight:800;
   color:#111;
-  background:rgba(255,255,255,.35);
-  transition:.15s ease;
+  font-size:var(--nav-font);
+  padding:9px 16px;
+  border-radius:999px;
+  border:1px solid var(--pill-border);
+  background: var(--pill-bg);
+  transition:.18s ease;
 }
 
 .nav a:hover{
-  background:#fff;
+  background: var(--pill-bg-hover);
 }
 
-/* =========================
-   CARDS
-========================= */
+/* ======================================
+   CARTES / BOUTONS
+====================================== */
 
 .card{
-  background:#fff;
-  border-radius:18px;
-  padding:20px;
-  margin:20px 0;
-  box-shadow:0 4px 14px rgba(0,0,0,.05);
+  border:1px solid var(--border);
+  background:var(--card);
+  border-radius:var(--radius-card);
+  padding:18px;
+  margin:16px 0;
+  box-shadow: 0 6px 16px rgba(0,0,0,.05);
 }
 
 .card h2{
-  margin-top:0;
+  margin:0 0 10px;
+  font-size:20px;
 }
-
-/* =========================
-   GRID & BUTTONS
-========================= */
 
 .grid{
   display:grid;
+  grid-template-columns:1fr;
   gap:12px;
+  margin-top:12px;
 }
 
-.btn{
-  display:inline-block;
-  padding:12px 16px;
-  border-radius:14px;
-  text-align:center;
-  text-decoration:none;
-  font-weight:900;
+/* ✅ Boutons : imposer style “bouton”, pas lien */
+.btn, a.btn, a.btn:visited{
+  display:block;
+  padding:14px 16px;
+  border-radius:var(--radius-btn);
   border:1px solid #ddd;
   background:#fafafa;
-  color:#111;
-  transition:.15s ease;
+  font-weight:700;
+
+  color:var(--text) !important;
+  text-decoration:none !important;
+
+  transition:.18s ease;
 }
 
-.btn:hover{
-  background:#fff;
+.btn:hover, a.btn:hover{
+  background:#f0f0f0;
 }
 
 .btn.disabled{
-  opacity:.5;
+  opacity:.55;
   pointer-events:none;
 }
 
-/* =========================
-   FOOTER
-========================= */
-
-.footer{
-  text-align:center;
-  padding:20px 0 30px;
+.muted{
+  color:var(--muted);
   font-size:14px;
-  opacity:.6;
+  margin-top:10px;
 }
 
-/* =========================
-   MOBILE
-========================= */
+/* ======================================
+   FORMULAIRES
+====================================== */
 
-@media (max-width:480px){
+.form{ display:grid; gap:12px; }
+.field{ display:grid; gap:6px; }
 
-  .brand-logo img{
-    height:50px;
+input, select, textarea{
+  padding:12px;
+  border:1px solid #ddd;
+  border-radius:12px;
+  font:inherit;
+  background:#fff;
+}
+
+.sep{
+  border:0;
+  border-top:1px solid #eee;
+  margin:10px 0;
+}
+
+/* ======================================
+   RESPONSIVE
+====================================== */
+
+@media (min-width: 780px){
+  .grid{ grid-template-columns: 1fr 1fr; }
+}
+
+/* très petits écrans */
+@media (max-width: 360px){
+  :root{
+    --logo-size: clamp(78px, 18vw, 118px);
+    --title-size: clamp(15px, 3.8vw, 20px);
   }
-
-  .brand-title{
-    font-size:20px;
-  }
-
+  .nav a{ padding:8px 14px; }
 }
