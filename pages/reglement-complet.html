@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Règlement complet (FR) — Open BT Bricorama</title>
+  <style>
+    html, body { height:100%; margin:0; }
+    body { background:#111; }
+    iframe{
+      width:100%;
+      height:100%;
+      border:0;
+      display:block;
+      background:#fff;
+    }
+    .fallback{
+      position:fixed;
+      left:12px;
+      bottom:12px;
+      right:12px;
+      font-family:-apple-system, system-ui, Segoe UI, Roboto, Arial, sans-serif;
+      background:rgba(0,0,0,.65);
+      color:#fff;
+      padding:10px 12px;
+      border-radius:12px;
+      font-size:14px;
+    }
+    .fallback a{ color:#fff; font-weight:800; }
+  </style>
+</head>
+<body>
+
+  <!-- PDF plein écran : retour via bouton "retour" du navigateur -->
+  <iframe
+    src="../assets/docs/reglement-open-bt.pdf#view=FitH"
+    title="Règlement Open BT Bricorama (PDF)">
+  </iframe>
+
+  <!-- Fallback si iOS/Safari n’affiche pas l’embed -->
+  <div class="fallback">
+    Si le PDF ne s’affiche pas : <a href="../assets/docs/reglement-open-bt.pdf" target="_blank" rel="noopener">ouvrir le PDF</a>
+  </div>
+
+</body>
+</html>
