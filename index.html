@@ -4,7 +4,26 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Open BT Bricorama — Infos & Inscriptions</title>
-  <link rel="stylesheet" href="assets/css/main.css?v=1" />
+  <link rel="stylesheet" href="assets/css/main.css?v=20260219" />
+  <style>
+    /* Thème spécifique Open BT : bandeau jaune / texte noir */
+    .openbt-band {
+      margin-top: 10px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: #ffd400;
+      color: #111;
+      font-weight: 900;
+      letter-spacing: .2px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .openbt-band small{
+      font-weight: 800;
+      opacity: .85;
+    }
+  </style>
 </head>
 <body>
 
@@ -18,56 +37,63 @@
       <h1 class="brand-title">Open BT Bricorama</h1>
 
       <div class="brand-logo">
-        <img src="assets/img/logo-bricorama.png" alt="Logo Bricorama">
+        <!-- ✅ Nouveau logo tournoi -->
+        <img src="assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
       </div>
     </div>
 
-    <p class="subtitle">BT250 — Toutes les infos au même endroit</p>
+    <!-- ✅ Bandeau jaune (pour différencier du challenge) -->
+    <div class="openbt-band" role="note" aria-label="Bandeau tournoi">
+      🟨 Open BT Bricorama <small>— BT250</small>
+    </div>
+
+    <!-- Nav façon challenge -->
+    <nav class="nav" style="margin-top:12px;">
+      <a href="index.html" aria-current="page">Accueil</a>
+      <a href="pages/dh/index.html">Tournoi Double Hommes</a>
+      <a href="pages/dd/index.html">Tournoi Double Dames</a>
+      <a href="pages/infos.html">Infos</a>
+      <a href="pages/reglement.html">Règlement</a>
+      <a href="pages/contact.html">Contact</a>
+    </nav>
   </div>
 </header>
 
 <main class="container">
 
   <section class="card">
-    <h2>🎾 Inscriptions</h2>
-    <p class="muted">Lien unique (inscription + infos + repas si applicable).</p>
+    <h2>Les tournois</h2>
 
-    <!-- À REMPLACER par ton lien final -->
-    <a class="btn primary" href="#" target="_blank" rel="noopener">S’inscrire</a>
-
-    <div class="grid" style="margin-top:10px;">
-      <a class="btn" href="#infos">Voir les infos</a>
-      <a class="btn" href="#programme">Programme</a>
+    <div class="grid">
+      <a class="btn" href="pages/dh/index.html">🎾 Tournoi Double Hommes</a>
+      <a class="btn" href="pages/dd/index.html">🎾 Tournoi Double Dames</a>
     </div>
-  </section>
 
-  <section class="card" id="infos">
-    <h2>ℹ️ Infos clés</h2>
-    <div class="list">
-      <div class="item"><b>Catégorie :</b> BT250</div>
-      <div class="item"><b>Tarif :</b> 20€ / équipe</div>
-      <div class="item"><b>Repas :</b> en supplément (sur réservation)</div>
-      <div class="item"><b>Lieu :</b> Suzini Arena</div>
-    </div>
-    <p class="muted">Les horaires et dates indicatifs pourront être ajustés par l’organisation.</p>
-  </section>
-
-  <section class="card" id="programme">
-    <h2>🗓️ Programme</h2>
-    <p class="muted">À venir (publication des convocations / planning).</p>
+    <p class="muted" style="margin-top:10px;">
+      Mini-site dédié au tournoi <b>Open BT Bricorama</b> (indépendant du challenge).
+    </p>
   </section>
 
   <section class="card">
-    <h2>📄 Règlement</h2>
-    <p class="muted">Version PDF (si besoin sur l’affiche / QR code).</p>
-    <a class="btn" href="assets/docs/reglement-open-bt-bricorama.pdf" target="_blank" rel="noopener">
-      Télécharger le règlement
-    </a>
+    <h2>Accès rapide</h2>
+    <div class="grid">
+      <a class="btn" href="pages/infos.html">ℹ️ Infos</a>
+      <a class="btn" href="pages/reglement.html">📘 Règlement</a>
+      <a class="btn" href="pages/contact.html">📩 Contact</a>
+    </div>
   </section>
 
+  <!-- (Optionnel) bloc organisateurs, prêt à l’emploi si tu veux le même système ensuite -->
   <section class="card">
-    <h2>📩 Contact</h2>
-    <p class="muted">Commission Beach Tennis — Tennis Club de Suzini</p>
+    <h2>🔐 Accès organisateurs</h2>
+
+    <div class="grid">
+      <a class="btn disabled" href="#" aria-disabled="true">📱 Mode Mobile — à venir</a>
+      <a class="btn disabled" href="#" aria-disabled="true">🛠️ Mode Admin — à venir</a>
+      <a class="btn disabled" href="#" aria-disabled="true">🎾 Mode JAT — à venir</a>
+    </div>
+
+    <p class="muted">On activera cette partie si on réutilise Firebase comme sur le challenge.</p>
   </section>
 
 </main>
