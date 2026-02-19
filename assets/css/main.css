@@ -1,28 +1,20 @@
 :root{
   --max: 980px;
 
-  /* ======================================
-     THEME OPEN BT BRICORAMA
-     -> Bandeau jaune / texte noir
-  ====================================== */
+  /* === Couleurs par défaut (à surcharger si besoin) === */
+  --brand: #1f7a3a;
+  --brand-dark: #16602d;
 
-  /* Jaune bandeau */
-  --brand: #f5c400;
-  --brand-dark: #e0ad00;
-
-  /* Textes */
   --text: #111;
   --muted: #666;
 
-  /* UI */
   --border: #e8e8e8;
   --card: #fff;
   --bg: #f6f7f8;
 
-  /* Logos plus grands (iPhone -> desktop) */
+  /* Taille logos */
   --logo-size: clamp(86px, 17vw, 130px);
 
-  /* Bandeau un peu plus discret */
   --title-size: clamp(16px, 3.0vw, 22px);
   --nav-font: clamp(13px, 2.4vw, 15px);
 
@@ -30,10 +22,9 @@
   --topbar-gap: 16px;
   --topbar-shadow: 0 8px 18px rgba(0,0,0,.10);
 
-  /* Pills sur fond jaune */
-  --pill-border: rgba(0,0,0,.22);
-  --pill-bg: rgba(0,0,0,.08);
-  --pill-bg-hover: rgba(0,0,0,.14);
+  --pill-border: rgba(255,255,255,.25);
+  --pill-bg: rgba(255,255,255,.10);
+  --pill-bg-hover: rgba(255,255,255,.18);
 
   --radius-card: 16px;
   --radius-btn: 14px;
@@ -49,7 +40,7 @@ body{
   background:var(--bg);
 }
 
-/* ✅ Anti “liens bleus iOS” (blindé) */
+/* Anti liens bleus iOS */
 a, a:visited, a:hover, a:active{
   color:inherit;
   text-decoration:none;
@@ -62,7 +53,7 @@ a, a:visited, a:hover, a:active{
 }
 
 /* ======================================
-   BANDEAU (JAUNE / NOIR)
+   BANDEAU
 ====================================== */
 
 .topbar{
@@ -70,7 +61,7 @@ a, a:visited, a:hover, a:active{
   top: 0;
   z-index: 50;
   background: linear-gradient(180deg, var(--brand), var(--brand-dark));
-  color: #111;
+  color:#fff;
   box-shadow: var(--topbar-shadow);
 }
 
@@ -91,18 +82,15 @@ a, a:visited, a:hover, a:active{
   display:flex;
   align-items:center;
   justify-content:center;
-  overflow:hidden; /* pas de cadre, juste l’image */
+  overflow:hidden;
 }
 
-/* Remplit davantage les logos (réduit la marge “vide” des PNG)
-   -> même rendu que le challenge
-*/
 .brand-logo img{
   width:100%;
   height:100%;
   object-fit:contain;
   display:block;
-  transform: scale(1.30);
+  transform: scale(1); /* 🔥 plus de compensation */
 }
 
 .brand-title{
@@ -112,8 +100,7 @@ a, a:visited, a:hover, a:active{
   font-size:var(--title-size);
   line-height:1.15;
   letter-spacing:.2px;
-  /* léger relief lisible sur jaune */
-  text-shadow: 0 1px 0 rgba(255,255,255,.35);
+  text-shadow: 0 1px 0 rgba(0,0,0,.15);
 }
 
 /* ======================================
@@ -129,7 +116,7 @@ a, a:visited, a:hover, a:active{
 }
 
 .nav a{
-  color:#111;
+  color:#fff;
   font-size:var(--nav-font);
   padding:9px 16px;
   border-radius:999px;
@@ -167,7 +154,6 @@ a, a:visited, a:hover, a:active{
   margin-top:12px;
 }
 
-/* ✅ Boutons : imposer style “bouton”, pas lien */
 .btn, a.btn, a.btn:visited{
   display:block;
   padding:14px 16px;
@@ -175,10 +161,8 @@ a, a:visited, a:hover, a:active{
   border:1px solid #ddd;
   background:#fafafa;
   font-weight:700;
-
   color:var(--text) !important;
   text-decoration:none !important;
-
   transition:.18s ease;
 }
 
@@ -226,7 +210,6 @@ input, select, textarea{
   .grid{ grid-template-columns: 1fr 1fr; }
 }
 
-/* très petits écrans */
 @media (max-width: 360px){
   :root{
     --logo-size: clamp(78px, 18vw, 118px);
