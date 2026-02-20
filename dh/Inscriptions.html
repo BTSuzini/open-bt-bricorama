@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Inscriptions — Double Hommes</title>
-  <link rel="stylesheet" href="../../assets/css/main.css?v=20260219" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260219" />
 </head>
 <body>
 
@@ -12,7 +12,7 @@
   <div class="container">
     <div class="topbar-row">
       <div class="brand-logo">
-        <img src="../../assets/img/logo-suzini.png" alt="Logo Suzini">
+        <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
       </div>
 
       <h1 class="brand-title">
@@ -21,233 +21,185 @@
       </h1>
 
       <div class="brand-logo">
-        <img src="../../assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
+        <img src="../assets/img/logo-openbt.png" alt="Logo Open BT">
       </div>
     </div>
 
     <nav class="nav">
-      <a href="../../index.html">Accueil</a>
-      <a href="index.html">DM</a>
-      <a href="../dd/index.html">DD</a>
-      <a href="../infos.html">Infos</a>
-      <a href="../reglement.html">Règlement</a>
-      <a href="../contact.html">Contact</a>
+      <a href="../index.html">Accueil</a>
+      <a href="programmation.html">Programmation</a>
+      <a href="equipes.html">Équipes</a>
+      <a href="inscriptions.html" aria-current="page">Inscriptions</a>
+      <a href="../pages/infos.html">Infos</a>
+      <a href="../pages/reglement.html">Règlement</a>
     </nav>
   </div>
 </header>
 
 <main class="container">
 
-  <section class="card">
-    <h2>Formulaire d’inscription — Double Hommes</h2>
+<section class="card">
+  <h2>Formulaire d’inscription — Double Hommes</h2>
 
-    <!-- Message statut inscriptions -->
-    <p id="gateMsg" class="muted">Chargement…</p>
+  <p id="gateMsg" class="muted">Chargement…</p>
 
-    <form id="signupForm" class="form" autocomplete="on">
+  <form id="signupForm" class="form" autocomplete="on">
 
-      <div class="field">
-        <label for="teamName">Nom de l’équipe *</label>
-        <input id="teamName" name="teamName" type="text" required maxlength="40" placeholder="Ex : Les beacheurs">
-      </div>
+    <div class="field">
+      <label for="teamName">Nom de l’équipe *</label>
+      <input id="teamName" name="teamName" type="text" required maxlength="40">
+    </div>
 
-      <hr class="sep" />
+    <hr class="sep" />
 
-      <h3 style="margin:0;">Joueur 1 👨</h3>
+    <h3>Joueur 1 👨</h3>
 
-      <div class="field">
-        <label for="p1LastName">Nom *</label>
-        <input id="p1LastName" name="p1LastName" type="text" required placeholder="Nom">
-      </div>
+    <div class="field">
+      <label for="p1LastName">Nom *</label>
+      <input id="p1LastName" required>
+    </div>
 
-      <div class="field">
-        <label for="p1FirstName">Prénom *</label>
-        <input id="p1FirstName" name="p1FirstName" type="text" required placeholder="Prénom">
-      </div>
+    <div class="field">
+      <label for="p1FirstName">Prénom *</label>
+      <input id="p1FirstName" required>
+    </div>
 
-      <div class="field">
-        <label for="p1Licence">N° Licence *</label>
-        <input id="p1Licence" name="p1Licence" type="text" required placeholder="Ex : 0123456A">
-      </div>
+    <div class="field">
+      <label for="p1Licence">N° Licence *</label>
+      <input id="p1Licence" required>
+    </div>
 
-      <div class="field">
-        <label for="p1Phone">Téléphone *</label>
-        <input id="p1Phone" name="p1Phone" type="tel" required placeholder="Ex : +594... / 06...">
-      </div>
+    <div class="field">
+      <label for="p1Phone">Téléphone *</label>
+      <input id="p1Phone" type="tel" required>
+    </div>
 
-      <hr class="sep" />
+    <hr class="sep" />
 
-      <h3 style="margin:0;">Joueur 2 👨</h3>
+    <h3>Joueur 2 👨</h3>
 
-      <div class="field">
-        <label for="p2LastName">Nom *</label>
-        <input id="p2LastName" name="p2LastName" type="text" required placeholder="Nom">
-      </div>
+    <div class="field">
+      <label for="p2LastName">Nom *</label>
+      <input id="p2LastName" required>
+    </div>
 
-      <div class="field">
-        <label for="p2FirstName">Prénom *</label>
-        <input id="p2FirstName" name="p2FirstName" type="text" required placeholder="Prénom">
-      </div>
+    <div class="field">
+      <label for="p2FirstName">Prénom *</label>
+      <input id="p2FirstName" required>
+    </div>
 
-      <div class="field">
-        <label for="p2Licence">N° Licence *</label>
-        <input id="p2Licence" name="p2Licence" type="text" required placeholder="Ex : 0123456A">
-      </div>
+    <div class="field">
+      <label for="p2Licence">N° Licence *</label>
+      <input id="p2Licence" required>
+    </div>
 
-      <div class="field">
-        <label for="p2Phone">Téléphone *</label>
-        <input id="p2Phone" name="p2Phone" type="tel" required placeholder="Ex : +594... / 06...">
-      </div>
+    <div class="field">
+      <label for="p2Phone">Téléphone *</label>
+      <input id="p2Phone" type="tel" required>
+    </div>
 
-      <hr class="sep" />
+    <hr class="sep" />
 
-      <button id="submitBtn" class="btn" type="submit" style="font-weight:800; color:#111;">
-        ✅ Valider
-      </button>
+    <button id="submitBtn" class="btn" type="submit" style="font-weight:800;">
+      ✅ Valider
+    </button>
 
-      <p id="status" class="muted" role="status" aria-live="polite"></p>
+    <p id="status" class="muted"></p>
 
-    </form>
-  </section>
+  </form>
+</section>
 
 </main>
 
 <script type="module">
-  import { db } from "../../assets/js/firebase.js";
-  import {
-    doc,
-    onSnapshot,
-    collection,
-    addDoc,
-    setDoc,
-    serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import { db } from "../assets/js/firebase.js";
+import {
+  doc,
+  onSnapshot,
+  collection,
+  addDoc,
+  setDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-  // ✅ Open BT — Double Hommes
-  const COL_PRIVATE = "inscriptions_dh_private";
-  const COL_PUBLIC  = "equipes_dh_public";
+const COL_PRIVATE = "inscriptions_dh_private";
+const COL_PUBLIC  = "equipes_dh_public";
 
-  const form = document.getElementById("signupForm");
-  const statusEl = document.getElementById("status");
-  const gateMsgEl = document.getElementById("gateMsg");
-  const submitBtn = document.getElementById("submitBtn");
+const form = document.getElementById("signupForm");
+const statusEl = document.getElementById("status");
+const gateMsgEl = document.getElementById("gateMsg");
+const submitBtn = document.getElementById("submitBtn");
 
-  let gateState = "not_open"; // not_open | open | paused | closed
+let gateState = "not_open";
 
-  const setStatus = (msg) => { statusEl.textContent = msg; };
+function applyGate(state){
+  gateState = state || "not_open";
 
-  function setInputsDisabled(disabled){
-    const fields = form.querySelectorAll("input, select, textarea, button");
-    fields.forEach(el => {
-      if(el.id === "submitBtn") return; // géré séparément
-      el.disabled = disabled;
-    });
-  }
-
-  function normalizeState(state){
-    // compat au cas où
-    if(state === "suspended") return "paused";
-    return state || "not_open";
-  }
-
-  function applyGate(stateRaw){
-    gateState = normalizeState(stateRaw);
-
-    if(gateState === "open"){
-      gateMsgEl.textContent = "✅ Inscriptions ouvertes. Tu peux t’inscrire ci-dessous.";
-      setInputsDisabled(false);
-      submitBtn.disabled = false;
-      submitBtn.classList.remove("disabled");
-      return;
-    }
-
-    setInputsDisabled(true);
+  if(gateState === "open"){
+    gateMsgEl.textContent = "✅ Inscriptions ouvertes.";
+    submitBtn.disabled = false;
+  } else if(gateState === "paused"){
+    gateMsgEl.textContent = "⏸️ Inscriptions suspendues.";
     submitBtn.disabled = true;
-    submitBtn.classList.add("disabled");
+  } else if(gateState === "closed"){
+    gateMsgEl.textContent = "🔒 Inscriptions clôturées.";
+    submitBtn.disabled = true;
+  } else {
+    gateMsgEl.textContent = "⏳ Pas encore ouvertes.";
+    submitBtn.disabled = true;
+  }
+}
 
-    if(gateState === "paused"){
-      gateMsgEl.textContent = "⏸️ Inscriptions temporairement suspendues. Réessaie un peu plus tard.";
-      return;
-    }
-    if(gateState === "closed"){
-      gateMsgEl.textContent = "🔒 Inscriptions clôturées.";
-      return;
-    }
-    gateMsgEl.textContent = "⏳ Les inscriptions ne sont pas encore ouvertes.";
+const cfgRef = doc(db, "config", "dh");
+onSnapshot(cfgRef, snap=>{
+  applyGate(snap.exists() ? snap.data().inscriptionsState : "not_open");
+});
+
+form.addEventListener("submit", async (e)=>{
+  e.preventDefault();
+  if(gateState !== "open"){
+    statusEl.textContent = "⛔ Inscriptions fermées.";
+    return;
   }
 
-  // 🔄 Live gate : config/dh
-  const cfgRef = doc(db, "config", "dh");
-  onSnapshot(cfgRef, (snap)=>{
-    const state = snap.exists() ? (snap.data().inscriptionsState || "not_open") : "not_open";
-    applyGate(state);
-  }, (err)=>{
-    console.error(err);
-    applyGate("not_open");
-    gateMsgEl.textContent = "❌ Impossible de vérifier l’état des inscriptions. Réessaie plus tard.";
-  });
+  submitBtn.disabled = true;
+  statusEl.textContent = "Envoi…";
 
-  function readFormData(){
-    return {
+  try{
+    const data = {
       createdAt: serverTimestamp(),
-      teamName: (form.teamName.value || "").trim(),
-
-      p1FirstName: (form.p1FirstName.value || "").trim(),
-      p1LastName:  (form.p1LastName.value || "").trim(),
-      p1Licence:   (form.p1Licence.value || "").trim(),
-      p1Phone:     (form.p1Phone.value || "").trim(),
-
-      p2FirstName: (form.p2FirstName.value || "").trim(),
-      p2LastName:  (form.p2LastName.value || "").trim(),
-      p2Licence:   (form.p2Licence.value || "").trim(),
-      p2Phone:     (form.p2Phone.value || "").trim(),
+      teamName: teamName.value.trim(),
+      p1FirstName: p1FirstName.value.trim(),
+      p1LastName: p1LastName.value.trim(),
+      p1Licence: p1Licence.value.trim(),
+      p1Phone: p1Phone.value.trim(),
+      p2FirstName: p2FirstName.value.trim(),
+      p2LastName: p2LastName.value.trim(),
+      p2Licence: p2Licence.value.trim(),
+      p2Phone: p2Phone.value.trim(),
     };
+
+    const ref = await addDoc(collection(db, COL_PRIVATE), data);
+
+    await setDoc(doc(db, COL_PUBLIC, ref.id), {
+      createdAt: serverTimestamp(),
+      teamName: data.teamName,
+      p1FirstName: data.p1FirstName,
+      p2FirstName: data.p2FirstName,
+      list: "main",
+      stby: false
+    });
+
+    form.reset();
+    statusEl.textContent = "✅ Inscription enregistrée !";
+
+  }catch(err){
+    console.error(err);
+    statusEl.textContent = "❌ Erreur.";
+  }finally{
+    submitBtn.disabled = false;
   }
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    if(gateState !== "open"){
-      setStatus("⛔ Inscriptions non ouvertes.");
-      return;
-    }
-
-    submitBtn.disabled = true;
-    submitBtn.classList.add("disabled");
-    setStatus("Envoi en cours…");
-
-    try{
-      const data = readFormData();
-
-      if(!data.teamName || !data.p1FirstName || !data.p1LastName || !data.p2FirstName || !data.p2LastName){
-        throw new Error("Merci de compléter tous les champs obligatoires.");
-      }
-
-      // 1) PRIVÉ
-      const ref = await addDoc(collection(db, COL_PRIVATE), data);
-
-      // 2) PUBLIC (même ID)
-      await setDoc(doc(db, COL_PUBLIC, ref.id), {
-        createdAt: serverTimestamp(),
-        teamName: data.teamName,
-        p1FirstName: data.p1FirstName,
-        p2FirstName: data.p2FirstName,
-        list: "main",
-        stby: false
-      });
-
-      form.reset();
-      setStatus("✅ Inscription enregistrée !");
-    }catch(err){
-      console.error(err);
-      setStatus("❌ Erreur : " + (err?.message || "Impossible d’enregistrer l’inscription."));
-    }finally{
-      if(gateState === "open"){
-        submitBtn.disabled = false;
-        submitBtn.classList.remove("disabled");
-      }
-    }
-  });
+});
 </script>
 
 </body>
