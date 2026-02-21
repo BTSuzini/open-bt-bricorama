@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin — Inscriptions (Open BT)</title>
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260220" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="container">
+    <div class="topbar-row">
+      <div class="brand-logo">
+        <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
+      </div>
+
+      <h1 class="brand-title" id="pageTitle">
+        Inscriptions (admin)<br>
+        <span style="opacity:.95;font-weight:800;" id="pageSub">Open BT —</span>
+      </h1>
+
+      <div class="brand-logo">
+        <img src="../assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
+      </div>
+    </div>
+
+    <nav class="nav">
+      <a href="#" id="tabEquipes">👥 Équipes</a>
+      <a href="#" id="tabInscriptions" aria-current="page">📝 Inscriptions</a>
+      <a href="#" id="tabTirage">🎲 Tirage</a>
+      <a href="#" id="btnPublic">Vue publique</a>
+      <a href="../admin/index.html">Admin</a>
+      <a href="../index.html">Accueil public</a>
+      <a href="#" id="btnLogout">Déconnexion</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="card" id="accessDenied" style="display:none;">
+    <h2 style="margin:0 0 8px;">⛔ Accès refusé</h2>
+    <p class="muted" style="margin:0;">Cette page est réservée aux administrateurs.</p>
+  </section>
+
+  <section class="card" id="adminUI" style="display:none;">
+    <h2 style="margin:0 0 10px;">🎛️ Statut des inscriptions</h2>
+
+    <p class="muted" id="currentState" style="margin:0;">Chargement…</p>
+    <p class="muted" id="statusMsg" style="margin-top:8px;"></p>
+
+    <div class="grid" style="margin-top:12px;">
+      <button class="btn" id="btnNotOpen" style="font-weight:800; color:#111;">💤 Pas encore ouvertes</button>
+      <button class="btn" id="btnOpen" style="font-weight:800; color:#111;">✅ Ouvrir</button>
+      <button class="btn" id="btnPause" style="font-weight:800; color:#111;">⏸️ Suspendre</button>
+      <button class="btn" id="btnClose" style="font-weight:800; color:#111;">🔒 Clôturer</button>
+    </div>
+
+    <p class="muted" style="margin-top:12px;">
+      ⚠️ Le public voit l’état (ouvertes / suspendues / clôturées / pas encore ouvertes).<br>
+      Les règles Firestore doivent aussi bloquer l’écriture si ce n’est pas “open”.
+    </p>
+  </section>
+
+  <!-- ✅ MAINTENANCE : RAZ -->
+  <section class="card" id="maintenanceUI" style="display:none;">
+    <h2 style="margin:0 0 10px;">🧹 Maintenance</h2>
+
+    <p class="muted" style="margin:0;">
+      Cette action supprime <b>toutes</b> les inscriptions du tournoi (<b>privé + public</b>)
+      et remet le statut à <b>Pas encore ouvertes</b>.
+      <br>⚠️ <b>Irréversible</b>.
+    </p>
+
+    <div class="grid" style="margin-top:12px;">
+      <button class="btn" id="btnRAZ" style="font-weight:900; color:#111; border-color:#f1b2b2;">
+        🧨 RAZ — Supprimer toutes les inscriptions
+      </button>
+    </div>
+
+    <p class="muted" id="razStatus" style="margin-top:10px;"></p>
+  </section>
+
+</main>
+
+<script type="module">
+  import { auth, db } from "../assets/js/firebase.js";
+  import { logout, getRoleByEmail } from "../assets/js/session.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+  import {
+    doc, setDoc, onSnapshot, serverTimestamp,
+    collection, getDocs, writeBatch
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+  // ---- scope : dh | dd
+  const params = new URLSearchParams(location.search);
+  const scope = (params.get("scope") || "dh").toLowerCase();
+
+  const isDH = scope === "dh";
+  const scopeLabel = isDH ? "Double Messieurs (DM)" : "Double Dames (DD)";
+
+  // ---- UI title
+  document.getElementById("pageSub").textContent = `${scopeLabel} — BT250`;
+
+  // ---- nav keep scope
+  document.getElementById("tabEquipes").href = `equipes.html?scope=${encodeURIComponent(scope)}`;
+  document.getElementById("tabInscriptions").href = `inscriptions.html?scope=${encodeURIComponent(scope)}`;
+  document.getElementById("tabTirage").href = `tirage.html?scope=${encodeURIComponent(scope)}`;
+
+  // Vue publique
+  document.getElementById("btnPublic").onclick = (e)=>{
+    e.preventDefault();
+    window.location.href = isDH ? "../dh/inscriptions.html" : "../dd/inscriptions.html";
+  };
+
+  // ---- dom
+  const accessDenied = document.getElementById("accessDenied");
+  const adminUI = document.getElementById("adminUI");
+  const maintenanceUI = document.getElementById("maintenanceUI");
+
+  const currentStateEl = document.getElementById("currentState");
+  const statusMsgEl = document.getElementById("statusMsg");
+
+  const btnNotOpen = document.getElementById("btnNotOpen");
+  const btnOpen = document.getElementById("btnOpen");
+  const btnPause = document.getElementById("btnPause");
+  const btnClose = document.getElementById("btnClose");
+
+  const btnRAZ = document.getElementById("btnRAZ");
+  const razStatus = document.getElementById("razStatus");
+
+  // ---- collections (Open BT)
+  const COL_PRIVATE = `inscriptions_${scope}_private`; // ex: inscriptions_dh_private
+  const COL_PUBLIC  = `equipes_${scope}_public`;       // ex: equipes_dh_public
+
+  // ---- config doc (Open BT)
+  // ex: config/dh ou config/dd
+  const cfgRef = doc(db, "config", scope);
+
+  function labelFor(state){
+    switch(state){
+      case "not_open": return "💤 Pas encore ouvertes";
+      case "open": return "✅ Ouvertes";
+      case "paused": return "⏸️ Suspendues";
+      case "closed": return "🔒 Clôturées";
+      default: return "—";
+    }
+  }
+
+  function publicMessage(state){
+    switch(state){
+      case "not_open": return "Le public voit : “Les inscriptions ne sont pas encore ouvertes.”";
+      case "open": return "Le public voit : “Inscriptions ouvertes ✅” (formulaire actif).";
+      case "paused": return "Le public voit : “Inscriptions suspendues ⏸️” (formulaire bloqué).";
+      case "closed": return "Le public voit : “Inscriptions clôturées 🔒” (formulaire bloqué).";
+      default: return "";
+    }
+  }
+
+  let currentState = null;
+
+  async function ensureAdmin(){
+    const u = auth.currentUser;
+    if(!u) return false;
+    const r = await getRoleByEmail(u.email);
+    return r === "admin";
+  }
+
+  function setButtonsDisabled(disabled){
+    [btnNotOpen, btnOpen, btnPause, btnClose, btnRAZ].forEach(b=>{
+      b.disabled = disabled;
+      b.classList.toggle("disabled", disabled);
+    });
+  }
+
+  async function setState(next){
+    if(next === "closed"){
+      const ok = confirm("Clôturer les inscriptions ?\n\nLe public verra “clôturées” et ne pourra plus s’inscrire.");
+      if(!ok) return;
+    }
+    if(next === "not_open"){
+      const ok = confirm("Mettre “pas encore ouvertes” ?\n\nLe public verra que ce n’est pas ouvert, formulaire bloqué.");
+      if(!ok) return;
+    }
+
+    setButtonsDisabled(true);
+    statusMsgEl.textContent = "Mise à jour…";
+
+    try{
+      await setDoc(cfgRef, {
+        inscriptionsState: next,
+        updatedAt: serverTimestamp()
+      }, { merge:true });
+
+      statusMsgEl.textContent = "✅ Statut mis à jour.";
+    }catch(e){
+      console.error(e);
+      statusMsgEl.textContent = "❌ Erreur : impossible de mettre à jour.";
+    }finally{
+      setButtonsDisabled(false);
+    }
+  }
+
+  // actions
+  btnNotOpen.onclick = ()=> setState("not_open");
+  btnOpen.onclick = ()=> setState("open");
+
+  btnPause.onclick = ()=>{
+    if(currentState === "paused") setState("open");
+    else setState("paused");
+  };
+
+  btnClose.onclick = ()=> setState("closed");
+
+  // ---- RAZ helper: delete a collection in batches
+  async function deleteCollectionInBatches(colName, batchSize=450){
+    let deleted = 0;
+
+    while(true){
+      const snap = await getDocs(collection(db, colName));
+      if(snap.empty) break;
+
+      const docs = snap.docs.slice(0, batchSize);
+      const batch = writeBatch(db);
+      docs.forEach(d => batch.delete(d.ref));
+      await batch.commit();
+
+      deleted += docs.length;
+      if(docs.length < batchSize) break;
+    }
+
+    return deleted;
+  }
+
+  async function doRAZ(){
+    const ok1 = confirm(
+      "⚠️ RAZ INSCRIPTIONS\n\nCette action supprime TOUTES les inscriptions (privé + public) pour :\n" +
+      scopeLabel +
+      "\n\nContinuer ?"
+    );
+    if(!ok1) return;
+
+    const typed = prompt('Tape exactement : RAZ\n\n(pour confirmer la suppression complète)');
+    if(typed !== "RAZ"){
+      alert("Annulé.");
+      return;
+    }
+
+    setButtonsDisabled(true);
+    razStatus.textContent = "Suppression en cours…";
+
+    try{
+      // 1) remettre le statut (safe)
+      await setDoc(cfgRef, { inscriptionsState: "not_open", updatedAt: serverTimestamp() }, { merge:true });
+
+      // 2) delete public + private
+      const delPublic  = await deleteCollectionInBatches(COL_PUBLIC);
+      const delPrivate = await deleteCollectionInBatches(COL_PRIVATE);
+
+      razStatus.textContent =
+        `✅ RAZ OK — supprimés : public=${delPublic}, privé=${delPrivate}. Statut remis à “Pas encore ouvertes”.`;
+
+      alert(
+        `RAZ terminé ✅\n\nSupprimés :\n- Public: ${delPublic}\n- Privé: ${delPrivate}\n\nStatut : pas encore ouvertes`
+      );
+    }catch(e){
+      console.error(e);
+      razStatus.textContent = "❌ Erreur pendant le RAZ. Voir console.";
+      alert("Erreur pendant le RAZ ❌\n\nOuvre la console pour le détail.");
+    }finally{
+      setButtonsDisabled(false);
+    }
+  }
+
+  btnRAZ.onclick = doRAZ;
+
+  // logout
+  document.getElementById("btnLogout").onclick = async (e)=>{
+    e.preventDefault();
+    await logout();
+    window.location.href = "../index.html";
+  };
+
+  // guard + live state
+  onAuthStateChanged(auth, async (user)=>{
+    accessDenied.style.display = "none";
+    adminUI.style.display = "none";
+    maintenanceUI.style.display = "none";
+
+    if(!user){
+      accessDenied.style.display = "block";
+      return;
+    }
+
+    const ok = await ensureAdmin();
+    if(!ok){
+      accessDenied.style.display = "block";
+      return;
+    }
+
+    adminUI.style.display = "block";
+    maintenanceUI.style.display = "block";
+
+    onSnapshot(cfgRef, (snap)=>{
+      const state = snap.exists() ? (snap.data().inscriptionsState || "not_open") : "not_open";
+      currentState = state;
+
+      currentStateEl.innerHTML = `Tournoi : <strong>${scopeLabel}</strong><br>Statut actuel : <strong>${labelFor(state)}</strong>`;
+      statusMsgEl.textContent = publicMessage(state);
+
+      btnPause.textContent = (state === "paused") ? "▶️ Réactiver" : "⏸️ Suspendre";
+    }, (err)=>{
+      console.error(err);
+      currentStateEl.textContent = "❌ Impossible de lire le statut.";
+      statusMsgEl.textContent = "";
+    });
+  });
+</script>
+
+</body>
+</html>
