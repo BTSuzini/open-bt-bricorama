@@ -15,10 +15,13 @@
         <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
       </div>
 
-      <h1 class="brand-title">Open BT Bricorama<br><span style="opacity:.95;font-weight:800;">Double Dames</span></h1>
+      <h1 class="brand-title">
+        Open BT Bricorama<br>
+        <span style="opacity:.95;font-weight:800;">Double Dames</span>
+      </h1>
 
       <div class="brand-logo">
-        <img src="../assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
+        <img src="../assets/img/logo-openbt.png" alt="Logo Open BT">
       </div>
     </div>
 
@@ -34,9 +37,8 @@
 
 <main class="container">
 
-  <section class="card">
+  <section class="card" id="cardForm">
     <h2>📝 Formulaire d’inscription — Double Dames</h2>
-
     <p id="gateMsg" class="muted">Chargement…</p>
 
     <form id="signupForm" class="form" autocomplete="on">
@@ -96,7 +98,7 @@
 
       <hr class="sep" />
 
-      <button id="submitBtn" class="btn" type="submit" style="font-weight:800; color:#111;">
+      <button id="submitBtn" class="btn" type="submit" style="font-weight:900; color:#111;">
         ✅ Valider
       </button>
 
@@ -104,16 +106,22 @@
     </form>
   </section>
 
+  <section class="card" id="cardSuccess" style="display:none;">
+    <h2>✅ Inscription enregistrée</h2>
+    <p class="muted">Merci pour votre inscription 🙌</p>
+    <div class="grid" style="margin-top:12px;">
+      <a class="btn" href="equipes.html">👥 Voir les équipes</a>
+      <a class="btn" href="programmation.html">📅 Programmation</a>
+    </div>
+  </section>
+
 </main>
 
 <script type="module">
   import { db } from "../assets/js/firebase.js";
   import {
-    doc,
-    onSnapshot,
-    collection,
-    addDoc,
-    setDoc,
+    doc, onSnapshot,
+    collection, addDoc, setDoc,
     serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
@@ -121,8 +129,11 @@
   const COL_PRIVATE = "inscriptions_dd_private";
   const COL_PUBLIC  = "equipes_dd_public";
 
-  // Gate unique Open BT : config/open (champ inscriptionsDDState)
-  const CFG_DOC = { col: "config", id: "open", field: "inscriptionsDDState" };
+  // Gate unique Open BT : config/open (champ exact Firestore)
+  const CFG_FIELD = "inscriptionsDDState"; // <- ton champ Firestore
+
+  const cardForm = document.getElementById("cardForm");
+  const cardSuccess = document.getElementById("cardSuccess");
 
   const form = document.getElementById("signupForm");
   const statusEl = document.getElementById("status");
@@ -130,21 +141,20 @@
   const submitBtn = document.getElementById("submitBtn");
 
   let gateState = "not_open"; // open | paused | closed | not_open
-  let submitting = false;     // anti double-clic
+  let isSubmitting = false;   // anti double-clic / double submit
 
   const setStatus = (msg) => { statusEl.textContent = msg; };
-
-  function setInputsDisabled(disabled){
-    const fields = form.querySelectorAll("input, select, textarea, button");
-    fields.forEach(el => {
-      if(el.id === "submitBtn") return;
-      el.disabled = disabled;
-    });
-  }
 
   function normalizeState(state){
     if(state === "suspended") return "paused";
     return state || "not_open";
+  }
+
+  function showSuccess(){
+    // Cache tout le formulaire après validation confirmée
+    cardForm.style.display = "none";
+    cardSuccess.style.display = "block";
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function applyGate(stateRaw){
@@ -152,13 +162,11 @@
 
     if(gateState === "open"){
       gateMsgEl.textContent = "✅ Inscriptions ouvertes. Tu peux t’inscrire ci-dessous.";
-      setInputsDisabled(false);
       submitBtn.disabled = false;
       submitBtn.classList.remove("disabled");
       return;
     }
 
-    setInputsDisabled(true);
     submitBtn.disabled = true;
     submitBtn.classList.add("disabled");
 
@@ -173,12 +181,10 @@
     gateMsgEl.textContent = "⏳ Les inscriptions ne sont pas encore ouvertes.";
   }
 
-  // 🔄 Live gate
-  const cfgRef = doc(db, CFG_DOC.col, CFG_DOC.id);
-  onSnapshot(cfgRef, (snap)=>{
+  // 🔄 Live gate (config/open)
+  onSnapshot(doc(db, "config", "open"), (snap)=>{
     const d = snap.exists() ? (snap.data() || {}) : {};
-    const state = d[CFG_DOC.field] || "not_open";
-    applyGate(state);
+    applyGate(d[CFG_FIELD] || "not_open");
   }, (err)=>{
     console.error(err);
     applyGate("not_open");
@@ -202,23 +208,17 @@
     };
   }
 
-  // 🔒 Nettoyage UI après confirmation (évite le "double clic" inconscient)
-  function lockAndHideFormAfterSuccess(){
-    const all = form.querySelectorAll("input, select, textarea, button");
-    all.forEach(el => { el.disabled = true; });
-    form.style.display = "none";
-  }
-
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    if(submitting) return; // anti double submit
+    if(isSubmitting) return;
+
     if(gateState !== "open"){
       setStatus("⛔ Inscriptions non ouvertes.");
       return;
     }
 
-    submitting = true;
+    isSubmitting = true;
     submitBtn.disabled = true;
     submitBtn.classList.add("disabled");
     setStatus("Envoi en cours…");
@@ -243,20 +243,30 @@
         stby: false
       });
 
-      // ✅ POPUP + disparition des champs après fermeture
-      alert("✅ Inscription enregistrée !\n\nMerci 🙏");
-      lockAndHideFormAfterSuccess();
+      // reset immédiat (au cas où), puis popup, puis on cache la page
+      form.reset();
+
+      const recap =
+        `✅ Inscription enregistrée !\n\n` +
+        `Équipe : ${data.teamName}\n` +
+        `Joueuses : ${data.p1FirstName} ${data.p1LastName} & ${data.p2FirstName} ${data.p2LastName}`;
+
+      alert(recap);
+
+      // Après fermeture du popup : on retire le formulaire
+      showSuccess();
       setStatus("");
+
     } catch (err) {
       console.error(err);
       setStatus("❌ Erreur : " + (err?.message || "Impossible d’enregistrer l’inscription."));
-
+      // si erreur, on ré-autorise
       if(gateState === "open"){
         submitBtn.disabled = false;
         submitBtn.classList.remove("disabled");
       }
     } finally {
-      submitting = false;
+      isSubmitting = false;
     }
   });
 </script>
