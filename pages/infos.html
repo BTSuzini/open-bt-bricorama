@@ -28,6 +28,7 @@
       <a href="dd/index.html">DD</a>
       <a href="infos.html" aria-current="page">Infos</a>
       <a href="reglement.html">Règlement</a>
+      <a href="repas.html">Repas</a>
       <a href="contact.html">Contact</a>
     </nav>
   </div>
@@ -81,7 +82,6 @@
 </main>
 
 <script type="module">
-  // ✅ Même pattern que le challenge (pas de config Firebase ici)
   import { auth, db } from "../assets/js/firebase.js";
   import { getRoleByEmail } from "../assets/js/session.js";
 
@@ -97,10 +97,7 @@
     doc
   } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-  // 🔧 Collection des infos (Open)
-  // 👉 Recommandation "future proof": utiliser une collection dédiée :
-  //    infos_openbt
-  // (comme ça, zéro risque de mélanger avec le challenge)
+  // Collection des infos (Open)
   const COL_INFOS = "infos";
 
   // DOM
@@ -193,7 +190,7 @@
     }
   }
 
-  // 🔐 Détection admin
+  // Détection admin
   onAuthStateChanged(auth, async (user) => {
     adminBox.style.display = "none";
     isAdmin = false;
@@ -211,7 +208,7 @@
     }
   });
 
-  // 🔄 Flux live (plus récent en haut)
+  // Flux live (plus récent en haut)
   infosCount.textContent = "Chargement…";
   const q = query(collection(db, COL_INFOS), orderBy("createdAt", "desc"));
 
@@ -223,7 +220,7 @@
     infosCount.textContent = "❌ Impossible de charger les infos.";
   });
 
-  // 🛠️ Publication (admin)
+  // Publication (admin)
   infoForm?.addEventListener("submit", async (e) => {
     e.preventDefault();
     publishBtn.disabled = true;
