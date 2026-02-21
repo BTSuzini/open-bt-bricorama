@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Inscriptions — Double Dames</title>
-  <link rel="stylesheet" href="../../assets/css/main.css?v=20260219" />
+  <title>Inscriptions — Double Dames — Open BT Bricorama</title>
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260219" />
 </head>
 <body>
 
@@ -12,26 +12,22 @@
   <div class="container">
     <div class="topbar-row">
       <div class="brand-logo">
-        <img src="../../assets/img/logo-suzini.png" alt="Logo Suzini">
+        <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
       </div>
 
-      <h1 class="brand-title">
-        Open BT Bricorama<br>
-        <span style="opacity:.95;font-weight:800;">Double Dames</span>
-      </h1>
+      <h1 class="brand-title">Open BT Bricorama<br><span style="opacity:.95;font-weight:800;">Double Dames</span></h1>
 
       <div class="brand-logo">
-        <img src="../../assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
+        <img src="../assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
       </div>
     </div>
 
     <nav class="nav">
-      <a href="../../index.html">Accueil</a>
-      <a href="../dh/index.html">DM</a>
-      <a href="index.html">DD</a>
-      <a href="../infos.html">Infos</a>
-      <a href="../reglement.html">Règlement</a>
-      <a href="../contact.html">Contact</a>
+      <a href="../index.html">Accueil</a>
+      <a href="programmation.html">Programmation</a>
+      <a href="equipes.html">Équipes</a>
+      <a href="inscriptions.html" aria-current="page">Inscriptions</a>
+      <a href="tirage.html">Tirage</a>
     </nav>
   </div>
 </header>
@@ -39,9 +35,8 @@
 <main class="container">
 
   <section class="card">
-    <h2>Formulaire d’inscription — Double Dames</h2>
+    <h2>📝 Formulaire d’inscription — Double Dames</h2>
 
-    <!-- Message statut inscriptions -->
     <p id="gateMsg" class="muted">Chargement…</p>
 
     <form id="signupForm" class="form" autocomplete="on">
@@ -106,14 +101,13 @@
       </button>
 
       <p id="status" class="muted" role="status" aria-live="polite"></p>
-
     </form>
   </section>
 
 </main>
 
 <script type="module">
-  import { db } from "../../assets/js/firebase.js";
+  import { db } from "../assets/js/firebase.js";
   import {
     doc,
     onSnapshot,
@@ -123,16 +117,19 @@
     serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-  // ✅ Open BT — Double Dames
+  // Open BT — DD
   const COL_PRIVATE = "inscriptions_dd_private";
   const COL_PUBLIC  = "equipes_dd_public";
+
+  // Gate unique Open BT : config/open (champ ddState)
+  const CFG_DOC = { col: "config", id: "open", field: "ddState" };
 
   const form = document.getElementById("signupForm");
   const statusEl = document.getElementById("status");
   const gateMsgEl = document.getElementById("gateMsg");
   const submitBtn = document.getElementById("submitBtn");
 
-  let gateState = "not_open"; // not_open | open | paused | closed
+  let gateState = "not_open"; // open | paused | closed | not_open
 
   const setStatus = (msg) => { statusEl.textContent = msg; };
 
@@ -175,10 +172,11 @@
     gateMsgEl.textContent = "⏳ Les inscriptions ne sont pas encore ouvertes.";
   }
 
-  // 🔄 Live gate : config/dd
-  const cfgRef = doc(db, "config", "dd");
+  // 🔄 Live gate
+  const cfgRef = doc(db, CFG_DOC.col, CFG_DOC.id);
   onSnapshot(cfgRef, (snap)=>{
-    const state = snap.exists() ? (snap.data().inscriptionsState || "not_open") : "not_open";
+    const d = snap.exists() ? (snap.data() || {}) : {};
+    const state = d[CFG_DOC.field] || "not_open";
     applyGate(state);
   }, (err)=>{
     console.error(err);
@@ -215,14 +213,14 @@
     submitBtn.classList.add("disabled");
     setStatus("Envoi en cours…");
 
-    try{
+    try {
       const data = readFormData();
 
-      if(!data.teamName || !data.p1FirstName || !data.p1LastName || !data.p2FirstName || !data.p2LastName){
+      if (!data.teamName || !data.p1FirstName || !data.p1LastName || !data.p2FirstName || !data.p2LastName) {
         throw new Error("Merci de compléter tous les champs obligatoires.");
       }
 
-      // 1) PRIVÉ
+      // 1) PRIVÉ (doc auto-id)
       const ref = await addDoc(collection(db, COL_PRIVATE), data);
 
       // 2) PUBLIC (même ID)
@@ -237,10 +235,10 @@
 
       form.reset();
       setStatus("✅ Inscription enregistrée !");
-    }catch(err){
+    } catch (err) {
       console.error(err);
       setStatus("❌ Erreur : " + (err?.message || "Impossible d’enregistrer l’inscription."));
-    }finally{
+    } finally {
       if(gateState === "open"){
         submitBtn.disabled = false;
         submitBtn.classList.remove("disabled");
