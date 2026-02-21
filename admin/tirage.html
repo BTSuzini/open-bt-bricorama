@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin — Tirage</title>
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260220" />
+</head>
+<body>
+
+<div id="adminHeader"></div>
+
+<main class="container">
+
+  <div id="adminZone"></div>
+
+  <section class="card" id="pageContent" style="display:none;">
+    <h2 style="margin:0 0 10px;">🎲 Tirage — Admin</h2>
+    <p class="muted" id="hint" style="margin:0;">
+      Cette page sera branchée ensuite sur le tirage (génération / export / affichage) pour DM/DD.
+    </p>
+
+    <hr class="sep" />
+
+    <p class="muted" style="margin:0;">
+      Prochaine étape : tirage au sort + affichage tableau + diffusion publique.
+    </p>
+  </section>
+
+</main>
+
+<script type="module">
+  import { renderAdminShell } from "../assets/js/admin-shell.js";
+  import { auth } from "../assets/js/firebase.js";
+  import { getRoleByEmail } from "../assets/js/session.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
+  renderAdminShell({ active: "tirage", basePath: ".." });
+
+  const pageContent = document.getElementById("pageContent");
+  const hint = document.getElementById("hint");
+  const params = new URLSearchParams(location.search);
+  const scope = (params.get("scope") || "").toLowerCase();
+
+  onAuthStateChanged(auth, async (user)=>{
+    pageContent.style.display = "none";
+    if(!user) return;
+    const role = await getRoleByEmail(user.email);
+    if(role !== "admin") return;
+
+    if(scope !== "dh" && scope !== "dd"){
+      hint.textContent = "Choisis DM ou DD dans le menu “Zone”.";
+    } else {
+      hint.textContent = scope === "dh"
+        ? "Zone DM : tirage Double Messieurs."
+        : "Zone DD : tirage Double Dames.";
+    }
+
+    pageContent.style.display = "block";
+  });
+</script>
+
+</body>
+</html>
