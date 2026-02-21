@@ -15,7 +15,10 @@
         <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
       </div>
 
-      <h1 class="brand-title">Open BT Bricorama<br><span style="opacity:.95;font-weight:800;">Double Hommes</span></h1>
+      <h1 class="brand-title">
+        Open BT Bricorama<br>
+        <span style="opacity:.95;font-weight:800;">Double Hommes</span>
+      </h1>
 
       <div class="brand-logo">
         <img src="../assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
@@ -36,7 +39,7 @@
 
   <!-- Compteurs + sous-onglets -->
   <section class="card">
-    <h2 style="margin-bottom:6px;">👥 Équipes inscrites</h2>
+    <h2 style="margin-bottom:6px;">👥 Équipes inscrites — Double Hommes</h2>
 
     <p class="muted" style="margin-top:0;">
       Total : <strong><span id="totalCount">0</span></strong>
@@ -112,8 +115,6 @@
 
   <!-- =========================
        VUE 2 : CLASSÉES
-       - seulement liste principale
-       - tri par (p1Rank+p2Rank) croissant
   ========================== -->
   <div id="panelClassees" style="display:none;" role="tabpanel" aria-labelledby="tabClassees">
 
@@ -239,11 +240,15 @@
 
 <script type="module">
   import { db } from "../assets/js/firebase.js";
-  import { collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+  import {
+    collection,
+    query,
+    orderBy,
+    onSnapshot
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
   const MAX_MAIN = 10;
   const COL_PUBLIC = "equipes_dh_public";
-  const LS_KEY = "openbt_dh_equipes_view";
 
   const statusEl = document.getElementById("status");
 
@@ -261,6 +266,7 @@
   const waitBody = document.getElementById("waitBody");
   const rankedBody = document.getElementById("rankedBody");
 
+  // Tabs
   const tabInscrits = document.getElementById("tabInscrits");
   const tabClassees = document.getElementById("tabClassees");
   const panelInscrits = document.getElementById("panelInscrits");
@@ -370,6 +376,7 @@
     mainCount2El.textContent = main.length;
     waitCount2El.textContent = wait.length;
 
+    // INSCRITS
     mainBody.innerHTML = main.length
       ? main.map((r,i) => rowHtml(i+1, r)).join("")
       : `<tr><td colspan="5" class="muted" style="padding:14px;">Aucune équipe pour le moment.</td></tr>`;
@@ -378,6 +385,7 @@
       ? wait.map((r,i) => rowHtml(main.length + i + 1, r)).join("")
       : `<tr><td colspan="5" class="muted" style="padding:14px;">Aucune équipe en liste d’attente.</td></tr>`;
 
+    // CLASSÉES : seulement main, tri par teamRank asc (missing ranks => en bas)
     const ranked = [...main];
     ranked.sort((a,b)=>{
       const a1 = toNum(a.p1Rank), a2 = toNum(a.p2Rank);
@@ -395,39 +403,42 @@
       : `<tr><td colspan="5" class="muted" style="padding:14px;">Aucune équipe sur la liste principale.</td></tr>`;
   }
 
+  // Tabs behavior
   function showInscrits(){
     tabInscrits.setAttribute("aria-selected", "true");
     tabClassees.setAttribute("aria-selected", "false");
     panelInscrits.style.display = "block";
     panelClassees.style.display = "none";
-    try{ localStorage.setItem(LS_KEY, "inscrits"); }catch(e){}
+    try{ localStorage.setItem("openbt_dh_equipes_view", "inscrits"); }catch(e){}
   }
   function showClassees(){
     tabInscrits.setAttribute("aria-selected", "false");
     tabClassees.setAttribute("aria-selected", "true");
     panelInscrits.style.display = "none";
     panelClassees.style.display = "block";
-    try{ localStorage.setItem(LS_KEY, "classees"); }catch(e){}
+    try{ localStorage.setItem("openbt_dh_equipes_view", "classees"); }catch(e){}
   }
 
   tabInscrits.addEventListener("click", showInscrits);
   tabClassees.addEventListener("click", showClassees);
 
+  // restore
   try{
-    const saved = localStorage.getItem(LS_KEY);
+    const saved = localStorage.getItem("openbt_dh_equipes_view");
     if(saved === "classees") showClassees(); else showInscrits();
   }catch(e){
     showInscrits();
   }
 
+  // 🔴 SNAPSHOT
   const q = query(collection(db, COL_PUBLIC), orderBy("createdAt", "asc"));
 
   onSnapshot(q, (snap) => {
     const rows = [];
-    snap.forEach(docSnap => {
-      const d = docSnap.data() || {};
+    snap.forEach(doc => {
+      const d = doc.data() || {};
       rows.push({
-        id: docSnap.id,
+        id: doc.id,
         teamName: d.teamName || "",
         p1FirstName: d.p1FirstName || "",
         p2FirstName: d.p2FirstName || "",
