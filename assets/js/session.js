@@ -3,7 +3,9 @@ import { auth, db } from "./firebase.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 import {
   signOut,
-  signInWithEmailAndPassword
+  signInWithEmailAndPassword,
+  setPersistence,
+  browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
 // Récupère le role depuis /roles/{email}
@@ -20,18 +22,20 @@ export async function getRoleByEmail(email){
   }
 }
 
-// Login minimal (prompt email/password)
+// Login minimal (prompt email + mdp)
 export async function loginAndRedirect(){
   const email = prompt("Email (admin) :");
   if(!email) return;
-
   const pass = prompt("Mot de passe :");
   if(!pass) return;
 
   try{
+    // ✅ Persistance locale => reste connecté sur ce navigateur/appareil
+    await setPersistence(auth, browserLocalPersistence);
+
     await signInWithEmailAndPassword(auth, email, pass);
   } catch(e){
-    alert("Erreur login : " + (e?.message || e));
+    alert("Erreur login : " + (e.message || e));
   }
 }
 
@@ -39,6 +43,6 @@ export async function logout(){
   try{
     await signOut(auth);
   } catch(e){
-    console.error("logout", e);
+    console.error(e);
   }
 }
