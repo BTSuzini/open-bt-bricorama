@@ -24,13 +24,11 @@
 
     <nav class="nav">
       <a href="index.html" aria-current="page">Accueil</a>
-      <!-- ✅ pas d'index DH/DD => redirection vers programmation -->
       <a href="dh/programmation.html">DM</a>
       <a href="dd/programmation.html">DD</a>
 
       <a href="pages/infos.html">Infos</a>
       <a href="pages/reglement.html">Règlement</a>
-      <!-- ✅ onglet repas ajouté -->
       <a href="pages/repas.html">Repas</a>
       <a href="pages/contact.html">Contact</a>
     </nav>
@@ -43,7 +41,6 @@
     <h2>Les tournois</h2>
 
     <div class="grid">
-      <!-- ✅ pas d'index DH/DD => redirection vers programmation -->
       <a class="btn" href="dd/programmation.html">👩‍🦱 Tournoi Double Dames</a>
       <a class="btn" href="dh/programmation.html">👨‍🦱 Tournoi Double Messieurs</a>
     </div>
@@ -67,12 +64,12 @@
     <h2>🔐 Accès organisateurs</h2>
 
     <div class="grid">
-      <a class="btn disabled" href="#" aria-disabled="true">📱 Mode Mobile — à venir</a>
-      <a class="btn disabled" href="#" aria-disabled="true">🛠️ Mode Admin — à venir</a>
-      <a class="btn disabled" href="#" aria-disabled="true">🎾 Mode JAT — à venir</a>
+      <a class="btn" href="#" id="btnAdmin">🛠️ Mode Admin</a>
+      <a class="btn" href="#" id="btnLogout">🚪 Déconnexion</a>
     </div>
 
-    <p class="muted">On activera cette partie si on réutilise Firebase comme sur le challenge.</p>
+    <p class="muted">Accès sécurisé (email / mot de passe).</p>
+    <p class="muted" id="authHint" style="margin-top:8px;"></p>
   </section>
 
 </main>
@@ -82,6 +79,50 @@
     <span>© TCS — Open BT Bricorama</span>
   </div>
 </footer>
+
+<script type="module">
+  import { auth } from "./assets/js/firebase.js";
+  import { loginAndRedirect, logout, getRoleByEmail } from "./assets/js/session.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
+  const hint = document.getElementById("authHint");
+
+  async function guardAdminAndGo(url){
+    // login si besoin
+    if(!auth.currentUser){
+      await loginAndRedirect();
+    }
+    const u = auth.currentUser;
+    if(!u){
+      alert("Connexion annulée.");
+      return;
+    }
+
+    // check rôle
+    const role = await getRoleByEmail(u.email);
+    if(role !== "admin"){
+      alert("Accès refusé : rôle requis = admin");
+      return;
+    }
+
+    window.location.href = url;
+  }
+
+  document.getElementById("btnAdmin").onclick = async (e)=>{
+    e.preventDefault();
+    await guardAdminAndGo("admin/index.html");
+  };
+
+  document.getElementById("btnLogout").onclick = async (e)=>{
+    e.preventDefault();
+    await logout();
+    alert("Déconnecté ✅");
+  };
+
+  onAuthStateChanged(auth, (user)=>{
+    hint.textContent = user ? ("Connecté : " + user.email) : "Non connecté.";
+  });
+</script>
 
 </body>
 </html>
