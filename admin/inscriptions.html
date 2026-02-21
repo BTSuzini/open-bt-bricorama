@@ -1,33 +1,66 @@
+<!-- admin/inscriptions.html -->
 <!doctype html>
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Admin — Inscriptions</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260220" />
+  <title>Admin — Inscriptions — Open BT Bricorama</title>
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260219" />
 </head>
 <body>
 
-<div id="adminHeader"></div>
+<header class="topbar">
+  <div class="container">
+    <div class="topbar-row">
+      <div class="brand-logo">
+        <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
+      </div>
+
+      <h1 class="brand-title">🛠️ Admin — Open BT Bricorama</h1>
+
+      <div class="brand-logo">
+        <img src="../assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
+      </div>
+    </div>
+
+    <!-- ✅ Bandeau identique partout (souhait) -->
+    <nav class="nav">
+      <a href="../index.html">Accueil public</a>
+      <a href="#" id="btnLogout">Déconnexion</a>
+    </nav>
+  </div>
+</header>
 
 <main class="container">
 
-  <div id="adminZone"></div>
+  <section class="card" id="accessDenied" style="display:none;">
+    <h2 style="margin:0 0 8px;">⛔ Accès refusé</h2>
+    <p class="muted" style="margin:0;">Cette page est réservée aux administrateurs.</p>
+  </section>
 
-  <section class="card" id="pageContent" style="display:none;">
-    <h2 style="margin:0 0 10px;">📝 Inscriptions — Admin</h2>
+  <!-- ✅ Encart "Zone" + onglets (souhait) -->
+  <section class="card" id="adminUI" style="display:none;">
+    <h2 style="margin:0 0 10px;">🎛️ Zone</h2>
 
-    <p class="muted" id="scopeLine" style="margin:0;">Chargement…</p>
-
-    <div class="grid" style="margin-top:12px;">
-      <a class="btn" id="btnPublic" href="#" target="_blank" rel="noopener" style="font-weight:900; color:#111;">
-        👀 Ouvrir la vue publique (inscriptions)
-      </a>
+    <div class="field">
+      <label for="scope">Choisir</label>
+      <select id="scope">
+        <option value="general">Général</option>
+        <option value="dh">Double Hommes</option>
+        <option value="dd">Double Dames</option>
+      </select>
     </div>
 
-    <hr class="sep" />
+    <div class="grid" style="margin-top:10px;" id="tabs"></div>
+    <p class="muted" id="hint" style="margin-top:10px;"></p>
+  </section>
 
-    <h3 style="margin:0 0 10px;">🎛️ Statut des inscriptions</h3>
+  <!-- =========================
+       PANNEAU : INSCRIPTIONS
+       (affiché sous la zone)
+  ========================== -->
+  <section class="card" id="panelInscriptions" style="display:none;">
+    <h2 style="margin:0 0 10px;">📝 Inscriptions</h2>
 
     <p class="muted" id="currentState" style="margin:0;">Chargement…</p>
     <p class="muted" id="statusMsg" style="margin-top:8px;"></p>
@@ -35,21 +68,28 @@
     <div class="grid" style="margin-top:12px;">
       <button class="btn" id="btnNotOpen" style="font-weight:800; color:#111;">💤 Pas encore ouvertes</button>
       <button class="btn" id="btnOpen" style="font-weight:800; color:#111;">✅ Ouvrir</button>
-      <button class="btn" id="btnSuspend" style="font-weight:800; color:#111;">⏸️ Suspendre</button>
+      <button class="btn" id="btnPause" style="font-weight:800; color:#111;">⏸️ Suspendre</button>
       <button class="btn" id="btnClose" style="font-weight:800; color:#111;">🔒 Clôturer</button>
+    </div>
+
+    <div class="grid" style="margin-top:12px;">
+      <a class="btn" id="btnPublic" href="#" style="font-weight:800; color:#111;">👁️ Voir la page publique</a>
     </div>
 
     <p class="muted" style="margin-top:12px;">
       ⚠️ Le public voit l’état (ouvertes / suspendues / clôturées / pas encore ouvertes).<br>
-      On raccordera ensuite la page publique DH/DD sur ce statut.
+      Les règles Firestore bloquent aussi l’écriture si ce n’est pas “open”.
     </p>
+  </section>
 
-    <hr class="sep" />
-
-    <h3 style="margin:0 0 10px;">🧹 Maintenance</h3>
+  <!-- =========================
+       MAINTENANCE : RAZ
+  ========================== -->
+  <section class="card" id="maintenanceUI" style="display:none;">
+    <h2 style="margin:0 0 10px;">🧹 Maintenance</h2>
 
     <p class="muted" style="margin:0;">
-      Cette action supprime <b>toutes</b> les inscriptions du tournoi (privé + public) pour la zone sélectionnée (DM ou DD)
+      Cette action supprime <b>toutes</b> les inscriptions (privé + public) pour la zone choisie,
       et remet le statut à <b>Pas encore ouvertes</b>.
       <br>⚠️ <b>Irréversible</b>.
     </p>
@@ -66,59 +106,88 @@
 </main>
 
 <script type="module">
-  import { renderAdminShell } from "../assets/js/admin-shell.js";
   import { auth, db } from "../assets/js/firebase.js";
-  import { getRoleByEmail } from "../assets/js/session.js";
-
+  import { logout, getRoleByEmail } from "../assets/js/session.js";
   import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
   import {
     doc, setDoc, onSnapshot, serverTimestamp,
     collection, getDocs, writeBatch
   } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-  renderAdminShell({ active: "inscriptions", basePath: ".." });
-
-  const pageContent = document.getElementById("pageContent");
-
+  // ----------------------------
+  // Param + scope persistence
+  // ----------------------------
   const params = new URLSearchParams(location.search);
-  const scope = (params.get("scope") || "").toLowerCase(); // dh | dd
-  const scopeLine = document.getElementById("scopeLine");
+  const urlScope = (params.get("scope") || "").toLowerCase();
 
-  const btnPublic = document.getElementById("btnPublic");
+  const LS_KEY = "openbt_admin_scope";
+
+  function normalizeScope(x){
+    if(x === "dh" || x === "dd" || x === "general") return x;
+    return "general";
+  }
+
+  // scope initial : URL > localStorage > general
+  let scope = normalizeScope(urlScope);
+  if(!urlScope){
+    try{
+      const saved = localStorage.getItem(LS_KEY);
+      if(saved) scope = normalizeScope(saved);
+    }catch(e){}
+  }
+
+  // ----------------------------
+  // DOM
+  // ----------------------------
+  const accessDenied = document.getElementById("accessDenied");
+  const adminUI = document.getElementById("adminUI");
+
+  const scopeEl = document.getElementById("scope");
+  const tabsEl  = document.getElementById("tabs");
+  const hintEl  = document.getElementById("hint");
+
+  const panelInscriptions = document.getElementById("panelInscriptions");
+  const maintenanceUI = document.getElementById("maintenanceUI");
 
   const currentStateEl = document.getElementById("currentState");
   const statusMsgEl = document.getElementById("statusMsg");
 
   const btnNotOpen = document.getElementById("btnNotOpen");
   const btnOpen = document.getElementById("btnOpen");
-  const btnSuspend = document.getElementById("btnSuspend");
+  const btnPause = document.getElementById("btnPause");
   const btnClose = document.getElementById("btnClose");
+  const btnPublic = document.getElementById("btnPublic");
 
   const btnRAZ = document.getElementById("btnRAZ");
   const razStatus = document.getElementById("razStatus");
 
-  function labelScope(s){
-    if(s === "dh") return "Double Messieurs (DM)";
-    if(s === "dd") return "Double Dames (DD)";
-    return "—";
-  }
-
-  // --- On stocke les états dans config/open
-  //     - inscriptionsDHState
-  //     - inscriptionsDDState
+  // config doc unique Open BT
   const cfgRef = doc(db, "config", "open");
 
-  function stateKeyForScope(s){
-    if(s === "dh") return "inscriptionsDHState";
-    if(s === "dd") return "inscriptionsDDState";
+  // mapping champ gate selon scope
+  function gateFieldForScope(sc){
+    if(sc === "dh") return "inscriptionsDHState";
+    if(sc === "dd") return "inscriptionsDDState";
     return null;
+  }
+
+  function labelScope(sc){
+    if(sc === "dh") return "Double Hommes";
+    if(sc === "dd") return "Double Dames";
+    return "Général";
+  }
+
+  function publicUrlForScope(sc){
+    if(sc === "dh") return "../dh/inscriptions.html";
+    if(sc === "dd") return "../dd/inscriptions.html";
+    return "../pages/infos.html";
   }
 
   function labelFor(state){
     switch(state){
       case "not_open": return "💤 Pas encore ouvertes";
       case "open": return "✅ Ouvertes";
-      case "suspended": return "⏸️ Suspendues";
+      case "paused": return "⏸️ Suspendues";
       case "closed": return "🔒 Clôturées";
       default: return "—";
     }
@@ -128,26 +197,124 @@
     switch(state){
       case "not_open": return "Le public voit : “Les inscriptions ne sont pas encore ouvertes.”";
       case "open": return "Le public voit : “Inscriptions ouvertes ✅” (formulaire actif).";
-      case "suspended": return "Le public voit : “Inscriptions suspendues ⏸️” (formulaire bloqué).";
+      case "paused": return "Le public voit : “Inscriptions suspendues ⏸️” (formulaire bloqué).";
       case "closed": return "Le public voit : “Inscriptions clôturées 🔒” (formulaire bloqué).";
       default: return "";
     }
   }
 
   function setButtonsDisabled(disabled){
-    [btnNotOpen, btnOpen, btnSuspend, btnClose, btnRAZ].forEach(b=>{
+    [btnNotOpen, btnOpen, btnPause, btnClose, btnRAZ].forEach(b=>{
       b.disabled = disabled;
       b.classList.toggle("disabled", disabled);
     });
   }
 
+  // ----------------------------
+  // Tabs (mêmes partout)
+  // ----------------------------
+  function tabHref(page, sc){
+    return `${page}?scope=${encodeURIComponent(sc)}`;
+  }
+
+  function setTabs(sc){
+    tabsEl.innerHTML = "";
+    panelInscriptions.style.display = "none";
+    maintenanceUI.style.display = "none";
+
+    // hint
+    if(sc === "general"){
+      hintEl.textContent = "Zone Général : gestion (ex : Infos).";
+    } else {
+      hintEl.textContent = `Zone ${labelScope(sc)} : inscriptions / équipes / tirage.`;
+    }
+
+    // tabs list
+    const tabs = (sc === "general")
+      ? [
+          ["📰 Infos", tabHref("index.html", "general")],
+          ["📝 Inscriptions", tabHref("inscriptions.html", "general")] // reste sur page, mais on garde cohérent
+        ]
+      : [
+          ["👥 Équipes", tabHref("equipes.html", sc)],
+          ["📝 Inscriptions", tabHref("inscriptions.html", sc)],
+          ["🎲 Tirage", tabHref("tirage.html", sc)]
+        ];
+
+    for(const [label, href] of tabs){
+      const a = document.createElement("a");
+      a.className = "btn";
+      a.href = href;
+      a.textContent = label;
+
+      // highlight current page (inscriptions)
+      if(label.includes("Inscriptions")){
+        a.setAttribute("aria-current", "page");
+      }
+      tabsEl.appendChild(a);
+    }
+
+    // show panels only for DH/DD (car "Inscriptions" n'a pas de sens en "Général")
+    if(sc === "dh" || sc === "dd"){
+      panelInscriptions.style.display = "block";
+      maintenanceUI.style.display = "block";
+    } else {
+      // général : on affiche un message simple
+      panelInscriptions.style.display = "block";
+      maintenanceUI.style.display = "none";
+      currentStateEl.innerHTML = `Zone : <strong>${labelScope(sc)}</strong>`;
+      statusMsgEl.textContent = "Cette page “Inscriptions” ne s’applique pas à la zone Général. Utilise plutôt l’onglet “Infos”.";
+      // disable buttons
+      setButtonsDisabled(true);
+      btnPublic.href = "../admin/index.html?scope=general";
+      btnPublic.textContent = "➡️ Aller à l’admin (Général)";
+    }
+  }
+
+  // ----------------------------
+  // Gate state live
+  // ----------------------------
+  let unsubscribeCfg = null;
   let currentState = "not_open";
 
-  async function setState(next){
-    if(!key){
-      alert("Choisis DM ou DD dans le menu “Zone”.");
+  function stopCfg(){
+    if(unsubscribeCfg){
+      unsubscribeCfg();
+      unsubscribeCfg = null;
+    }
+  }
+
+  function startCfg(sc){
+    stopCfg();
+
+    const field = gateFieldForScope(sc);
+    if(!field){
+      currentState = "not_open";
       return;
     }
+
+    currentStateEl.textContent = "Chargement…";
+    statusMsgEl.textContent = "";
+
+    unsubscribeCfg = onSnapshot(cfgRef, (snap)=>{
+      const d = snap.exists() ? (snap.data() || {}) : {};
+      const state = (d[field] || "not_open");
+      currentState = state;
+
+      currentStateEl.innerHTML = `Zone : <strong>${labelScope(sc)}</strong> — Statut actuel : <strong>${labelFor(state)}</strong>`;
+      statusMsgEl.textContent = publicMessage(state);
+
+      btnPause.textContent = (state === "paused") ? "▶️ Réactiver" : "⏸️ Suspendre";
+    }, (err)=>{
+      console.error(err);
+      currentStateEl.textContent = "❌ Impossible de lire le statut (config/open).";
+      statusMsgEl.textContent = "";
+    });
+  }
+
+  async function setState(sc, next){
+    const field = gateFieldForScope(sc);
+    if(!field) return;
 
     if(next === "closed"){
       const ok = confirm("Clôturer les inscriptions ?\n\nLe public verra “clôturées” et ne pourra plus s’inscrire.");
@@ -163,7 +330,7 @@
 
     try{
       await setDoc(cfgRef, {
-        [key]: next,
+        [field]: next,
         updatedAt: serverTimestamp()
       }, { merge:true });
 
@@ -176,27 +343,18 @@
     }
   }
 
-  // --- RAZ : collections par scope
-  function colsForScope(s){
-    // Tu peux changer ces noms si tu préfères autre chose.
-    // Le but : 2 collections (privée + publique) par tournoi.
-    if(s === "dh"){
-      return {
-        privateCol: "inscriptions_dh_private",
-        publicCol: "equipes_dh_public"
-      };
-    }
-    if(s === "dd"){
-      return {
-        privateCol: "inscriptions_dd_private",
-        publicCol: "equipes_dd_public"
-      };
-    }
+  // ----------------------------
+  // RAZ helpers
+  // ----------------------------
+  function colNamesForScope(sc){
+    if(sc === "dh") return { priv: "inscriptions_dh_private", pub: "equipes_dh_public" };
+    if(sc === "dd") return { priv: "inscriptions_dd_private", pub: "equipes_dd_public" };
     return null;
   }
 
   async function deleteCollectionInBatches(colName, batchSize=450){
     let deleted = 0;
+
     while(true){
       const snap = await getDocs(collection(db, colName));
       if(snap.empty) break;
@@ -209,17 +367,20 @@
       deleted += docs.length;
       if(docs.length < batchSize) break;
     }
+
     return deleted;
   }
 
-  async function doRAZ(){
-    if(!key){
-      alert("Choisis DM ou DD dans le menu “Zone”.");
+  async function doRAZ(sc){
+    const cols = colNamesForScope(sc);
+    const field = gateFieldForScope(sc);
+    if(!cols || !field){
+      alert("RAZ indisponible pour cette zone.");
       return;
     }
 
     const ok1 = confirm(
-      "⚠️ RAZ INSCRIPTIONS\n\nCette action supprime TOUTES les inscriptions (privé + public) pour " + labelScope(scope) + ".\n\nContinuer ?"
+      "⚠️ RAZ INSCRIPTIONS\n\nCette action supprime TOUTES les inscriptions (privé + public) pour : " + labelScope(sc) + ".\n\nContinuer ?"
     );
     if(!ok1) return;
 
@@ -229,24 +390,19 @@
       return;
     }
 
-    const cols = colsForScope(scope);
-    if(!cols){
-      alert("Scope invalide. Choisis DM ou DD.");
-      return;
-    }
-
     setButtonsDisabled(true);
     razStatus.textContent = "Suppression en cours…";
 
     try{
-      // Remet le statut à not_open d’abord (safe)
-      await setDoc(cfgRef, { [key]: "not_open", updatedAt: serverTimestamp() }, { merge:true });
+      // 1) remettre not_open avant nettoyage
+      await setDoc(cfgRef, { [field]: "not_open", updatedAt: serverTimestamp() }, { merge:true });
 
-      const delPublic  = await deleteCollectionInBatches(cols.publicCol);
-      const delPrivate = await deleteCollectionInBatches(cols.privateCol);
+      // 2) delete
+      const delPub  = await deleteCollectionInBatches(cols.pub);
+      const delPriv = await deleteCollectionInBatches(cols.priv);
 
-      razStatus.textContent = `✅ RAZ OK — supprimés : public=${delPublic}, privé=${delPrivate}. Statut remis à “Pas encore ouvertes”.`;
-      alert(`RAZ terminé ✅\n\nSupprimés :\n- Public: ${delPublic}\n- Privé: ${delPrivate}\n\nStatut : pas encore ouvertes`);
+      razStatus.textContent = `✅ RAZ OK — supprimés : public=${delPub}, privé=${delPriv}. Statut remis à “Pas encore ouvertes”.`;
+      alert(`RAZ terminé ✅\n\nSupprimés :\n- Public: ${delPub}\n- Privé: ${delPriv}\n\nStatut : pas encore ouvertes`);
     }catch(e){
       console.error(e);
       razStatus.textContent = "❌ Erreur pendant le RAZ. Voir console.";
@@ -256,71 +412,88 @@
     }
   }
 
-  btnNotOpen.onclick = ()=> setState("not_open");
-  btnOpen.onclick = ()=> setState("open");
-  btnSuspend.onclick = ()=>{
-    if(currentState === "suspended") setState("open");
-    else setState("suspended");
+  // ----------------------------
+  // Actions
+  // ----------------------------
+  btnNotOpen.onclick = ()=> setState(scope, "not_open");
+  btnOpen.onclick = ()=> setState(scope, "open");
+  btnPause.onclick = ()=>{
+    if(currentState === "paused") setState(scope, "open");
+    else setState(scope, "paused");
   };
-  btnClose.onclick = ()=> setState("closed");
-  btnRAZ.onclick = doRAZ;
+  btnClose.onclick = ()=> setState(scope, "closed");
 
-  // --- Lien vue publique (on utilisera dh/inscriptions.html et dd/inscriptions.html)
-  function setPublicLink(){
-    if(scope === "dh"){
-      btnPublic.href = "../dh/inscriptions.html";
-      btnPublic.textContent = "👀 Ouvrir la vue publique (DM)";
-      return;
-    }
-    if(scope === "dd"){
-      btnPublic.href = "../dd/inscriptions.html";
-      btnPublic.textContent = "👀 Ouvrir la vue publique (DD)";
-      return;
-    }
-    btnPublic.href = "#";
-    btnPublic.textContent = "👀 Ouvrir la vue publique (inscriptions)";
+  btnRAZ.onclick = ()=> doRAZ(scope);
+
+  btnPublic.onclick = (e)=>{
+    e.preventDefault();
+    window.location.href = publicUrlForScope(scope);
+  };
+
+  document.getElementById("btnLogout").onclick = async (e)=>{
+    e.preventDefault();
+    await logout();
+    window.location.href = "../index.html";
+  };
+
+  // ----------------------------
+  // Guard admin + init
+  // ----------------------------
+  async function ensureAdmin(){
+    const u = auth.currentUser;
+    if(!u) return false;
+    const r = await getRoleByEmail(u.email);
+    return r === "admin";
   }
 
-  // scope key
-  const key = stateKeyForScope(scope);
+  function applyScope(newScope){
+    scope = normalizeScope(newScope);
 
-  // guard admin + live state
+    try{ localStorage.setItem(LS_KEY, scope); }catch(e){}
+
+    // sync URL (sans recharger)
+    const u = new URL(location.href);
+    u.searchParams.set("scope", scope);
+    history.replaceState({}, "", u.toString());
+
+    scopeEl.value = scope;
+
+    // tabs + panels
+    setTabs(scope);
+
+    // public link label
+    if(scope === "dh" || scope === "dd"){
+      btnPublic.textContent = "👁️ Voir la page publique";
+      btnPublic.href = publicUrlForScope(scope);
+      setButtonsDisabled(false);
+      startCfg(scope);
+    } else {
+      stopCfg();
+    }
+  }
+
+  scopeEl.onchange = ()=> applyScope(scopeEl.value);
+
   onAuthStateChanged(auth, async (user)=>{
-    pageContent.style.display = "none";
+    accessDenied.style.display = "none";
+    adminUI.style.display = "none";
+    panelInscriptions.style.display = "none";
+    maintenanceUI.style.display = "none";
+    stopCfg();
 
-    if(!user) return;
-    const role = await getRoleByEmail(user.email);
-    if(role !== "admin") return;
-
-    pageContent.style.display = "block";
-
-    setPublicLink();
-
-    if(!key){
-      scopeLine.textContent = "Choisis DM ou DD dans le menu “Zone”.";
-      currentStateEl.textContent = "—";
-      statusMsgEl.textContent = "";
-      setButtonsDisabled(true);
+    if(!user){
+      accessDenied.style.display = "block";
       return;
     }
 
-    scopeLine.textContent = `Zone sélectionnée : ${labelScope(scope)}`;
-    setButtonsDisabled(false);
+    const ok = await ensureAdmin();
+    if(!ok){
+      accessDenied.style.display = "block";
+      return;
+    }
 
-    onSnapshot(cfgRef, (snap)=>{
-      const data = snap.exists() ? (snap.data() || {}) : {};
-      const state = (data[key] || "not_open");
-      currentState = state;
-
-      currentStateEl.innerHTML = `Statut actuel : <strong>${labelFor(state)}</strong>`;
-      statusMsgEl.textContent = publicMessage(state);
-
-      btnSuspend.textContent = (state === "suspended") ? "▶️ Réactiver" : "⏸️ Suspendre";
-    }, (err)=>{
-      console.error(err);
-      currentStateEl.textContent = "❌ Impossible de lire le statut.";
-      statusMsgEl.textContent = "";
-    });
+    adminUI.style.display = "block";
+    applyScope(scope);
   });
 </script>
 
