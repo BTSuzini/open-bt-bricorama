@@ -5,82 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin — Équipes — Open BT Bricorama</title>
   <link rel="stylesheet" href="../assets/css/main.css?v=20260219" />
-
-  <style>
-    .table-wrap{
-      overflow:auto;
-      border:1px solid #eee;
-      border-radius:14px;
-      background:#fff;
-    }
-    table.teams{
-      width:100%;
-      border-collapse:separate;
-      border-spacing:0;
-      min-width: 980px;
-    }
-    table.teams thead th{
-      text-align:left;
-      font-size:13px;
-      letter-spacing:.2px;
-      color:#444;
-      background:#f7f7f7;
-      border-bottom:1px solid #eee;
-      padding:12px 12px;
-      position:sticky;
-      top:0;
-      z-index:1;
-      white-space:nowrap;
-    }
-    table.teams tbody td{
-      padding:12px 12px;
-      border-bottom:1px solid #f0f0f0;
-      vertical-align:top;
-      font-size:14px;
-    }
-    table.teams tbody tr:last-child td{ border-bottom:none; }
-
-    .pill{
-      display:inline-block;
-      padding:4px 10px;
-      border-radius:999px;
-      font-size:12px;
-      border:1px solid #eee;
-      background:#fafafa;
-      color:#333;
-      white-space:nowrap;
-    }
-    .pill.main{ border-color:#d9e6ff; background:#f3f7ff; font-weight:900; }
-    .pill.wait{ border-color:#ffe3b3; background:#fff7e6; font-weight:900; }
-    .pill.auto{ border-color:#e9e9e9; background:#fafafa; }
-    .pill.stby{ border-color:#ffd37a; background:#fff7e6; font-weight:900; }
-
-    .mini-input{
-      width:86px;
-      padding:10px 10px;
-      border:1px solid #ddd;
-      border-radius:12px;
-      font-weight:900;
-    }
-    .mini-select{
-      padding:10px 10px;
-      border:1px solid #ddd;
-      border-radius:12px;
-      font-weight:900;
-      background:#fff;
-    }
-    .row-actions{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
-    .muted2{ color:#666; font-size:13px; }
-    .ok{ color:#1f7a3a; font-weight:900; }
-    .bad{ color:#b00020; font-weight:900; }
-  </style>
 </head>
-
 <body>
 
 <header class="topbar">
@@ -97,7 +22,7 @@
       </div>
     </div>
 
-    <!-- ✅ Bandeau identique partout : Accueil public + Déconnexion -->
+    <!-- ✅ Bandeau identique partout -->
     <nav class="nav">
       <a href="../index.html">Accueil public</a>
       <a href="#" id="btnLogout">Déconnexion</a>
@@ -107,22 +32,21 @@
 
 <main class="container">
 
-  <!-- Guard -->
   <section class="card" id="accessDenied" style="display:none;">
     <h2 style="margin:0 0 8px;">⛔ Accès refusé</h2>
     <p class="muted" style="margin:0;">Cette page est réservée aux administrateurs.</p>
   </section>
 
-  <!-- ✅ Zone + sous-onglets (identique partout) -->
-  <section class="card" id="adminZone" style="display:none;">
+  <!-- ✅ Encart Zone identique partout -->
+  <section class="card" id="adminUI" style="display:none;">
     <h2 style="margin:0 0 10px;">🎛️ Zone</h2>
 
     <div class="field">
       <label for="scope">Choisir</label>
       <select id="scope">
         <option value="general">Général</option>
-        <option value="dh">Double Hommes</option>
-        <option value="dd">Double Dames</option>
+        <option value="dh" selected>DM</option>
+        <option value="dd">DD</option>
       </select>
     </div>
 
@@ -130,67 +54,160 @@
     <p class="muted" id="hint" style="margin-top:10px;"></p>
   </section>
 
-  <!-- ✅ Contenu de la rubrique (après l’encart Zone) -->
-  <section class="card" id="panelTeams" style="display:none;">
-    <h2 style="margin:0 0 6px;">👥 Équipes (admin)</h2>
+  <!-- =========================
+       CONTENU ÉQUIPES (après Zone)
+  ========================== -->
+  <section class="card" id="panelEquipes" style="display:none;">
+    <h2 style="margin:0 0 10px;">👥 Équipes (admin) — <span id="zoneLabel">DM</span></h2>
 
-    <p class="muted" style="margin:0;">
-      Zone : <strong id="zoneLabel">—</strong>
-      — Total : <strong><span id="totalCount">0</span></strong>
-      — Principale : <strong><span id="mainCount">0</span></strong>
-      — Attente : <strong><span id="waitCount">0</span></strong>
-      — STBY : <strong><span id="stbyCount">0</span></strong>
+    <p class="muted" style="margin-top:0;">
+      Ici tu peux :
+      <b>forcer la liste</b> (main/attente),
+      <b>mettre STBY</b>,
+      <b>renseigner les classements</b> (p1Rank/p2Rank).
     </p>
 
-    <p class="muted" id="liveStatus" style="margin-top:10px;">Connexion…</p>
+    <p class="muted" id="counts" style="margin:0;">Chargement…</p>
+    <p class="muted" id="liveStatus" style="margin-top:6px;">Connexion…</p>
 
     <div class="table-wrap" style="margin-top:12px;">
-      <table class="teams" aria-label="Équipes admin">
+      <table class="teams-table" aria-label="Équipes admin">
         <thead>
           <tr>
-            <th style="width:54px;">#</th>
+            <th style="width:44px;">#</th>
             <th>Équipe</th>
-            <th style="width:160px;" id="colP1">P1</th>
-            <th style="width:160px;" id="colP2">P2</th>
-            <th style="width:140px;">Liste</th>
+            <th style="width:170px;">Joueur/Joueuse 1</th>
+            <th style="width:170px;">Joueur/Joueuse 2</th>
+            <th style="width:120px;">Liste</th>
             <th style="width:110px;">STBY</th>
-            <th style="width:110px;">Rank P1</th>
-            <th style="width:110px;">Rank P2</th>
+            <th style="width:160px;">Classements</th>
             <th style="width:220px;">Actions</th>
           </tr>
         </thead>
-        <tbody id="tbody"></tbody>
+        <tbody id="body"></tbody>
       </table>
     </div>
 
-    <p class="muted2" style="margin-top:10px;">
-      • “Liste” : <b>auto</b> = ordre d’inscription ; <b>main</b> = force liste principale ; <b>wait</b> = force attente.<br>
-      • “Rank” : chiffre (ex: 12). Sert à l’affichage “Classées” côté public.
-    </p>
-  </section>
-
-  <section class="card" id="panelExplain" style="display:none;">
-    <h2 style="margin:0 0 8px;">ℹ️ Sélectionne une zone</h2>
-    <p class="muted" style="margin:0;">
-      Cette page “Équipes” s’applique à <b>Double Hommes</b> ou <b>Double Dames</b>.  
-      Pour “Général”, utilise l’onglet <b>Infos</b>.
+    <p class="muted" style="margin-top:10px;">
+      Astuce : si tu ne forces pas “list”, l’ordre public est basé sur l’ordre d’inscription (createdAt).
     </p>
   </section>
 
 </main>
+
+<style>
+  .table-wrap{
+    overflow:auto;
+    border:1px solid #eee;
+    border-radius:14px;
+    background:#fff;
+  }
+  .teams-table{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0;
+    min-width: 980px;
+  }
+  .teams-table thead th{
+    text-align:left;
+    font-size:13px;
+    letter-spacing:.2px;
+    color:#444;
+    background:#f7f7f7;
+    border-bottom:1px solid #eee;
+    padding:12px 12px;
+    position:sticky;
+    top:0;
+    z-index:1;
+  }
+  .teams-table tbody td{
+    padding:12px 12px;
+    border-bottom:1px solid #f0f0f0;
+    vertical-align:top;
+    font-size:14px;
+  }
+  .teams-table tbody tr:last-child td{ border-bottom:none; }
+
+  .pill{
+    display:inline-block;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:12px;
+    border:1px solid #eee;
+    background:#fafafa;
+    color:#333;
+    white-space:nowrap;
+  }
+  .pill.main{ border-color:#d9f2df; background:#f3fff6; font-weight:900; }
+  .pill.wait{ border-color:#ffe1a6; background:#fff8e6; font-weight:900; }
+  .pill.stby{ border-color:#ffd37a; background:#fff7e6; font-weight:900; }
+
+  .btn.small{
+    padding:8px 10px;
+    border-radius:12px;
+    font-weight:900;
+    color:#111;
+  }
+
+  .mono{
+    font-variant-numeric: tabular-nums;
+    white-space:nowrap;
+  }
+</style>
 
 <script type="module">
   import { auth, db } from "../assets/js/firebase.js";
   import { logout, getRoleByEmail } from "../assets/js/session.js";
   import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
   import {
-    collection, query, orderBy, onSnapshot,
-    doc, updateDoc, deleteDoc
+    collection,
+    query,
+    orderBy,
+    onSnapshot,
+    doc,
+    updateDoc,
+    deleteDoc
   } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-  // --------------------------
-  // helpers
-  // --------------------------
+  // -----------------------------
+  // Scope handling
+  // -----------------------------
+  const params = new URLSearchParams(location.search);
+  const scopeParam = (params.get("scope") || "dh").toLowerCase();
+
+  const scopeEl = document.getElementById("scope");
+  const tabsEl  = document.getElementById("tabs");
+  const hintEl  = document.getElementById("hint");
+
+  const accessDenied = document.getElementById("accessDenied");
+  const adminUI = document.getElementById("adminUI");
+
+  const panelEquipes = document.getElementById("panelEquipes");
+  const zoneLabel = document.getElementById("zoneLabel");
+  const countsEl = document.getElementById("counts");
+  const liveStatusEl = document.getElementById("liveStatus");
+  const bodyEl = document.getElementById("body");
+
+  let unsubscribe = null;
+
+  function setScopeSelect(value){
+    // map : dh->DM, dd->DD, general->Général
+    scopeEl.value = (value === "dd" || value === "general") ? value : "dh";
+  }
+
+  function zoneText(sc){
+    if(sc === "dd") return "DD";
+    if(sc === "general") return "Général";
+    return "DM";
+  }
+
+  function stopLive(){
+    if(unsubscribe){
+      unsubscribe();
+      unsubscribe = null;
+    }
+  }
+
   function esc(s){
     return (s ?? "").toString()
       .replaceAll("&","&amp;")
@@ -200,20 +217,232 @@
       .replaceAll("'","&#039;");
   }
 
-  function toNumOrNull(v){
-    if(v === null || v === undefined) return null;
-    const t = String(v).trim();
-    if(!t) return null;
-    const n = Number(t.replace(",", "."));
+  function toNum(v){
+    if(v === null || v === undefined || v === "") return null;
+    const n = typeof v === "number" ? v : Number(String(v).replace(",", ".").trim());
     return Number.isFinite(n) ? n : null;
   }
 
-  function listPill(list){
+  function pillList(list){
     if(list === "main") return `<span class="pill main">MAIN</span>`;
-    if(list === "wait") return `<span class="pill wait">WAIT</span>`;
-    return `<span class="pill auto">AUTO</span>`;
+    if(list === "wait") return `<span class="pill wait">ATT</span>`;
+    return `<span class="pill">AUTO</span>`;
   }
 
+  function pillStby(stby){
+    return stby ? `<span class="pill stby">STBY</span>` : `<span class="pill">OK</span>`;
+  }
+
+  function computeCounts(rows){
+    const main = rows.filter(r => r.list === "main").length;
+    const wait = rows.filter(r => r.list === "wait").length;
+    const auto = rows.filter(r => !r.list).length;
+    const stby = rows.filter(r => r.stby).length;
+    return { total: rows.length, main, wait, auto, stby };
+  }
+
+  function setTabs(scope){
+    tabsEl.innerHTML = "";
+    hintEl.textContent = "";
+
+    const make = (label, href, isCurrent=false) => {
+      const a = document.createElement("a");
+      a.className = "btn";
+      a.href = href;
+      a.textContent = label;
+      if(isCurrent) a.setAttribute("aria-current", "page");
+      tabsEl.appendChild(a);
+    };
+
+    if(scope === "general"){
+      hintEl.textContent = "Zone Général : publication des infos (via admin/index).";
+      make("📰 Infos", "index.html?scope=general", false);
+      make("👥 Équipes", "equipes.html?scope=dh", true); // on garde la page, mais ça pousse vers DH
+      make("📝 Inscriptions", "inscriptions.html?scope=dh", false);
+      make("🎲 Tirage", "tirage.html?scope=dh", false);
+      return;
+    }
+
+    hintEl.textContent = `Zone ${zoneText(scope)} : gestion équipes / inscriptions / tirage.`;
+
+    make("👥 Équipes", `equipes.html?scope=${encodeURIComponent(scope)}`, true);
+    make("📝 Inscriptions", `inscriptions.html?scope=${encodeURIComponent(scope)}`, false);
+    make("🎲 Tirage", `tirage.html?scope=${encodeURIComponent(scope)}`, false);
+    make("📰 Infos", "index.html?scope=general", false);
+  }
+
+  function startLive(scope){
+    stopLive();
+    bodyEl.innerHTML = "";
+    countsEl.textContent = "Chargement…";
+    liveStatusEl.textContent = "Connexion…";
+
+    if(scope === "general"){
+      panelEquipes.style.display = "none";
+      return;
+    }
+
+    panelEquipes.style.display = "block";
+    zoneLabel.textContent = zoneText(scope);
+
+    const colName = (scope === "dd") ? "equipes_dd_public" : "equipes_dh_public";
+    const q = query(collection(db, colName), orderBy("createdAt", "asc"));
+
+    unsubscribe = onSnapshot(q, (snap)=>{
+      const rows = snap.docs.map(d => {
+        const x = d.data() || {};
+        return {
+          id: d.id,
+          teamName: x.teamName || "",
+          p1FirstName: x.p1FirstName || "",
+          p2FirstName: x.p2FirstName || "",
+          list: x.list || null,
+          stby: x.stby === true,
+          p1Rank: x.p1Rank ?? null,
+          p2Rank: x.p2Rank ?? null,
+          createdAtMs: x.createdAt?.toMillis ? x.createdAt.toMillis() : 0
+        };
+      });
+
+      const c = computeCounts(rows);
+      countsEl.innerHTML =
+        `Total : <b>${c.total}</b> — MAIN : <b>${c.main}</b> — ATT : <b>${c.wait}</b> — AUTO : <b>${c.auto}</b> — STBY : <b>${c.stby}</b>`;
+
+      bodyEl.innerHTML = rows.length ? rows.map((r, i) => {
+        const p1 = toNum(r.p1Rank);
+        const p2 = toNum(r.p2Rank);
+        const teamRank = (p1 !== null && p2 !== null) ? (p1 + p2) : null;
+
+        return `
+          <tr>
+            <td class="mono">#${i+1}</td>
+
+            <td>
+              <div style="font-weight:900;">${esc(r.teamName)}</div>
+              <div class="muted" style="margin-top:6px;">ID: <span class="mono">${esc(r.id)}</span></div>
+            </td>
+
+            <td><span class="pill">${esc(r.p1FirstName)}</span></td>
+            <td><span class="pill">${esc(r.p2FirstName)}</span></td>
+
+            <td>${pillList(r.list)}</td>
+            <td>${pillStby(r.stby)}</td>
+
+            <td>
+              <div class="muted" style="margin:0;">
+                p1: <b>${p1 ?? "—"}</b> • p2: <b>${p2 ?? "—"}</b>
+              </div>
+              <div class="muted" style="margin-top:6px;">
+                équipe: <b>${teamRank ?? "—"}</b>
+              </div>
+            </td>
+
+            <td>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="btn small" data-main="${esc(r.id)}">MAIN</button>
+                <button class="btn small" data-wait="${esc(r.id)}">ATT</button>
+                <button class="btn small" data-auto="${esc(r.id)}">AUTO</button>
+                <button class="btn small" data-stby="${esc(r.id)}">${r.stby ? "STBY ✖" : "STBY ✓"}</button>
+                <button class="btn small" data-rank="${esc(r.id)}">🏷️ Ranks</button>
+                <button class="btn small" data-del="${esc(r.id)}" style="border-color:#f1b2b2;">🗑️</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("") : `
+        <tr>
+          <td colspan="8" class="muted" style="padding:14px;">Aucune équipe.</td>
+        </tr>
+      `;
+
+      // Actions
+      const refFor = (id) => doc(db, colName, id);
+
+      bodyEl.querySelectorAll("button[data-main]").forEach(b=>{
+        b.onclick = async ()=>{
+          const id = b.dataset.main;
+          await updateDoc(refFor(id), { list: "main" });
+        };
+      });
+
+      bodyEl.querySelectorAll("button[data-wait]").forEach(b=>{
+        b.onclick = async ()=>{
+          const id = b.dataset.wait;
+          await updateDoc(refFor(id), { list: "wait" });
+        };
+      });
+
+      bodyEl.querySelectorAll("button[data-auto]").forEach(b=>{
+        b.onclick = async ()=>{
+          const id = b.dataset.auto;
+          await updateDoc(refFor(id), { list: null });
+        };
+      });
+
+      bodyEl.querySelectorAll("button[data-stby]").forEach(b=>{
+        b.onclick = async ()=>{
+          const id = b.dataset.stby;
+          // toggle: on relit via dataset? plus simple: prompt
+          // => on fait un toggle optimiste en lisant le texte du bouton
+          const goingOn = b.textContent.includes("✓");
+          await updateDoc(refFor(id), { stby: goingOn });
+        };
+      });
+
+      bodyEl.querySelectorAll("button[data-rank]").forEach(b=>{
+        b.onclick = async ()=>{
+          const id = b.dataset.rank;
+          const row = rows.find(x => x.id === id);
+          if(!row) return;
+
+          const cur1 = (row.p1Rank ?? "");
+          const cur2 = (row.p2Rank ?? "");
+
+          const n1 = prompt("Classement BT Joueur/Joueuse 1 (nombre) :", String(cur1));
+          if(n1 === null) return;
+
+          const n2 = prompt("Classement BT Joueur/Joueuse 2 (nombre) :", String(cur2));
+          if(n2 === null) return;
+
+          const p1 = (String(n1).trim() === "") ? null : Number(String(n1).replace(",", ".").trim());
+          const p2 = (String(n2).trim() === "") ? null : Number(String(n2).replace(",", ".").trim());
+
+          if(p1 !== null && !Number.isFinite(p1)) return alert("p1Rank invalide.");
+          if(p2 !== null && !Number.isFinite(p2)) return alert("p2Rank invalide.");
+
+          await updateDoc(refFor(id), { p1Rank: p1, p2Rank: p2 });
+        };
+      });
+
+      bodyEl.querySelectorAll("button[data-del]").forEach(b=>{
+        b.onclick = async ()=>{
+          const id = b.dataset.del;
+          const ok = confirm("Supprimer cette équipe ?\n\n⚠️ Action irréversible.");
+          if(!ok) return;
+          await deleteDoc(refFor(id));
+        };
+      });
+
+      liveStatusEl.textContent = "🟢 En direct";
+    }, (err)=>{
+      console.error(err);
+      liveStatusEl.textContent = "🔴 Erreur de connexion";
+      countsEl.textContent = "❌ Impossible de charger les équipes.";
+    });
+  }
+
+  // -----------------------------
+  // Logout
+  // -----------------------------
+  document.getElementById("btnLogout").onclick = async (e)=>{
+    e.preventDefault();
+    await logout();
+    window.location.href = "../index.html";
+  };
+
+  // -----------------------------
+  // Guard admin + init
+  // -----------------------------
   async function ensureAdmin(){
     const u = auth.currentUser;
     if(!u) return false;
@@ -221,275 +450,10 @@
     return r === "admin";
   }
 
-  // --------------------------
-  // dom
-  // --------------------------
-  const accessDenied = document.getElementById("accessDenied");
-  const adminZone = document.getElementById("adminZone");
-
-  const scopeEl = document.getElementById("scope");
-  const tabsEl = document.getElementById("tabs");
-  const hintEl = document.getElementById("hint");
-
-  const panelTeams = document.getElementById("panelTeams");
-  const panelExplain = document.getElementById("panelExplain");
-
-  const zoneLabel = document.getElementById("zoneLabel");
-  const liveStatus = document.getElementById("liveStatus");
-
-  const totalCountEl = document.getElementById("totalCount");
-  const mainCountEl  = document.getElementById("mainCount");
-  const waitCountEl  = document.getElementById("waitCount");
-  const stbyCountEl  = document.getElementById("stbyCount");
-
-  const colP1 = document.getElementById("colP1");
-  const colP2 = document.getElementById("colP2");
-
-  const tbody = document.getElementById("tbody");
-
-  // --------------------------
-  // scope / navigation
-  // --------------------------
-  const params = new URLSearchParams(location.search);
-  const initialScope = (params.get("scope") || "general").toLowerCase();
-
-  function setTabs(scope){
-    tabsEl.innerHTML = "";
-    panelTeams.style.display = "none";
-    panelExplain.style.display = "none";
-    tbody.innerHTML = "";
-
-    // Générique : liens vers pages admin, en gardant scope
-    const mk = (label, href, isCurrent=false) => {
-      const a = document.createElement("a");
-      a.className = "btn";
-      a.href = href;
-      a.textContent = label;
-      if(isCurrent) a.setAttribute("aria-current", "page");
-      return a;
-    };
-
-    if(scope === "general"){
-      hintEl.textContent = "Zone Général : gestion des infos (publication / modification / suppression).";
-      tabsEl.appendChild(mk("📰 Infos", "index.html?scope=general", false));
-      panelExplain.style.display = "block";
-      return;
-    }
-
-    // DH / DD
-    const label = (scope === "dh") ? "Double Hommes" : "Double Dames";
-    hintEl.textContent = `Zone ${label} : équipes / inscriptions / tirage.`;
-    tabsEl.appendChild(mk("👥 Équipes", `equipes.html?scope=${encodeURIComponent(scope)}`, true));
-    tabsEl.appendChild(mk("📝 Inscriptions", `inscriptions.html?scope=${encodeURIComponent(scope)}`, false));
-    tabsEl.appendChild(mk("🎲 Tirage", `tirage.html?scope=${encodeURIComponent(scope)}`, false));
-
-    panelTeams.style.display = "block";
-  }
-
-  function setScopeSelect(scope){
-    const allowed = ["general","dh","dd"];
-    scopeEl.value = allowed.includes(scope) ? scope : "general";
-  }
-
-  // --------------------------
-  // Firestore live
-  // --------------------------
-  let unsubscribe = null;
-  let currentScope = "general";
-
-  function stopLive(){
-    if(unsubscribe){
-      unsubscribe();
-      unsubscribe = null;
-    }
-  }
-
-  function startLive(scope){
-    stopLive();
-    tbody.innerHTML = "";
-    liveStatus.textContent = "Connexion…";
-
-    // collections
-    const COL = (scope === "dh") ? "equipes_dh_public" : "equipes_dd_public";
-
-    // labels colonnes
-    if(scope === "dh"){
-      zoneLabel.textContent = "Double Hommes";
-      colP1.textContent = "Joueur 1";
-      colP2.textContent = "Joueur 2";
-    } else {
-      zoneLabel.textContent = "Double Dames";
-      colP1.textContent = "Joueuse 1";
-      colP2.textContent = "Joueuse 2";
-    }
-
-    const q = query(collection(db, COL), orderBy("createdAt", "asc"));
-
-    unsubscribe = onSnapshot(q, (snap)=>{
-      const rows = [];
-      snap.forEach(ds=>{
-        const d = ds.data() || {};
-        rows.push({
-          id: ds.id,
-          teamName: d.teamName || "",
-          p1FirstName: d.p1FirstName || "",
-          p2FirstName: d.p2FirstName || "",
-          createdAtMs: d.createdAt?.toMillis ? d.createdAt.toMillis() : 0,
-          list: d.list || null, // null/"" => auto
-          stby: d.stby === true,
-          p1Rank: d.p1Rank ?? null,
-          p2Rank: d.p2Rank ?? null
-        });
-      });
-
-      // counts (main/wait auto: on compte seulement les "forcés" ici, la répartition auto se fait côté public)
-      const mainForced = rows.filter(r=> r.list === "main").length;
-      const waitForced = rows.filter(r=> r.list === "wait").length;
-      const stby = rows.filter(r=> r.stby).length;
-
-      totalCountEl.textContent = rows.length;
-      mainCountEl.textContent  = mainForced;
-      waitCountEl.textContent  = waitForced;
-      stbyCountEl.textContent  = stby;
-
-      renderTable(rows, COL);
-      liveStatus.textContent = "🟢 En direct";
-    }, (err)=>{
-      console.error(err);
-      liveStatus.textContent = "🔴 Erreur de connexion";
-    });
-  }
-
-  function renderTable(rows, COL){
-    if(rows.length === 0){
-      tbody.innerHTML = `<tr><td colspan="9" class="muted" style="padding:14px;">Aucune équipe.</td></tr>`;
-      return;
-    }
-
-    tbody.innerHTML = rows.map((r, idx)=>{
-      const listValue = (r.list === "main" || r.list === "wait") ? r.list : "auto";
-      const stbyChecked = r.stby ? "checked" : "";
-      const p1v = (r.p1Rank ?? "") === null ? "" : String(r.p1Rank ?? "");
-      const p2v = (r.p2Rank ?? "") === null ? "" : String(r.p2Rank ?? "");
-
-      return `
-        <tr data-id="${esc(r.id)}">
-          <td class="muted2">#${idx+1}</td>
-          <td><div style="font-weight:900;">${esc(r.teamName)}</div><div class="muted2">${listPill(r.list)}</div></td>
-          <td><span class="pill">${esc(r.p1FirstName)}</span></td>
-          <td><span class="pill">${esc(r.p2FirstName)}</span></td>
-
-          <td>
-            <select class="mini-select" data-field="list">
-              <option value="auto" ${listValue==="auto"?"selected":""}>auto</option>
-              <option value="main" ${listValue==="main"?"selected":""}>main</option>
-              <option value="wait" ${listValue==="wait"?"selected":""}>wait</option>
-            </select>
-          </td>
-
-          <td>
-            <label style="display:flex; align-items:center; gap:10px;">
-              <input type="checkbox" data-field="stby" ${stbyChecked} />
-              <span class="pill stby">STBY</span>
-            </label>
-          </td>
-
-          <td><input class="mini-input" data-field="p1Rank" inputmode="numeric" placeholder="—" value="${esc(p1v)}"></td>
-          <td><input class="mini-input" data-field="p2Rank" inputmode="numeric" placeholder="—" value="${esc(p2v)}"></td>
-
-          <td>
-            <div class="row-actions">
-              <button class="btn" data-action="save" style="font-weight:900; color:#111;">💾 Enregistrer</button>
-              <button class="btn" data-action="delete" style="font-weight:900; color:#111; border-color:#f1b2b2;">🗑️ Supprimer</button>
-            </div>
-            <div class="muted2" data-status style="margin-top:8px;"></div>
-          </td>
-        </tr>
-      `;
-    }).join("");
-
-    // events
-    tbody.querySelectorAll("tr[data-id]").forEach(tr=>{
-      const id = tr.getAttribute("data-id");
-      const status = tr.querySelector("[data-status]");
-
-      const getVal = (field)=>{
-        if(field === "list"){
-          const v = tr.querySelector('select[data-field="list"]').value;
-          return v;
-        }
-        if(field === "stby"){
-          return tr.querySelector('input[type="checkbox"][data-field="stby"]').checked;
-        }
-        if(field === "p1Rank"){
-          return tr.querySelector('input[data-field="p1Rank"]').value;
-        }
-        if(field === "p2Rank"){
-          return tr.querySelector('input[data-field="p2Rank"]').value;
-        }
-        return null;
-      };
-
-      tr.querySelector('button[data-action="save"]').onclick = async ()=>{
-        status.textContent = "Enregistrement…";
-        try{
-          const listRaw = getVal("list");
-          const stby = !!getVal("stby");
-          const p1Rank = toNumOrNull(getVal("p1Rank"));
-          const p2Rank = toNumOrNull(getVal("p2Rank"));
-
-          const payload = {
-            stby,
-            p1Rank: p1Rank === null ? null : p1Rank,
-            p2Rank: p2Rank === null ? null : p2Rank,
-          };
-
-          // list: auto => on supprime le champ
-          if(listRaw === "auto") payload.list = null;
-          else payload.list = listRaw;
-
-          // nettoyage: null => deleteField ? ici on met null (ok) et côté public on traite null comme auto
-          await updateDoc(doc(db, COL, id), payload);
-
-          status.innerHTML = `<span class="ok">✅ OK</span>`;
-        }catch(e){
-          console.error(e);
-          status.innerHTML = `<span class="bad">❌ Erreur</span>`;
-        }
-      };
-
-      tr.querySelector('button[data-action="delete"]').onclick = async ()=>{
-        const ok = confirm("Supprimer cette équipe ?\n\n⚠️ Action irréversible.");
-        if(!ok) return;
-        status.textContent = "Suppression…";
-        try{
-          await deleteDoc(doc(db, COL, id));
-          status.innerHTML = `<span class="ok">✅ Supprimée</span>`;
-        }catch(e){
-          console.error(e);
-          status.innerHTML = `<span class="bad">❌ Erreur</span>`;
-        }
-      };
-    });
-  }
-
-  // --------------------------
-  // logout
-  // --------------------------
-  document.getElementById("btnLogout").onclick = async (e)=>{
-    e.preventDefault();
-    await logout();
-    window.location.href = "../index.html";
-  };
-
-  // --------------------------
-  // guard + init
-  // --------------------------
   onAuthStateChanged(auth, async (user)=>{
     accessDenied.style.display = "none";
-    adminZone.style.display = "none";
-    panelTeams.style.display = "none";
-    panelExplain.style.display = "none";
+    adminUI.style.display = "none";
+    panelEquipes.style.display = "none";
     stopLive();
 
     if(!user){
@@ -503,28 +467,19 @@
       return;
     }
 
-    adminZone.style.display = "block";
+    adminUI.style.display = "block";
 
-    setScopeSelect(initialScope);
-    currentScope = scopeEl.value;
-    setTabs(currentScope);
+    // apply scope from URL (default dh)
+    const sc = (scopeParam === "dd" || scopeParam === "general") ? scopeParam : "dh";
+    setScopeSelect(sc);
+    setTabs(sc);
+    startLive(sc);
 
-    if(currentScope === "dh" || currentScope === "dd"){
-      startLive(currentScope);
-    }
-
+    // change scope => navigate (garde des pages séparées)
     scopeEl.onchange = ()=>{
-      currentScope = scopeEl.value;
-
-      // update URL (sans reload dur)
-      const u = new URL(location.href);
-      u.searchParams.set("scope", currentScope);
-      history.replaceState({}, "", u.toString());
-
-      setTabs(currentScope);
-
-      if(currentScope === "dh" || currentScope === "dd") startLive(currentScope);
-      else stopLive();
+      const next = scopeEl.value;
+      // on garde la logique multi-pages : on recharge la page avec le scope
+      window.location.href = `equipes.html?scope=${encodeURIComponent(next)}`;
     };
   });
 </script>
