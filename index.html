@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Open BT Bricorama — Infos & Inscriptions</title>
-  <link rel="stylesheet" href="assets/css/main.css?v=20260219" />
+  <link rel="stylesheet" href="assets/css/main.css?v=20260220" />
 </head>
 <body>
 
@@ -88,17 +88,18 @@
   const hint = document.getElementById("authHint");
 
   async function guardAdminAndGo(url){
-    // login si besoin
+    // ✅ Si pas connecté : login
     if(!auth.currentUser){
       await loginAndRedirect();
     }
+
     const u = auth.currentUser;
     if(!u){
       alert("Connexion annulée.");
       return;
     }
 
-    // check rôle
+    // ✅ Check rôle
     const role = await getRoleByEmail(u.email);
     if(role !== "admin"){
       alert("Accès refusé : rôle requis = admin");
@@ -110,7 +111,8 @@
 
   document.getElementById("btnAdmin").onclick = async (e)=>{
     e.preventDefault();
-    await guardAdminAndGo("admin/index.html");
+    // ✅ arrive direct sur le scope général (Infos)
+    await guardAdminAndGo("admin/index.html?scope=general");
   };
 
   document.getElementById("btnLogout").onclick = async (e)=>{
