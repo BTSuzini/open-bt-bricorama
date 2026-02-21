@@ -121,8 +121,8 @@
   const COL_PRIVATE = "inscriptions_dd_private";
   const COL_PUBLIC  = "equipes_dd_public";
 
-  // Gate unique Open BT : config/open (champ ddState)
-  const CFG_DOC = { col: "config", id: "open", field: "ddState" };
+  // Gate unique Open BT : config/open (champ inscriptionsDDState)
+  const CFG_DOC = { col: "config", id: "open", field: "inscriptionsDDState" };
 
   const form = document.getElementById("signupForm");
   const statusEl = document.getElementById("status");
@@ -130,6 +130,7 @@
   const submitBtn = document.getElementById("submitBtn");
 
   let gateState = "not_open"; // open | paused | closed | not_open
+  let submitting = false;     // anti double-clic
 
   const setStatus = (msg) => { statusEl.textContent = msg; };
 
@@ -201,14 +202,23 @@
     };
   }
 
+  // 🔒 Nettoyage UI après confirmation (évite le "double clic" inconscient)
+  function lockAndHideFormAfterSuccess(){
+    const all = form.querySelectorAll("input, select, textarea, button");
+    all.forEach(el => { el.disabled = true; });
+    form.style.display = "none";
+  }
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
+    if(submitting) return; // anti double submit
     if(gateState !== "open"){
       setStatus("⛔ Inscriptions non ouvertes.");
       return;
     }
 
+    submitting = true;
     submitBtn.disabled = true;
     submitBtn.classList.add("disabled");
     setStatus("Envoi en cours…");
@@ -233,16 +243,20 @@
         stby: false
       });
 
-      form.reset();
-      setStatus("✅ Inscription enregistrée !");
+      // ✅ POPUP + disparition des champs après fermeture
+      alert("✅ Inscription enregistrée !\n\nMerci 🙏");
+      lockAndHideFormAfterSuccess();
+      setStatus("");
     } catch (err) {
       console.error(err);
       setStatus("❌ Erreur : " + (err?.message || "Impossible d’enregistrer l’inscription."));
-    } finally {
+
       if(gateState === "open"){
         submitBtn.disabled = false;
         submitBtn.classList.remove("disabled");
       }
+    } finally {
+      submitting = false;
     }
   });
 </script>
