@@ -1,1 +1,311 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin — Open BT Bricorama</title>
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260219" />
+</head>
+<body>
 
+<header class="topbar">
+  <div class="container">
+    <div class="topbar-row">
+      <div class="brand-logo">
+        <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
+      </div>
+
+      <h1 class="brand-title">🛠️ Admin — Open BT</h1>
+
+      <div class="brand-logo">
+        <img src="../assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
+      </div>
+    </div>
+
+    <nav class="nav">
+      <a href="../index.html">Accueil public</a>
+      <a href="#" id="btnLogout">Déconnexion</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="card" id="accessDenied" style="display:none;">
+    <h2 style="margin:0 0 8px;">⛔ Accès refusé</h2>
+    <p class="muted" style="margin:0;">Cette page est réservée aux administrateurs.</p>
+  </section>
+
+  <section class="card" id="adminUI" style="display:none;">
+    <h2 style="margin:0 0 10px;">🎛️ Zone</h2>
+
+    <div class="field">
+      <label for="scope">Choisir</label>
+      <select id="scope">
+        <option value="general" selected>Général</option>
+        <option value="dh">Double Messieurs (DM)</option>
+        <option value="dd">Double Dames (DD)</option>
+      </select>
+    </div>
+
+    <div class="grid" style="margin-top:10px;" id="tabs"></div>
+    <p class="muted" id="hint" style="margin-top:10px;"></p>
+  </section>
+
+  <!-- Zone: Général -->
+  <section class="card" id="panelGeneral" style="display:none;">
+    <h2 style="margin:0 0 10px;">📰 Infos (admin)</h2>
+
+    <form id="infoForm" class="form" autocomplete="off">
+      <div class="field">
+        <label for="infoTitle">Titre *</label>
+        <input id="infoTitle" name="infoTitle" required maxlength="80" placeholder="Ex : Inscriptions ouvertes ✅">
+      </div>
+
+      <div class="field">
+        <label for="infoText">Texte *</label>
+        <textarea id="infoText" name="infoText" rows="5" required maxlength="2000"
+          placeholder="Texte (emojis ok 😄)"></textarea>
+      </div>
+
+      <button class="btn" id="publishBtn" type="submit" style="font-weight:800; color:#111;">✅ Publier</button>
+      <p class="muted" id="adminStatus" role="status" aria-live="polite" style="margin:8px 0 0;"></p>
+    </form>
+
+    <hr class="sep" />
+
+    <p class="muted" id="infosCount" style="margin:0;">Chargement…</p>
+    <div id="infosList" style="display:grid; gap:10px; margin-top:10px;"></div>
+  </section>
+
+</main>
+
+<script type="module">
+  import { auth, db } from "../assets/js/firebase.js";
+  import { getRoleByEmail, logout } from "../assets/js/session.js";
+
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+  import {
+    doc, getDoc,
+    collection, addDoc, deleteDoc, updateDoc,
+    serverTimestamp,
+    query, orderBy, onSnapshot
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+  // ✅ Open BT : collection infos = "infos" (alignée avec tes rules)
+  const COL_INFOS = "infos";
+
+  const accessDenied = document.getElementById("accessDenied");
+  const adminUI = document.getElementById("adminUI");
+
+  const scopeEl = document.getElementById("scope");
+  const tabsEl  = document.getElementById("tabs");
+  const hintEl  = document.getElementById("hint");
+
+  const panelGeneral = document.getElementById("panelGeneral");
+
+  const infoForm = document.getElementById("infoForm");
+  const publishBtn = document.getElementById("publishBtn");
+  const adminStatus = document.getElementById("adminStatus");
+  const infosCount = document.getElementById("infosCount");
+  const infosList = document.getElementById("infosList");
+
+  let unsubscribeInfos = null;
+
+  function esc(str){
+    return (str || "")
+      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+  }
+
+  function fmtDate(ts){
+    try{
+      const d = ts?.toDate ? ts.toDate() : null;
+      if(!d) return "—";
+      return d.toLocaleString("fr-FR", {
+        year:"numeric", month:"long", day:"numeric",
+        hour:"2-digit", minute:"2-digit"
+      });
+    }catch{ return "—"; }
+  }
+
+  function stopInfos(){
+    if(unsubscribeInfos){
+      unsubscribeInfos();
+      unsubscribeInfos = null;
+    }
+  }
+
+  function startInfos(){
+    if(unsubscribeInfos) return;
+
+    infosCount.textContent = "Chargement…";
+    infosList.innerHTML = "";
+
+    const q = query(collection(db, COL_INFOS), orderBy("createdAt","desc"));
+    unsubscribeInfos = onSnapshot(q, (snap)=>{
+      const items = snap.docs.map(d => ({ id:d.id, ...d.data() }));
+      infosCount.textContent = `📌 ${items.length} info${items.length>1?"s":""}`;
+      infosList.innerHTML = "";
+
+      if(items.length === 0){
+        infosList.innerHTML = `<p class="muted" style="margin:0;">Aucune info publiée.</p>`;
+        return;
+      }
+
+      for(const it of items){
+        const title = esc(it.title);
+        const text = esc(it.text).replaceAll("\n","<br>");
+        const date = fmtDate(it.createdAt);
+
+        const card = document.createElement("div");
+        card.className = "card";
+        card.style.margin = "0";
+        card.innerHTML = `
+          <div style="display:flex; gap:12px; justify-content:space-between; align-items:flex-start;">
+            <div style="min-width:0;">
+              <div style="font-weight:900;">${title}</div>
+              <div class="muted" style="margin-top:6px;">🗓️ ${date}</div>
+              <div style="margin-top:8px; line-height:1.45;">${text}</div>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px; flex:0 0 auto;">
+              <button class="btn" data-edit="${it.id}" style="font-weight:800; color:#111;">✏️ Modifier</button>
+              <button class="btn" data-del="${it.id}" style="font-weight:800; color:#111;">🗑️ Supprimer</button>
+            </div>
+          </div>
+        `;
+        infosList.appendChild(card);
+      }
+
+      // delete
+      infosList.querySelectorAll("button[data-del]").forEach(btn=>{
+        btn.onclick = async ()=>{
+          const id = btn.dataset.del;
+          const ok = confirm("Supprimer cette info ?\n\n⚠️ Action irréversible.");
+          if(!ok) return;
+          await deleteDoc(doc(db, COL_INFOS, id));
+        };
+      });
+
+      // edit via prompt (simple & efficace)
+      infosList.querySelectorAll("button[data-edit]").forEach(btn=>{
+        btn.onclick = async ()=>{
+          const id = btn.dataset.edit;
+          const ref = doc(db, COL_INFOS, id);
+          const s = await getDoc(ref);
+          if(!s.exists()) return;
+
+          const cur = s.data();
+          const newTitle = prompt("Modifier le titre :", cur.title || "");
+          if(newTitle === null) return;
+          const newText = prompt("Modifier le texte :", cur.text || "");
+          if(newText === null) return;
+
+          await updateDoc(ref, { title: newTitle.trim(), text: newText.trim() });
+        };
+      });
+
+    }, (err)=>{
+      console.error(err);
+      infosCount.textContent = "❌ Impossible de charger les infos.";
+    });
+  }
+
+  function setTabs(scope){
+    tabsEl.innerHTML = "";
+    panelGeneral.style.display = "none";
+    stopInfos();
+
+    if(scope === "general"){
+      hintEl.textContent = "Zone Général : gestion des infos (publication / modification / suppression).";
+      panelGeneral.style.display = "block";
+
+      const a = document.createElement("a");
+      a.className = "btn";
+      a.href = "#";
+      a.textContent = "📰 Infos";
+      a.onclick = (e)=>{ e.preventDefault(); };
+      tabsEl.appendChild(a);
+
+      startInfos();
+      return;
+    }
+
+    const label = (scope === "dh") ? "Double Messieurs" : "Double Dames";
+    hintEl.textContent = `Zone ${label} : équipes / inscriptions / tirage (pages admin à créer).`;
+
+    // ✅ On prépare les liens admin (à créer ensuite)
+    // Tu peux les garder tels quels, on les code après :
+    // admin/equipes.html?scope=dh | admin/inscriptions.html?scope=dh | admin/tirage.html?scope=dh
+    const links = [
+      ["👥 Équipes", "equipes.html"],
+      ["📝 Inscriptions", "inscriptions.html"],
+      ["🎲 Tirage", "tirage.html"],
+    ];
+
+    for(const [txt, file] of links){
+      const a = document.createElement("a");
+      a.className = "btn";
+      a.href = `${file}?scope=${encodeURIComponent(scope)}`;
+      a.textContent = txt;
+      tabsEl.appendChild(a);
+    }
+  }
+
+  // Publish info
+  infoForm.addEventListener("submit", async (e)=>{
+    e.preventDefault();
+    publishBtn.disabled = true;
+    publishBtn.classList.add("disabled");
+    adminStatus.textContent = "Publication…";
+
+    try{
+      const title = (infoForm.infoTitle.value || "").trim();
+      const text  = (infoForm.infoText.value || "").trim();
+      if(!title || !text) throw new Error("Titre et texte obligatoires.");
+
+      await addDoc(collection(db, COL_INFOS), { title, text, createdAt: serverTimestamp() });
+      infoForm.reset();
+      adminStatus.textContent = "✅ Publié !";
+    }catch(err){
+      console.error(err);
+      adminStatus.textContent = "❌ Erreur : " + (err?.message || "Impossible de publier.");
+    }finally{
+      publishBtn.disabled = false;
+      publishBtn.classList.remove("disabled");
+    }
+  });
+
+  // Logout
+  document.getElementById("btnLogout").onclick = async (e)=>{
+    e.preventDefault();
+    await logout();
+    window.location.href = "../index.html";
+  };
+
+  // Guard admin
+  onAuthStateChanged(auth, async (user)=>{
+    accessDenied.style.display = "none";
+    adminUI.style.display = "none";
+    panelGeneral.style.display = "none";
+    stopInfos();
+
+    if(!user){
+      accessDenied.style.display="block";
+      return;
+    }
+
+    const role = await getRoleByEmail(user.email);
+    if(role !== "admin"){
+      accessDenied.style.display="block";
+      return;
+    }
+
+    adminUI.style.display = "block";
+    setTabs(scopeEl.value);
+    scopeEl.onchange = ()=> setTabs(scopeEl.value);
+  });
+</script>
+
+</body>
+</html>
