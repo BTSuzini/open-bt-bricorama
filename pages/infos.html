@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Infos — Open BT Bricorama</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260219" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260220" />
 </head>
 <body>
 
@@ -24,8 +24,11 @@
 
     <nav class="nav">
       <a href="../index.html">Accueil</a>
-      <a href="dh/index.html">DM</a>
-      <a href="dd/index.html">DD</a>
+
+      <!-- ✅ pas d'index DH/DD => redirection vers programmation -->
+      <a href="../dh/programmation.html">DM</a>
+      <a href="../dd/programmation.html">DD</a>
+
       <a href="infos.html" aria-current="page">Infos</a>
       <a href="reglement.html">Règlement</a>
       <a href="repas.html">Repas</a>
@@ -35,35 +38,6 @@
 </header>
 
 <main class="container">
-
-  <!-- Admin: ajout d'infos (affiché uniquement si rôle = admin) -->
-  <section class="card" id="adminBox" style="display:none;">
-    <h2 style="margin:0 0 10px 0;">🛠️ Admin — Publier une info</h2>
-
-    <form id="infoForm" class="form" autocomplete="off">
-      <div class="field">
-        <label for="infoTitle">Titre *</label>
-        <input id="infoTitle" name="infoTitle" type="text" required maxlength="80"
-               placeholder="Ex : Inscriptions ouvertes ✅">
-      </div>
-
-      <div class="field">
-        <label for="infoText">Texte *</label>
-        <textarea id="infoText" name="infoText" rows="5" required maxlength="2000"
-                  placeholder="Écris ici le message (emojis ok 😄)"></textarea>
-      </div>
-
-      <button id="publishBtn" class="btn" type="submit" style="font-weight:800; color:#111;">
-        📣 Publier
-      </button>
-
-      <p id="adminStatus" class="muted" role="status" aria-live="polite" style="margin:8px 0 0;"></p>
-    </form>
-
-    <p class="muted" style="margin-top:10px;">
-      Les infos apparaissent automatiquement côté public (plus récent en haut).
-    </p>
-  </section>
 
   <!-- Public: fil d'infos -->
   <section class="card">
@@ -82,34 +56,20 @@
 </main>
 
 <script type="module">
-  import { auth, db } from "../assets/js/firebase.js";
-  import { getRoleByEmail } from "../assets/js/session.js";
-
-  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+  import { db } from "../assets/js/firebase.js";
   import {
     collection,
-    addDoc,
-    deleteDoc,
-    serverTimestamp,
     query,
     orderBy,
-    onSnapshot,
-    doc
+    onSnapshot
   } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-  // Collection des infos (Open)
+  // ✅ Collection Open BT
   const COL_INFOS = "infos";
 
   // DOM
   const infosList  = document.getElementById("infosList");
   const infosCount = document.getElementById("infosCount");
-
-  const adminBox    = document.getElementById("adminBox");
-  const infoForm    = document.getElementById("infoForm");
-  const publishBtn  = document.getElementById("publishBtn");
-  const adminStatus = document.getElementById("adminStatus");
-
-  let isAdmin = false;
 
   function escapeHTML(str){
     return (str || "")
@@ -151,64 +111,19 @@
       card.className = "card";
       card.style.margin = "0";
 
-      const adminActions = isAdmin ? `
-        <div style="margin-top:10px; display:flex; justify-content:flex-end;">
-          <button class="btn" data-del="${it.id}" style="font-weight:800; color:#111;">
-            🗑️ Supprimer
-          </button>
-        </div>
-      ` : "";
-
       card.innerHTML = `
         <div style="display:flex; flex-direction:column; gap:6px;">
           <div style="font-weight:900;">${title}</div>
           <div class="muted" style="margin:0;">🗓️ ${date}</div>
           <div style="margin-top:2px; line-height:1.45;">${text}</div>
-          ${adminActions}
         </div>
       `;
 
       infosList.appendChild(card);
     }
-
-    if(isAdmin){
-      infosList.querySelectorAll("button[data-del]").forEach(btn => {
-        btn.addEventListener("click", async () => {
-          const id = btn.getAttribute("data-del");
-          const ok = confirm("Supprimer cette info ?\n\n⚠️ Action irréversible.");
-          if(!ok) return;
-
-          try{
-            await deleteDoc(doc(db, COL_INFOS, id));
-            alert("Info supprimée ✅");
-          } catch(e){
-            console.error(e);
-            alert("Erreur suppression ❌");
-          }
-        });
-      });
-    }
   }
 
-  // Détection admin
-  onAuthStateChanged(auth, async (user) => {
-    adminBox.style.display = "none";
-    isAdmin = false;
-
-    if(!user) return;
-
-    try{
-      const role = await getRoleByEmail(user.email);
-      if(role === "admin"){
-        isAdmin = true;
-        adminBox.style.display = "block";
-      }
-    } catch(e){
-      console.warn("Role lookup failed:", e);
-    }
-  });
-
-  // Flux live (plus récent en haut)
+  // 🔄 Flux live (plus récent en haut)
   infosCount.textContent = "Chargement…";
   const q = query(collection(db, COL_INFOS), orderBy("createdAt", "desc"));
 
@@ -218,38 +133,6 @@
   }, (err) => {
     console.error(err);
     infosCount.textContent = "❌ Impossible de charger les infos.";
-  });
-
-  // Publication (admin)
-  infoForm?.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    publishBtn.disabled = true;
-    publishBtn.classList.add("disabled");
-    adminStatus.textContent = "Publication en cours…";
-
-    try{
-      const title = (infoForm.infoTitle.value || "").trim();
-      const text  = (infoForm.infoText.value || "").trim();
-
-      if(!title || !text){
-        throw new Error("Titre et texte obligatoires.");
-      }
-
-      await addDoc(collection(db, COL_INFOS), {
-        title,
-        text,
-        createdAt: serverTimestamp()
-      });
-
-      infoForm.reset();
-      adminStatus.textContent = "✅ Info publiée !";
-    } catch(err){
-      console.error(err);
-      adminStatus.textContent = "❌ Erreur : " + (err?.message || "publication impossible.");
-    } finally {
-      publishBtn.disabled = false;
-      publishBtn.classList.remove("disabled");
-    }
   });
 </script>
 
