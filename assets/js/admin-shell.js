@@ -4,9 +4,13 @@ import { logout, getRoleByEmail } from "./session.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
 /**
+ * Shell Admin commun :
+ * - Bandeau : Accueil public / Déconnexion
+ * - Encart Zone : select (Général/DM/DD) + onglets adaptés
+ *
  * Options :
  * - active: "home" | "infos" | "equipes" | "inscriptions" | "tirage"
- * - basePath: chemin relatif depuis la page admin vers la racine du site (ex: ".." depuis /admin/*)
+ * - basePath: chemin relatif depuis /admin/* vers la racine (..)
  */
 export function renderAdminShell({ active = "home", basePath = ".." } = {}) {
   const headerMount = document.getElementById("adminHeader");
@@ -20,11 +24,7 @@ export function renderAdminShell({ active = "home", basePath = ".." } = {}) {
   const params = new URLSearchParams(location.search);
   const scope = (params.get("scope") || "general").toLowerCase(); // general | dh | dd
 
-  const scopeLabel = scope === "general"
-    ? "Général"
-    : (scope === "dh" ? "Double Messieurs (DM)" : "Double Dames (DD)");
-
-  // ---------- Header commun (Accueil public / Déconnexion) ----------
+  // ---------- Header commun ----------
   headerMount.innerHTML = `
     <header class="topbar">
       <div class="container">
@@ -48,7 +48,7 @@ export function renderAdminShell({ active = "home", basePath = ".." } = {}) {
     </header>
   `;
 
-  // ---------- Encart Zone + tabs ----------
+  // ---------- Encart Zone ----------
   zoneMount.innerHTML = `
     <section class="card" id="accessDenied" style="display:none;">
       <h2 style="margin:0 0 8px;">⛔ Accès refusé</h2>
@@ -78,8 +78,7 @@ export function renderAdminShell({ active = "home", basePath = ".." } = {}) {
   const tabsEl = document.getElementById("tabs");
   const hintEl = document.getElementById("hint");
 
-  // init select
-  scopeEl.value = ["general","dh","dd"].includes(scope) ? scope : "general";
+  scopeEl.value = ["general", "dh", "dd"].includes(scope) ? scope : "general";
 
   function mkTab(label, href, isActive) {
     const a = document.createElement("a");
@@ -99,12 +98,12 @@ export function renderAdminShell({ active = "home", basePath = ".." } = {}) {
     if (nextScope === "general") {
       hintEl.textContent = "Zone Général : publication / modification / suppression des infos.";
       tabsEl.appendChild(
-        mkTab("📰 Infos", `${basePath}/admin/index.html?scope=general`, active === "infos" || active === "home")
+        mkTab("📰 Infos", `${basePath}/admin/index.html?scope=general`, active === "home" || active === "infos")
       );
       return;
     }
 
-    hintEl.textContent = `Zone ${nextScope.toUpperCase()} : équipes / inscriptions / tirage. (${scopeLabel})`;
+    hintEl.textContent = `Zone ${nextScope.toUpperCase()} : équipes / inscriptions / tirage.`;
 
     tabsEl.appendChild(
       mkTab("👥 Équipes", `${basePath}/admin/equipes.html?scope=${encodeURIComponent(nextScope)}`, active === "equipes")
@@ -119,35 +118,35 @@ export function renderAdminShell({ active = "home", basePath = ".." } = {}) {
 
   setTabs(scopeEl.value);
 
-  // changer de scope => rester sur la même "rubrique" si possible
+  // Changement de scope : on reste sur la même rubrique si possible
   scopeEl.addEventListener("change", () => {
     const s = scopeEl.value;
-    // si on est dans une page “dh/dd” et on switch general => go index
+
     if (s === "general") {
       window.location.href = `${basePath}/admin/index.html?scope=general`;
       return;
     }
 
-    // sinon : rester sur la page active (equipes/inscriptions/tirage)
     const map = {
       equipes: "equipes.html",
       inscriptions: "inscriptions.html",
       tirage: "tirage.html",
       home: "index.html",
-      infos: "index.html"
+      infos: "index.html",
     };
+
     const target = map[active] || "index.html";
     window.location.href = `${basePath}/admin/${target}?scope=${encodeURIComponent(s)}`;
   });
 
-  // logout
+  // Déconnexion
   headerMount.querySelector("#btnLogout").addEventListener("click", async (e) => {
     e.preventDefault();
     await logout();
     window.location.href = `${basePath}/index.html`;
   });
 
-  // Guard admin (affiche l’UI seulement si admin)
+  // Guard admin
   onAuthStateChanged(auth, async (user) => {
     accessDenied.style.display = "none";
     adminUI.style.display = "none";
@@ -156,6 +155,7 @@ export function renderAdminShell({ active = "home", basePath = ".." } = {}) {
       accessDenied.style.display = "block";
       return;
     }
+
     try {
       const role = await getRoleByEmail(user.email);
       if (role !== "admin") {
