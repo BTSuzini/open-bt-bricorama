@@ -15,10 +15,13 @@
         <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
       </div>
 
-      <h1 class="brand-title">Open BT Bricorama<br><span style="opacity:.95;font-weight:800;">Double Hommes</span></h1>
+      <h1 class="brand-title">
+        Open BT Bricorama<br>
+        <span style="opacity:.95;font-weight:800;">Double Hommes</span>
+      </h1>
 
       <div class="brand-logo">
-        <img src="../assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
+        <img src="../assets/img/logo-openbt.png" alt="Logo Open BT">
       </div>
     </div>
 
@@ -34,233 +37,154 @@
 
 <main class="container">
 
-  <section class="card">
+  <section class="card" id="cardForm">
     <h2>📝 Formulaire d’inscription — Double Hommes</h2>
-
     <p id="gateMsg" class="muted">Chargement…</p>
 
-    <form id="signupForm" class="form" autocomplete="on">
+    <form id="signupForm" class="form">
 
       <div class="field">
-        <label for="teamName">Nom de l’équipe *</label>
-        <input id="teamName" name="teamName" type="text" required maxlength="40" placeholder="Ex : Les beacheurs">
+        <label>Nom de l’équipe *</label>
+        <input id="teamName" required maxlength="40">
       </div>
 
       <hr class="sep" />
 
-      <h3 style="margin:0;">Joueur 1 👨</h3>
-
-      <div class="field">
-        <label for="p1LastName">Nom *</label>
-        <input id="p1LastName" name="p1LastName" type="text" required placeholder="Nom">
-      </div>
-
-      <div class="field">
-        <label for="p1FirstName">Prénom *</label>
-        <input id="p1FirstName" name="p1FirstName" type="text" required placeholder="Prénom">
-      </div>
-
-      <div class="field">
-        <label for="p1Licence">N° Licence *</label>
-        <input id="p1Licence" name="p1Licence" type="text" required placeholder="Ex : 0123456A">
-      </div>
-
-      <div class="field">
-        <label for="p1Phone">Téléphone *</label>
-        <input id="p1Phone" name="p1Phone" type="tel" required placeholder="Ex : +594... / 06...">
-      </div>
+      <h3>Joueur 1 👨</h3>
+      <div class="field"><label>Nom *</label><input id="p1LastName" required></div>
+      <div class="field"><label>Prénom *</label><input id="p1FirstName" required></div>
+      <div class="field"><label>N° Licence *</label><input id="p1Licence" required></div>
+      <div class="field"><label>Téléphone *</label><input id="p1Phone" required></div>
 
       <hr class="sep" />
 
-      <h3 style="margin:0;">Joueur 2 👨</h3>
-
-      <div class="field">
-        <label for="p2LastName">Nom *</label>
-        <input id="p2LastName" name="p2LastName" type="text" required placeholder="Nom">
-      </div>
-
-      <div class="field">
-        <label for="p2FirstName">Prénom *</label>
-        <input id="p2FirstName" name="p2FirstName" type="text" required placeholder="Prénom">
-      </div>
-
-      <div class="field">
-        <label for="p2Licence">N° Licence *</label>
-        <input id="p2Licence" name="p2Licence" type="text" required placeholder="Ex : 0123456A">
-      </div>
-
-      <div class="field">
-        <label for="p2Phone">Téléphone *</label>
-        <input id="p2Phone" name="p2Phone" type="tel" required placeholder="Ex : +594... / 06...">
-      </div>
+      <h3>Joueur 2 👨</h3>
+      <div class="field"><label>Nom *</label><input id="p2LastName" required></div>
+      <div class="field"><label>Prénom *</label><input id="p2FirstName" required></div>
+      <div class="field"><label>N° Licence *</label><input id="p2Licence" required></div>
+      <div class="field"><label>Téléphone *</label><input id="p2Phone" required></div>
 
       <hr class="sep" />
 
-      <button id="submitBtn" class="btn" type="submit" style="font-weight:800; color:#111;">
-        ✅ Valider
-      </button>
-
-      <p id="status" class="muted" role="status" aria-live="polite"></p>
+      <button id="submitBtn" class="btn" type="submit" style="font-weight:900;">✅ Valider</button>
+      <p id="status" class="muted"></p>
     </form>
+  </section>
+
+  <section class="card" id="cardSuccess" style="display:none;">
+    <h2>✅ Inscription enregistrée</h2>
+    <p class="muted">Merci pour votre inscription 🙌</p>
+    <div class="grid" style="margin-top:12px;">
+      <a class="btn" href="equipes.html">👥 Voir les équipes</a>
+      <a class="btn" href="programmation.html">📅 Programmation</a>
+    </div>
   </section>
 
 </main>
 
 <script type="module">
-  import { db } from "../assets/js/firebase.js";
-  import {
-    doc,
-    onSnapshot,
-    collection,
-    addDoc,
-    setDoc,
-    serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import { db } from "../assets/js/firebase.js";
+import {
+  doc, onSnapshot,
+  collection, addDoc, setDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-  // Open BT — DH
-  const COL_PRIVATE = "inscriptions_dh_private";
-  const COL_PUBLIC  = "equipes_dh_public";
+const COL_PRIVATE = "inscriptions_dh_private";
+const COL_PUBLIC  = "equipes_dh_public";
+const CFG_FIELD   = "inscriptionsDHState";
 
-  // Gate unique Open BT : config/open (champ inscriptionsDHState)
-  const CFG_DOC = { col: "config", id: "open", field: "inscriptionsDHState" };
+const cardForm = document.getElementById("cardForm");
+const cardSuccess = document.getElementById("cardSuccess");
+const form = document.getElementById("signupForm");
+const submitBtn = document.getElementById("submitBtn");
+const statusEl = document.getElementById("status");
+const gateMsgEl = document.getElementById("gateMsg");
 
-  const form = document.getElementById("signupForm");
-  const statusEl = document.getElementById("status");
-  const gateMsgEl = document.getElementById("gateMsg");
-  const submitBtn = document.getElementById("submitBtn");
+let gateState = "not_open";
+let isSubmitting = false;
 
-  let gateState = "not_open"; // open | paused | closed | not_open
-  let submitting = false;     // anti double-clic
+function showSuccess(){
+  cardForm.style.display = "none";
+  cardSuccess.style.display = "block";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
 
-  const setStatus = (msg) => { statusEl.textContent = msg; };
+function normalizeState(s){
+  if(s === "suspended") return "paused";
+  return s || "not_open";
+}
 
-  function setInputsDisabled(disabled){
-    const fields = form.querySelectorAll("input, select, textarea, button");
-    fields.forEach(el => {
-      if(el.id === "submitBtn") return;
-      el.disabled = disabled;
-    });
-  }
-
-  function normalizeState(state){
-    if(state === "suspended") return "paused";
-    return state || "not_open";
-  }
-
-  function applyGate(stateRaw){
-    gateState = normalizeState(stateRaw);
-
-    if(gateState === "open"){
-      gateMsgEl.textContent = "✅ Inscriptions ouvertes. Tu peux t’inscrire ci-dessous.";
-      setInputsDisabled(false);
-      submitBtn.disabled = false;
-      submitBtn.classList.remove("disabled");
-      return;
-    }
-
-    setInputsDisabled(true);
+function applyGate(state){
+  gateState = normalizeState(state);
+  if(gateState === "open"){
+    gateMsgEl.textContent = "✅ Inscriptions ouvertes.";
+    submitBtn.disabled = false;
+  } else {
     submitBtn.disabled = true;
-    submitBtn.classList.add("disabled");
-
-    if(gateState === "paused"){
-      gateMsgEl.textContent = "⏸️ Inscriptions temporairement suspendues. Réessaie un peu plus tard.";
-      return;
-    }
-    if(gateState === "closed"){
-      gateMsgEl.textContent = "🔒 Inscriptions clôturées.";
-      return;
-    }
-    gateMsgEl.textContent = "⏳ Les inscriptions ne sont pas encore ouvertes.";
+    gateMsgEl.textContent =
+      gateState === "closed" ? "🔒 Inscriptions clôturées."
+      : gateState === "paused" ? "⏸️ Inscriptions suspendues."
+      : "⏳ Pas encore ouvertes.";
   }
+}
 
-  // 🔄 Live gate
-  const cfgRef = doc(db, CFG_DOC.col, CFG_DOC.id);
-  onSnapshot(cfgRef, (snap)=>{
-    const d = snap.exists() ? (snap.data() || {}) : {};
-    const state = d[CFG_DOC.field] || "not_open";
-    applyGate(state);
-  }, (err)=>{
-    console.error(err);
-    applyGate("not_open");
-    gateMsgEl.textContent = "❌ Impossible de vérifier l’état des inscriptions. Réessaie plus tard.";
-  });
+onSnapshot(doc(db,"config","open"), snap=>{
+  const data = snap.data() || {};
+  applyGate(data[CFG_FIELD]);
+});
 
-  function readFormData(){
-    return {
+form.addEventListener("submit", async e=>{
+  e.preventDefault();
+  if(isSubmitting || gateState !== "open") return;
+
+  isSubmitting = true;
+  submitBtn.disabled = true;
+  statusEl.textContent = "Envoi en cours…";
+
+  try{
+    const data = {
       createdAt: serverTimestamp(),
-      teamName: (form.teamName.value || "").trim(),
-
-      p1FirstName: (form.p1FirstName.value || "").trim(),
-      p1LastName:  (form.p1LastName.value || "").trim(),
-      p1Licence:   (form.p1Licence.value || "").trim(),
-      p1Phone:     (form.p1Phone.value || "").trim(),
-
-      p2FirstName: (form.p2FirstName.value || "").trim(),
-      p2LastName:  (form.p2LastName.value || "").trim(),
-      p2Licence:   (form.p2Licence.value || "").trim(),
-      p2Phone:     (form.p2Phone.value || "").trim(),
+      teamName: teamName.value.trim(),
+      p1FirstName: p1FirstName.value.trim(),
+      p1LastName: p1LastName.value.trim(),
+      p1Licence: p1Licence.value.trim(),
+      p1Phone: p1Phone.value.trim(),
+      p2FirstName: p2FirstName.value.trim(),
+      p2LastName: p2LastName.value.trim(),
+      p2Licence: p2Licence.value.trim(),
+      p2Phone: p2Phone.value.trim()
     };
+
+    const ref = await addDoc(collection(db,COL_PRIVATE), data);
+
+    await setDoc(doc(db,COL_PUBLIC,ref.id),{
+      createdAt: serverTimestamp(),
+      teamName: data.teamName,
+      p1FirstName: data.p1FirstName,
+      p2FirstName: data.p2FirstName,
+      list: "main",
+      stby: false
+    });
+
+    form.reset();
+
+    const recap =
+      `✅ Inscription enregistrée !\n\n` +
+      `Équipe : ${data.teamName}\n` +
+      `Joueurs : ${data.p1FirstName} ${data.p1LastName} & ${data.p2FirstName} ${data.p2LastName}`;
+
+    alert(recap);
+    showSuccess();
+
+  }catch(err){
+    console.error(err);
+    statusEl.textContent = "❌ Erreur lors de l’enregistrement.";
+    submitBtn.disabled = false;
+  }finally{
+    isSubmitting = false;
   }
-
-  // 🔒 Nettoyage UI après confirmation (évite le "double clic" inconscient)
-  function lockAndHideFormAfterSuccess(){
-    // désactive tout + masque le formulaire (il "disparaît")
-    const all = form.querySelectorAll("input, select, textarea, button");
-    all.forEach(el => { el.disabled = true; });
-    form.style.display = "none";
-  }
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    if(submitting) return; // anti double submit
-    if(gateState !== "open"){
-      setStatus("⛔ Inscriptions non ouvertes.");
-      return;
-    }
-
-    submitting = true;
-    submitBtn.disabled = true;
-    submitBtn.classList.add("disabled");
-    setStatus("Envoi en cours…");
-
-    try {
-      const data = readFormData();
-
-      if (!data.teamName || !data.p1FirstName || !data.p1LastName || !data.p2FirstName || !data.p2LastName) {
-        throw new Error("Merci de compléter tous les champs obligatoires.");
-      }
-
-      // 1) PRIVÉ (doc auto-id)
-      const ref = await addDoc(collection(db, COL_PRIVATE), data);
-
-      // 2) PUBLIC (même ID)
-      await setDoc(doc(db, COL_PUBLIC, ref.id), {
-        createdAt: serverTimestamp(),
-        teamName: data.teamName,
-        p1FirstName: data.p1FirstName,
-        p2FirstName: data.p2FirstName,
-        list: "main",
-        stby: false
-      });
-
-      // ✅ POPUP + disparition des champs après fermeture
-      alert("✅ Inscription enregistrée !\n\nMerci 🙏");
-      lockAndHideFormAfterSuccess();
-      setStatus(""); // optionnel
-    } catch (err) {
-      console.error(err);
-      setStatus("❌ Erreur : " + (err?.message || "Impossible d’enregistrer l’inscription."));
-
-      // si erreur, on réautorise le bouton si inscriptions toujours ouvertes
-      if(gateState === "open"){
-        submitBtn.disabled = false;
-        submitBtn.classList.remove("disabled");
-      }
-    } finally {
-      submitting = false;
-    }
-  });
+});
 </script>
 
 </body>
