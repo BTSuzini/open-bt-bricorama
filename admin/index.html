@@ -4,112 +4,96 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin — Open BT Bricorama</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260219" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260220" />
 </head>
 <body>
 
-<header class="topbar">
-  <div class="container">
-    <div class="topbar-row">
-      <div class="brand-logo">
-        <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
-      </div>
-
-      <h1 class="brand-title">🛠️ Admin — Open BT</h1>
-
-      <div class="brand-logo">
-        <img src="../assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
-      </div>
-    </div>
-
-    <nav class="nav">
-      <a href="../index.html">Accueil public</a>
-      <a href="#" id="btnLogout">Déconnexion</a>
-    </nav>
-  </div>
-</header>
+<div id="adminHeader"></div>
 
 <main class="container">
 
-  <section class="card" id="accessDenied" style="display:none;">
-    <h2 style="margin:0 0 8px;">⛔ Accès refusé</h2>
-    <p class="muted" style="margin:0;">Cette page est réservée aux administrateurs.</p>
-  </section>
+  <div id="adminZone"></div>
 
-  <section class="card" id="adminUI" style="display:none;">
-    <h2 style="margin:0 0 10px;">🎛️ Zone</h2>
+  <!-- Contenu après encart "Zone" -->
+  <section class="card" id="pageContent" style="display:none;">
 
-    <div class="field">
-      <label for="scope">Choisir</label>
-      <select id="scope">
-        <option value="general" selected>Général</option>
-        <option value="dh">Double Messieurs (DM)</option>
-        <option value="dd">Double Dames (DD)</option>
-      </select>
+    <!-- Bloc Général -->
+    <div id="panelGeneral" style="display:none;">
+      <h2 style="margin:0 0 10px;">📰 Infos (admin)</h2>
+
+      <form id="infoForm" class="form" autocomplete="off">
+        <div class="field">
+          <label for="infoTitle">Titre *</label>
+          <input id="infoTitle" name="infoTitle" required maxlength="80" placeholder="Ex : Inscriptions ouvertes ✅">
+        </div>
+
+        <div class="field">
+          <label for="infoText">Texte *</label>
+          <textarea id="infoText" name="infoText" rows="5" required maxlength="2000"
+            placeholder="Texte (emojis ok 😄)"></textarea>
+        </div>
+
+        <button class="btn" id="publishBtn" type="submit" style="font-weight:800; color:#111;">✅ Publier</button>
+        <p class="muted" id="adminStatus" role="status" aria-live="polite" style="margin:8px 0 0;"></p>
+      </form>
+
+      <hr class="sep" />
+
+      <p class="muted" id="infosCount" style="margin:0;">Chargement…</p>
+      <div id="infosList" style="display:grid; gap:10px; margin-top:10px;"></div>
     </div>
 
-    <div class="grid" style="margin-top:10px;" id="tabs"></div>
-    <p class="muted" id="hint" style="margin-top:10px;"></p>
-  </section>
+    <!-- Bloc DM/DD (raccourcis) -->
+    <div id="panelScope" style="display:none;">
+      <h2 style="margin:0 0 10px;">🎛️ Administration — Tournoi</h2>
+      <p class="muted" id="scopeHint" style="margin:0;">
+        Choisis DM ou DD dans le menu déroulant “Zone”.
+      </p>
 
-  <!-- Zone: Général -->
-  <section class="card" id="panelGeneral" style="display:none;">
-    <h2 style="margin:0 0 10px;">📰 Infos (admin)</h2>
-
-    <form id="infoForm" class="form" autocomplete="off">
-      <div class="field">
-        <label for="infoTitle">Titre *</label>
-        <input id="infoTitle" name="infoTitle" required maxlength="80" placeholder="Ex : Inscriptions ouvertes ✅">
+      <div class="grid" style="margin-top:12px;">
+        <a class="btn" id="goEquipes" href="#" style="font-weight:900; color:#111;">👥 Équipes</a>
+        <a class="btn" id="goInscriptions" href="#" style="font-weight:900; color:#111;">📝 Inscriptions</a>
+        <a class="btn" id="goTirage" href="#" style="font-weight:900; color:#111;">🎲 Tirage</a>
       </div>
 
-      <div class="field">
-        <label for="infoText">Texte *</label>
-        <textarea id="infoText" name="infoText" rows="5" required maxlength="2000"
-          placeholder="Texte (emojis ok 😄)"></textarea>
-      </div>
+      <p class="muted" style="margin-top:10px;">
+        (La gestion détaillée est dans les pages dédiées, accessibles via les onglets.)
+      </p>
+    </div>
 
-      <button class="btn" id="publishBtn" type="submit" style="font-weight:800; color:#111;">✅ Publier</button>
-      <p class="muted" id="adminStatus" role="status" aria-live="polite" style="margin:8px 0 0;"></p>
-    </form>
-
-    <hr class="sep" />
-
-    <p class="muted" id="infosCount" style="margin:0;">Chargement…</p>
-    <div id="infosList" style="display:grid; gap:10px; margin-top:10px;"></div>
   </section>
 
 </main>
 
 <script type="module">
+  import { renderAdminShell } from "../assets/js/admin-shell.js";
   import { auth, db } from "../assets/js/firebase.js";
-  import { getRoleByEmail, logout } from "../assets/js/session.js";
+  import { getRoleByEmail } from "../assets/js/session.js";
 
   import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
   import {
-    doc, getDoc,
     collection, addDoc, deleteDoc, updateDoc,
+    doc, getDoc,
     serverTimestamp,
     query, orderBy, onSnapshot
   } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-  // ✅ Open BT : collection infos = "infos" (alignée avec tes rules)
-  const COL_INFOS = "infos";
+  renderAdminShell({ active: "home", basePath: ".." });
 
-  const accessDenied = document.getElementById("accessDenied");
-  const adminUI = document.getElementById("adminUI");
-
-  const scopeEl = document.getElementById("scope");
-  const tabsEl  = document.getElementById("tabs");
-  const hintEl  = document.getElementById("hint");
-
+  const pageContent = document.getElementById("pageContent");
   const panelGeneral = document.getElementById("panelGeneral");
+  const panelScope = document.getElementById("panelScope");
 
+  const params = new URLSearchParams(location.search);
+  const scope = (params.get("scope") || "general").toLowerCase();
+
+  // --- Infos (général)
+  const COL_INFOS = "infos";
   const infoForm = document.getElementById("infoForm");
   const publishBtn = document.getElementById("publishBtn");
   const adminStatus = document.getElementById("adminStatus");
   const infosCount = document.getElementById("infosCount");
   const infosList = document.getElementById("infosList");
-
   let unsubscribeInfos = null;
 
   function esc(str){
@@ -122,10 +106,7 @@
     try{
       const d = ts?.toDate ? ts.toDate() : null;
       if(!d) return "—";
-      return d.toLocaleString("fr-FR", {
-        year:"numeric", month:"long", day:"numeric",
-        hour:"2-digit", minute:"2-digit"
-      });
+      return d.toLocaleString("fr-FR", { year:"numeric", month:"long", day:"numeric", hour:"2-digit", minute:"2-digit" });
     }catch{ return "—"; }
   }
 
@@ -177,7 +158,6 @@
         infosList.appendChild(card);
       }
 
-      // delete
       infosList.querySelectorAll("button[data-del]").forEach(btn=>{
         btn.onclick = async ()=>{
           const id = btn.dataset.del;
@@ -187,15 +167,14 @@
         };
       });
 
-      // edit via prompt (simple & efficace)
       infosList.querySelectorAll("button[data-edit]").forEach(btn=>{
         btn.onclick = async ()=>{
           const id = btn.dataset.edit;
           const ref = doc(db, COL_INFOS, id);
           const s = await getDoc(ref);
           if(!s.exists()) return;
-
           const cur = s.data();
+
           const newTitle = prompt("Modifier le titre :", cur.title || "");
           if(newTitle === null) return;
           const newText = prompt("Modifier le texte :", cur.text || "");
@@ -211,54 +190,12 @@
     });
   }
 
-  function setTabs(scope){
-    tabsEl.innerHTML = "";
-    panelGeneral.style.display = "none";
-    stopInfos();
-
-    if(scope === "general"){
-      hintEl.textContent = "Zone Général : gestion des infos (publication / modification / suppression).";
-      panelGeneral.style.display = "block";
-
-      const a = document.createElement("a");
-      a.className = "btn";
-      a.href = "#";
-      a.textContent = "📰 Infos";
-      a.onclick = (e)=>{ e.preventDefault(); };
-      tabsEl.appendChild(a);
-
-      startInfos();
-      return;
-    }
-
-    const label = (scope === "dh") ? "Double Messieurs" : "Double Dames";
-    hintEl.textContent = `Zone ${label} : équipes / inscriptions / tirage (pages admin à créer).`;
-
-    // ✅ On prépare les liens admin (à créer ensuite)
-    // Tu peux les garder tels quels, on les code après :
-    // admin/equipes.html?scope=dh | admin/inscriptions.html?scope=dh | admin/tirage.html?scope=dh
-    const links = [
-      ["👥 Équipes", "equipes.html"],
-      ["📝 Inscriptions", "inscriptions.html"],
-      ["🎲 Tirage", "tirage.html"],
-    ];
-
-    for(const [txt, file] of links){
-      const a = document.createElement("a");
-      a.className = "btn";
-      a.href = `${file}?scope=${encodeURIComponent(scope)}`;
-      a.textContent = txt;
-      tabsEl.appendChild(a);
-    }
-  }
-
-  // Publish info
-  infoForm.addEventListener("submit", async (e)=>{
+  // publish
+  infoForm?.addEventListener("submit", async (e)=>{
     e.preventDefault();
     publishBtn.disabled = true;
     publishBtn.classList.add("disabled");
     adminStatus.textContent = "Publication…";
-
     try{
       const title = (infoForm.infoTitle.value || "").trim();
       const text  = (infoForm.infoText.value || "").trim();
@@ -276,34 +213,46 @@
     }
   });
 
-  // Logout
-  document.getElementById("btnLogout").onclick = async (e)=>{
-    e.preventDefault();
-    await logout();
-    window.location.href = "../index.html";
-  };
+  // --- Raccourcis DM/DD
+  const goEquipes = document.getElementById("goEquipes");
+  const goInscriptions = document.getElementById("goInscriptions");
+  const goTirage = document.getElementById("goTirage");
+  const scopeHint = document.getElementById("scopeHint");
 
-  // Guard admin
+  function applyScopePanel(s){
+    goEquipes.href = `equipes.html?scope=${encodeURIComponent(s)}`;
+    goInscriptions.href = `inscriptions.html?scope=${encodeURIComponent(s)}`;
+    goTirage.href = `tirage.html?scope=${encodeURIComponent(s)}`;
+
+    scopeHint.textContent = s === "dh"
+      ? "Zone DM : administration du Double Messieurs."
+      : "Zone DD : administration du Double Dames.";
+  }
+
+  // guard admin + affichage panels
   onAuthStateChanged(auth, async (user)=>{
-    accessDenied.style.display = "none";
-    adminUI.style.display = "none";
+    pageContent.style.display = "none";
     panelGeneral.style.display = "none";
+    panelScope.style.display = "none";
     stopInfos();
 
-    if(!user){
-      accessDenied.style.display="block";
-      return;
-    }
-
+    if(!user) return;
     const role = await getRoleByEmail(user.email);
-    if(role !== "admin"){
-      accessDenied.style.display="block";
-      return;
-    }
+    if(role !== "admin") return;
 
-    adminUI.style.display = "block";
-    setTabs(scopeEl.value);
-    scopeEl.onchange = ()=> setTabs(scopeEl.value);
+    pageContent.style.display = "block";
+
+    const s = scope;
+    if(s === "general"){
+      panelGeneral.style.display = "block";
+      startInfos();
+    } else if(s === "dh" || s === "dd") {
+      panelScope.style.display = "block";
+      applyScopePanel(s);
+    } else {
+      panelScope.style.display = "block";
+      scopeHint.textContent = "Choisis DM ou DD dans le menu “Zone”.";
+    }
   });
 </script>
 
