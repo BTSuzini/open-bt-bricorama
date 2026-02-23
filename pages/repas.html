@@ -5,37 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Repas — Open BT Bricorama</title>
   <link rel="stylesheet" href="../assets/css/main.css?v=20260219" />
-  <style>
-    .note{
-      border:1px solid #eee;
-      border-radius:14px;
-      padding:14px;
-      background:#fff;
-      line-height:1.55;
-    }
-    .small{ font-size:14px; }
-
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:10px 12px;
-      border-radius:999px;
-      border:1px solid #eee;
-      background:#fafafa;
-      font-weight:900;
-    }
-
-    .cta-row{
-      display:grid;
-      gap:12px;
-      margin-top:12px;
-    }
-
-    @media (min-width: 780px){
-      .cta-row{ grid-template-columns: 1fr 1fr; }
-    }
-  </style>
 </head>
 <body>
 
@@ -46,7 +15,10 @@
         <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
       </div>
 
-      <h1 class="brand-title">Open BT Bricorama</h1>
+      <h1 class="brand-title">
+        Open BT Bricorama<br>
+        <span style="opacity:.95;font-weight:800;">🍽️ Repas (Lasagnes)</span>
+      </h1>
 
       <div class="brand-logo">
         <img src="../assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
@@ -67,38 +39,470 @@
 
 <main class="container">
 
+  <!-- Sous-onglets -->
   <section class="card">
-    <h2 style="margin:0 0 10px;">🍽️ Repas — sur réservation</h2>
+    <h2 style="margin-bottom:6px;">🍽️ Espace repas</h2>
 
-    <div class="note">
-      <p style="margin:0 0 10px;">
-        <span class="pill">📌 Page en préparation</span>
+    <div class="subtabs" role="tablist" aria-label="Espace repas">
+      <button class="subtab" id="tabFlyer" type="button" aria-selected="true">📄 Flyer</button>
+      <button class="subtab" id="tabCommander" type="button" aria-selected="false">🛒 Commander</button>
+      <button class="subtab" id="tabCommandes" type="button" aria-selected="false">📦 Commandes effectuées</button>
+    </div>
+  </section>
+
+  <!-- ======================
+        FLYER
+  ======================= -->
+  <section class="card" id="panelFlyer">
+    <h2>📄 Flyer officiel</h2>
+
+    <div style="text-align:center; margin-top:15px;">
+      <img
+        src="../assets/img/lasagnes.png"
+        alt="Flyer Lasagnes"
+        style="max-width:100%; border-radius:14px; box-shadow:0 10px 25px rgba(0,0,0,.08);"
+      >
+    </div>
+  </section>
+
+  <!-- ======================
+        COMMANDER
+  ======================= -->
+  <section class="card" id="panelCommander" style="display:none;">
+    <h2>🛒 Commander</h2>
+
+    <div style="margin-top:12px; line-height:1.6;">
+      <p style="font-size:18px; font-weight:900; margin:0;">
+        🎾 Offre repas (Open BT) !
       </p>
 
-      <p style="margin:0 0 10px;">
-        Ici, tu trouveras bientôt :
+      <p style="margin:10px 0 0;">
+        Réserve ton repas pour le tournoi 🍝<br>
+        <strong>Lasagnes — 11€ la part</strong> 🔥
       </p>
 
-      <ul style="margin:0 0 10px 18px;">
-        <li>Le menu / la proposition repas</li>
-        <li>Le tarif</li>
-        <li>La date limite de réservation</li>
-        <li>Le lien de paiement (si applicable)</li>
-      </ul>
-
-      <p class="muted small" style="margin:0;">
-        👉 En attendant, surveille l’onglet <b>Infos</b> : l’organisation y publiera les détails dès que c’est prêt.
+      <p style="margin:10px 0 0; font-weight:900;">
+        ⏳ Réservations possibles jusqu’au <span style="white-space:nowrap;">25/02</span>
       </p>
+
+      <hr class="sep" style="margin:14px 0;" />
     </div>
 
-    <div class="cta-row">
-      <a class="btn" href="infos.html" style="font-weight:900; color:#111;">📰 Voir les infos</a>
-      <a class="btn" href="../index.html" style="font-weight:900; color:#111;">⬅️ Retour accueil</a>
+    <!-- Form -->
+    <form id="orderForm" class="form" autocomplete="off">
+      <div class="field">
+        <label for="beacheurSelect">Beacheur *</label>
+        <select id="beacheurSelect" required>
+          <option value="" selected disabled>Chargement…</option>
+        </select>
+        <p class="muted" style="margin:8px 0 0;">Sélection = <b>Prénom</b> + (<b>équipe</b>)</p>
+      </div>
+
+      <div class="field">
+        <label for="qtySelect">Nombre de repas *</label>
+        <select id="qtySelect" required>
+          <option value="1" selected>1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+        </select>
+      </div>
+
+      <button id="btnOrder" class="btn" type="submit" style="font-weight:900; color:#111;">
+        ✅ Valider la commande
+      </button>
+
+      <p id="orderStatus" class="muted" role="status" aria-live="polite" style="margin-top:10px;"></p>
+    </form>
+
+    <!-- Success box -->
+    <div id="orderDone" class="card" style="display:none; margin:14px 0 0;">
+      <h3 style="margin:0 0 6px;">✅ Commande enregistrée</h3>
+      <p class="muted" id="orderDoneText" style="margin:0;"></p>
+      <div class="grid" style="margin-top:12px;">
+        <button class="btn" id="btnNewOrder" type="button" style="font-weight:900; color:#111;">
+          ➕ Faire une autre commande
+        </button>
+        <button class="btn" id="btnGoList" type="button" style="font-weight:900; color:#111;">
+          📦 Voir les commandes
+        </button>
+      </div>
     </div>
 
   </section>
 
+  <!-- ======================
+        COMMANDES EFFECTUÉES
+  ======================= -->
+  <section class="card" id="panelCommandes" style="display:none;">
+    <h2>📦 Commandes effectuées</h2>
+
+    <p class="muted" style="margin-top:10px;">
+      1 ligne par beacheur (les commandes se <b>cumulent automatiquement</b>).
+    </p>
+
+    <p class="muted" id="ordersStatus" style="margin:10px 0 0;">Chargement…</p>
+
+    <div class="table-wrap" style="margin-top:10px;">
+      <table class="teams-table" aria-label="Commandes repas">
+        <thead>
+          <tr>
+            <th style="width:44px;">#</th>
+            <th>Beacheur</th>
+            <th>Équipe</th>
+            <th style="width:140px;">Qté</th>
+            <th style="width:140px;">Montant</th>
+          </tr>
+        </thead>
+        <tbody id="ordersBody"></tbody>
+      </table>
+    </div>
+
+    <p class="muted" style="margin:10px 0 0;">
+      💡 La quantité correspond au nombre de <b>repas</b>.
+    </p>
+  </section>
+
 </main>
+
+<style>
+  .subtabs{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-top:10px;
+  }
+  .subtab{
+    appearance:none;
+    border:1px solid #ddd;
+    background:#fafafa;
+    border-radius:999px;
+    padding:10px 14px;
+    font-weight:900;
+    cursor:pointer;
+  }
+  .subtab[aria-selected="true"]{
+    background:#fff;
+    border-color:#cfcfcf;
+    box-shadow: 0 6px 14px rgba(0,0,0,.06);
+  }
+
+  .table-wrap{
+    overflow:auto;
+    border:1px solid #eee;
+    border-radius:14px;
+    background:#fff;
+  }
+  .teams-table{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0;
+    min-width: 720px;
+  }
+  .teams-table thead th{
+    text-align:left;
+    font-size:13px;
+    letter-spacing:.2px;
+    color:#444;
+    background:#f7f7f7;
+    border-bottom:1px solid #eee;
+    padding:12px 12px;
+    position:sticky;
+    top:0;
+    z-index:1;
+    white-space:nowrap;
+  }
+  .teams-table tbody td{
+    padding:12px 12px;
+    border-bottom:1px solid #f0f0f0;
+    vertical-align:top;
+    font-size:14px;
+  }
+  .teams-table tbody tr:last-child td{ border-bottom:none; }
+</style>
+
+<script type="module">
+  import { db } from "../assets/js/firebase.js";
+  import {
+    collection,
+    query,
+    orderBy,
+    onSnapshot,
+    doc,
+    runTransaction,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+  // =========================================================
+  // Open BT — Collections
+  // =========================================================
+  // ⚠️ Ajuste si tes noms diffèrent
+  const COL_TEAMS_DM_PUBLIC = "equipes_dh_public";
+  const COL_TEAMS_DD_PUBLIC = "equipes_dd_public";
+
+  // 1 doc par beacheurKey (cumul)
+  const COL_ORDERS = "repas_openbt";
+
+  const UNIT_PRICE = 10; // 1 repas = 10€
+
+  // ===== Tabs
+  const tabFlyer = document.getElementById("tabFlyer");
+  const tabCommander = document.getElementById("tabCommander");
+  const tabCommandes = document.getElementById("tabCommandes");
+
+  const panelFlyer = document.getElementById("panelFlyer");
+  const panelCommander = document.getElementById("panelCommander");
+  const panelCommandes = document.getElementById("panelCommandes");
+
+  function show(panel){
+    panelFlyer.style.display = "none";
+    panelCommander.style.display = "none";
+    panelCommandes.style.display = "none";
+
+    tabFlyer.setAttribute("aria-selected","false");
+    tabCommander.setAttribute("aria-selected","false");
+    tabCommandes.setAttribute("aria-selected","false");
+
+    panel.style.display = "block";
+  }
+
+  tabFlyer.onclick = ()=>{
+    show(panelFlyer);
+    tabFlyer.setAttribute("aria-selected","true");
+  };
+  tabCommander.onclick = ()=>{
+    show(panelCommander);
+    tabCommander.setAttribute("aria-selected","true");
+  };
+  tabCommandes.onclick = ()=>{
+    show(panelCommandes);
+    tabCommandes.setAttribute("aria-selected","true");
+  };
+
+  // ===== Commander UI
+  const orderForm = document.getElementById("orderForm");
+  const beacheurSelect = document.getElementById("beacheurSelect");
+  const qtySelect = document.getElementById("qtySelect");
+  const btnOrder = document.getElementById("btnOrder");
+  const orderStatus = document.getElementById("orderStatus");
+
+  const orderDone = document.getElementById("orderDone");
+  const orderDoneText = document.getElementById("orderDoneText");
+  const btnNewOrder = document.getElementById("btnNewOrder");
+  const btnGoList = document.getElementById("btnGoList");
+
+  // ===== Commandes effectuées UI
+  const ordersStatus = document.getElementById("ordersStatus");
+  const ordersBody = document.getElementById("ordersBody");
+
+  function esc(s){
+    return (s ?? "").toString()
+      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+  }
+
+  function setOrderStatus(msg){ orderStatus.textContent = msg || ""; }
+
+  function setOrderEnabled(enabled){
+    beacheurSelect.disabled = !enabled;
+    qtySelect.disabled = !enabled;
+    btnOrder.disabled = !enabled;
+    btnOrder.classList.toggle("disabled", !enabled);
+  }
+
+  function resetOrderUI(){
+    orderDone.style.display = "none";
+    orderForm.style.display = "block";
+    setOrderStatus("");
+    setOrderEnabled(true);
+  }
+
+  btnNewOrder.onclick = ()=>{
+    resetOrderUI();
+  };
+
+  btnGoList.onclick = ()=>{
+    show(panelCommandes);
+    tabCommandes.setAttribute("aria-selected","true");
+  };
+
+  function setBeacheurLoading(){
+    beacheurSelect.innerHTML = `<option value="" selected disabled>Chargement…</option>`;
+  }
+  function setBeacheurError(){
+    beacheurSelect.innerHTML = `<option value="" selected disabled>Impossible de charger la liste</option>`;
+  }
+
+  setBeacheurLoading();
+
+  // ===== Charger les beacheurs depuis DM + DD
+  // beacheurKey = "<dm|dd>_<teamDocId>_p1" | "<dm|dd>_<teamDocId>_p2"
+  // (stable + évite collisions entre DM et DD)
+  function feedBeacheursFromSnap(prefix, snap, out){
+    snap.forEach(d=>{
+      const data = d.data() || {};
+      const teamName = (data.teamName || "").trim();
+      const p1 = (data.p1FirstName || "").trim();
+      const p2 = (data.p2FirstName || "").trim();
+
+      if(teamName && p1){
+        out.push({ key: `${prefix}_${d.id}_p1`, name: p1, team: teamName });
+      }
+      if(teamName && p2){
+        out.push({ key: `${prefix}_${d.id}_p2`, name: p2, team: teamName });
+      }
+    });
+  }
+
+  let snapDM = null;
+  let snapDD = null;
+
+  function rebuildBeacheurSelect(){
+    const opts = [];
+    if(snapDM) feedBeacheursFromSnap("dm", snapDM, opts);
+    if(snapDD) feedBeacheursFromSnap("dd", snapDD, opts);
+
+    // tri : prénom puis équipe
+    opts.sort((a,b)=> (a.name||"").localeCompare((b.name||""), "fr") || (a.team||"").localeCompare((b.team||""), "fr"));
+
+    if(opts.length === 0){
+      beacheurSelect.innerHTML = `<option value="" selected disabled>Aucun beacheur pour le moment</option>`;
+      return;
+    }
+
+    beacheurSelect.innerHTML =
+      `<option value="" selected disabled>Choisir…</option>` +
+      opts.map(o => `<option value="${esc(o.key)}" data-name="${esc(o.name)}" data-team="${esc(o.team)}">${esc(o.name)} (${esc(o.team)})</option>`).join("");
+  }
+
+  const qDM = query(collection(db, COL_TEAMS_DM_PUBLIC), orderBy("createdAt","asc"));
+  const qDD = query(collection(db, COL_TEAMS_DD_PUBLIC), orderBy("createdAt","asc"));
+
+  onSnapshot(qDM, (snap)=>{
+    snapDM = snap;
+    rebuildBeacheurSelect();
+  }, (err)=>{
+    console.error(err);
+    setBeacheurError();
+  });
+
+  onSnapshot(qDD, (snap)=>{
+    snapDD = snap;
+    rebuildBeacheurSelect();
+  }, (err)=>{
+    console.error(err);
+    setBeacheurError();
+  });
+
+  // ===== Enregistrer commande (cumul)
+  async function upsertCumulativeOrder({ beacheurKey, beacheurName, teamName, addQty }){
+    const ref = doc(db, COL_ORDERS, beacheurKey);
+
+    await runTransaction(db, async (tx)=>{
+      const snap = await tx.get(ref);
+      const curQty = snap.exists() ? (snap.data().qty || 0) : 0;
+      const nextQty = curQty + addQty;
+
+      const payload = {
+        beacheurKey,
+        beacheurName,
+        teamName,
+        qty: nextQty,
+        unitPrice: UNIT_PRICE,
+        total: nextQty * UNIT_PRICE,
+        updatedAt: serverTimestamp()
+      };
+
+      if(!snap.exists()){
+        payload.createdAt = serverTimestamp();
+      } else {
+        payload.createdAt = snap.data().createdAt; // conserve
+      }
+
+      tx.set(ref, payload, { merge: false });
+    });
+  }
+
+  orderForm.addEventListener("submit", async (e)=>{
+    e.preventDefault();
+
+    const key = (beacheurSelect.value || "").trim();
+    const qty = Number(qtySelect.value || "0");
+
+    if(!key){ setOrderStatus("❌ Choisis un beacheur."); return; }
+    if(!Number.isFinite(qty) || qty < 1){ setOrderStatus("❌ Quantité invalide."); return; }
+
+    const opt = beacheurSelect.selectedOptions?.[0];
+    const beacheurName = opt?.dataset?.name || "";
+    const teamName = opt?.dataset?.team || "";
+
+    setOrderEnabled(false);
+    setOrderStatus("Enregistrement…");
+
+    try{
+      await upsertCumulativeOrder({ beacheurKey:key, beacheurName, teamName, addQty:qty });
+
+      alert("Commande enregistrée ✅");
+
+      orderForm.reset();
+      orderForm.style.display = "none";
+      orderDone.style.display = "block";
+      orderDoneText.innerHTML = `
+        <b>${esc(beacheurName)}</b> (${esc(teamName)})<br>
+        Ajout : <b>+${esc(String(qty))}</b> repas — Total cumulé visible dans “Commandes effectuées”.
+      `;
+      setOrderStatus("");
+    }catch(err){
+      console.error(err);
+      setOrderEnabled(true);
+      setOrderStatus("❌ Erreur : impossible d’enregistrer la commande.");
+    }
+  });
+
+  // ===== Récap commandes (lecture en direct)
+  const ordersQ = query(collection(db, COL_ORDERS), orderBy("beacheurName","asc"));
+
+  onSnapshot(ordersQ, (snap)=>{
+    const rows = [];
+    snap.forEach(d=>{
+      const x = d.data() || {};
+      rows.push({
+        id: d.id,
+        beacheurName: x.beacheurName || "",
+        teamName: x.teamName || "",
+        qty: Number.isFinite(x.qty) ? x.qty : (x.qty || 0),
+        total: Number.isFinite(x.total) ? x.total : (x.total || 0)
+      });
+    });
+
+    if(rows.length === 0){
+      ordersBody.innerHTML = `<tr><td colspan="5" class="muted" style="padding:14px;">Aucune commande pour le moment.</td></tr>`;
+      ordersStatus.textContent = "🟢 En direct — 0 commande";
+      return;
+    }
+
+    ordersBody.innerHTML = rows.map((r, i)=>`
+      <tr>
+        <td>#${i+1}</td>
+        <td><b>${esc(r.beacheurName)}</b></td>
+        <td>${esc(r.teamName)}</td>
+        <td>${esc(String(r.qty))}</td>
+        <td><b>${esc(String(r.total))} €</b></td>
+      </tr>
+    `).join("");
+
+    ordersStatus.textContent = `🟢 En direct — ${rows.length} ligne(s)`;
+  }, (err)=>{
+    console.error(err);
+    ordersStatus.textContent = "🔴 Erreur de connexion";
+    ordersBody.innerHTML = `<tr><td colspan="5" class="muted" style="padding:14px;">Erreur de connexion.</td></tr>`;
+  });
+</script>
 
 </body>
 </html>
