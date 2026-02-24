@@ -180,20 +180,25 @@
     display:block;
     filter: drop-shadow(0 1px 0 rgba(0,0,0,.15));
   }
-
-  /* ✅ Nav 2 lignes sur téléphone (6 items => 3 + 3) */
-  .nav-step{
-    gap:8px;
-    flex-wrap:wrap;
-    justify-content:space-between;
-  }
+/* ✅ NAV — FORCÉE EN 2 LIGNES (3 colonnes fixes) */
+.nav-step{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap:8px;
+}
+.nav-step a{
+  display:block;
+  text-align:center;
+  white-space:nowrap;
+  min-width:0;
+  padding:8px 10px;
+}
+@media (max-width:420px){
   .nav-step a{
-    padding:8px 12px;
-    flex: 1 1 auto;
-    text-align:center;
-    white-space:nowrap;
-    flex-basis: 33.333%;
+    padding:7px 8px;
+    font-size:13px;
   }
+}
   .nav a[aria-current="page"]{
     background: rgba(255,255,255,.26);
     border-color: rgba(255,255,255,.45);
