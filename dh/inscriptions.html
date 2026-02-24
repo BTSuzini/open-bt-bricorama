@@ -4,33 +4,35 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Inscriptions — Double Hommes — Open BT Bricorama</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260219" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260224" />
 </head>
 <body>
 
 <header class="topbar">
   <div class="container">
-    <div class="topbar-row">
+    <!-- ✅ Bandeau harmonisé (logo / image / logo) -->
+    <div class="topbar-row topbar-row-step">
       <div class="brand-logo">
         <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
       </div>
 
-      <h1 class="brand-title">
-        Open BT Bricorama<br>
-        <span style="opacity:.95;font-weight:800;">Double Hommes</span>
-      </h1>
+      <!-- ✅ Image au centre -->
+      <div class="step-title-wrap" aria-label="BT250 — Double Hommes">
+        <img class="step-title-img" src="../assets/img/bt250-dm.png" alt="BT250 — Double Hommes">
+      </div>
 
       <div class="brand-logo">
         <img src="../assets/img/logo-openbt.png" alt="Logo Open BT">
       </div>
     </div>
 
-    <nav class="nav">
-      <a href="../index.html">Accueil</a>
-      <a href="programmation.html">Programmation</a>
-      <a href="equipes.html">Équipes</a>
-      <a href="inscriptions.html" aria-current="page">Inscriptions</a>
-      <a href="tirage.html">Tirage</a>
+    <!-- ✅ Nav Open BT : 2 lignes fixes sur téléphone (3 + 2), justifiée -->
+    <nav class="nav nav-step">
+      <a href="../index.html" title="Accueil" aria-label="Accueil">🏠</a>
+      <a href="inscriptions.html" aria-current="page">📝 Inscriptions</a>
+      <a href="tirage.html" title="Tirage" aria-label="Tirage">🎲</a>
+      <a href="equipes.html">👥 Équipes</a>
+      <a href="programmation.html">🗓️ Programme</a>
     </nav>
   </div>
 </header>
@@ -81,6 +83,60 @@
   </section>
 
 </main>
+
+<style>
+  /* ✅ Bandeau "image au centre" */
+  .topbar-row-step{
+    grid-template-columns: var(--logo-size) 1fr var(--logo-size);
+  }
+  .step-title-wrap{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height: calc(var(--logo-size) * 0.55);
+  }
+  .step-title-img{
+    width: min(520px, 100%);
+    max-height: 88px;
+    height: auto;
+    object-fit: contain;
+    display:block;
+    filter: drop-shadow(0 1px 0 rgba(0,0,0,.15));
+  }
+
+  /* ✅ NAV: desktop = 1 ligne; téléphone = 2 lignes fixes (3 + 2) */
+  .nav-step{
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .nav-step a{
+    padding:8px 12px;
+    flex: 0 0 auto;
+    text-align:center;
+    white-space:nowrap;
+  }
+
+  @media (max-width: 560px){
+    .nav-step{ justify-content:space-between; }
+    .nav-step a{ width: calc((100% - 16px) / 3); }           /* 3 items ligne 1 */
+    .nav-step a:nth-child(n+4){ width: calc((100% - 8px) / 2); } /* 2 items ligne 2 */
+  }
+
+  @media (max-width: 420px){
+    .nav-step a{
+      padding:7px 10px;
+      font-size: 13px;
+    }
+    .step-title-img{ max-height: 74px; }
+  }
+
+  /* ✅ Lien actif plus visible */
+  .nav a[aria-current="page"]{
+    background: rgba(255,255,255,.26);
+    border-color: rgba(255,255,255,.45);
+    box-shadow: 0 6px 14px rgba(0,0,0,.10);
+  }
+</style>
 
 <script type="module">
 import { db } from "../assets/js/firebase.js";
