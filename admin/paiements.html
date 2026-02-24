@@ -25,7 +25,7 @@
 
     .subtabs{
       display:grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 1fr 1fr 1fr;
       gap:10px;
       margin-top:10px;
     }
@@ -191,6 +191,8 @@
     .meta small{ opacity:.75; }
 
     @media (max-width:420px){
+      .subtabs{ grid-template-columns: 1fr 1fr; }
+      #tabAll{ grid-column: 1 / -1; }
       .pay-team{ font-size:15px; }
       .toggle button{ padding:7px 9px; font-size:13px; }
     }
@@ -289,21 +291,36 @@
   // =========================
   const authState = document.getElementById("authState");
   const statusEl = document.getElementById("status");
+  const listEl = document.getElementById("list");
+
+  function waitAuthOnce(){
+    return new Promise((resolve) => {
+      const unsub = onAuthStateChanged(auth, (user) => {
+        unsub();
+        resolve(user);
+      });
+    });
+  }
 
   async function guardAdmin(){
-    if(!auth.currentUser){
+    let u = auth.currentUser;
+
+    if(!u){
       await loginAndRedirect();
+      u = await waitAuthOnce();
     }
-    const u = auth.currentUser;
+
     if(!u){
       alert("Connexion annulée.");
       throw new Error("not_logged");
     }
+
     const role = await getRoleByEmail(u.email);
     if(role !== "admin"){
       alert("Accès refusé : rôle requis = admin");
       throw new Error("not_admin");
     }
+
     authState.textContent = "🟢 Admin : " + u.email;
   }
 
@@ -325,7 +342,6 @@
   const tabDM  = document.getElementById("tabDM");
   const tabDD  = document.getElementById("tabDD");
   const qInput = document.getElementById("q");
-  const listEl = document.getElementById("list");
 
   const c0 = document.getElementById("c0");
   const c1 = document.getElementById("c1");
@@ -379,17 +395,19 @@
   }
 
   function buildRows(){
-    if(!snapDM || !snapDD || !snapPay) return null;
+    if(!snapDM || !snapDD) return null; // ✅ pay optional
 
     const payMap = new Map();
-    snapPay.forEach(d=>{
-      const x = d.data() || {};
-      payMap.set(d.id, {
-        p1Paid: x.p1Paid === true,
-        p2Paid: x.p2Paid === true,
-        updatedAt: x.updatedAt || null
+    if(snapPay){
+      snapPay.forEach(d=>{
+        const x = d.data() || {};
+        payMap.set(d.id, {
+          p1Paid: x.p1Paid === true,
+          p2Paid: x.p2Paid === true,
+          updatedAt: x.updatedAt || null
+        });
       });
-    });
+    }
 
     const rows = [];
 
@@ -442,16 +460,10 @@
   }
 
   async function setPaid(payId, who, paid){
-    // who = "p1" | "p2"
-    // paid = true/false
     const ref = doc(db, COL_PAYMENTS, payId);
-    const payload = {
-      updatedAt: serverTimestamp()
-    };
+    const payload = { updatedAt: serverTimestamp() };
     payload[who === "p1" ? "p1Paid" : "p2Paid"] = paid;
-
-    // merge:true => crée le doc si absent (default false implicite pour l'autre joueur)
-    await setDoc(ref, payload, { merge: true });
+    await setDoc(ref, payload, { merge: true }); // ✅ crée le doc si absent
   }
 
   function render(){
@@ -463,7 +475,6 @@
 
     const filtered = rows.filter(matches);
 
-    // stats globales (sur filtré)
     let n0=0, n1=0, n2=0;
     for(const r of filtered){
       if(r.paidCount === 0) n0++;
@@ -474,7 +485,6 @@
     c1.textContent = String(n1);
     c2.textContent = String(n2);
 
-    // tri: 0 -> 1 -> 2, puis nom équipe
     filtered.sort((a,b)=>{
       if(a.paidCount !== b.paidCount) return a.paidCount - b.paidCount;
       return (a.teamName||"").localeCompare((b.teamName||""), "fr");
@@ -534,13 +544,12 @@
       `;
     }).join("");
 
-    // bind toggles
     listEl.querySelectorAll("button[data-who]").forEach(btn=>{
       btn.addEventListener("click", async ()=>{
         const card = btn.closest(".pay-card");
         const payId = card?.dataset?.payid;
         const who = btn.dataset.who;
-        const next = btn.dataset.next === "1"; // true => paid
+        const next = btn.dataset.next === "1";
 
         btn.disabled = true;
         try{
@@ -574,7 +583,9 @@
 
       onSnapshot(qDM, s=>{ snapDM=s; render(); }, e=>{ console.error(e); statusEl.textContent="🔴 Erreur DM"; });
       onSnapshot(qDD, s=>{ snapDD=s; render(); }, e=>{ console.error(e); statusEl.textContent="🔴 Erreur DD"; });
-      onSnapshot(qPay, s=>{ snapPay=s; render(); }, e=>{ console.error(e); statusEl.textContent="🔴 Erreur paiements"; });
+
+      // ✅ payements peuvent être vides / absents au début
+      onSnapshot(qPay, s=>{ snapPay=s; render(); }, e=>{ console.error(e); snapPay=null; render(); });
 
     }catch(err){
       console.error(err);
