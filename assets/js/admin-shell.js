@@ -9,7 +9,7 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/f
  * - Encart Zone : select (Général/DM/DD) + onglets adaptés
  *
  * Options :
- * - active: "home" | "infos" | "equipes" | "inscriptions" | "tirage"
+ * - active: "home" | "infos" | "equipes" | "inscriptions" | "tirage" | "paiements"
  * - basePath: chemin relatif depuis /admin/* vers la racine (..)
  */
 export function renderAdminShell({ active = "home", basePath = ".." } = {}) {
@@ -103,22 +103,29 @@ export function renderAdminShell({ active = "home", basePath = ".." } = {}) {
       return;
     }
 
-    hintEl.textContent = `Zone ${nextScope.toUpperCase()} : équipes / inscriptions / tirage.`;
+    hintEl.textContent = `Zone ${nextScope.toUpperCase()} : équipes / inscriptions / tirage / paiements.`;
 
     tabsEl.appendChild(
       mkTab("👥 Équipes", `${basePath}/admin/equipes.html?scope=${encodeURIComponent(nextScope)}`, active === "equipes")
     );
+
     tabsEl.appendChild(
       mkTab("📝 Inscriptions", `${basePath}/admin/inscriptions.html?scope=${encodeURIComponent(nextScope)}`, active === "inscriptions")
     );
+
     tabsEl.appendChild(
       mkTab("🎲 Tirage", `${basePath}/admin/tirage.html?scope=${encodeURIComponent(nextScope)}`, active === "tirage")
+    );
+
+    // ✅ NOUVEL ONGLET
+    tabsEl.appendChild(
+      mkTab("💳 Paiements", `${basePath}/admin/paiements.html?scope=${encodeURIComponent(nextScope)}`, active === "paiements")
     );
   }
 
   setTabs(scopeEl.value);
 
-  // Changement de scope : on reste sur la même rubrique si possible
+  // Changement de scope
   scopeEl.addEventListener("change", () => {
     const s = scopeEl.value;
 
@@ -131,6 +138,7 @@ export function renderAdminShell({ active = "home", basePath = ".." } = {}) {
       equipes: "equipes.html",
       inscriptions: "inscriptions.html",
       tirage: "tirage.html",
+      paiements: "paiements.html",
       home: "index.html",
       infos: "index.html",
     };
