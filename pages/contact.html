@@ -8,9 +8,13 @@
 
   <style>
     /* ✅ Bandeau index */
-    .topbar-row-step{ grid-template-columns: var(--logo-size) 1fr var(--logo-size); }
+    .topbar-row-step{
+      grid-template-columns: var(--logo-size) 1fr var(--logo-size);
+    }
     .step-title-wrap{
-      display:flex; align-items:center; justify-content:center;
+      display:flex;
+      align-items:center;
+      justify-content:center;
       min-height: calc(var(--logo-size) * 0.55);
     }
     .step-title-img{
@@ -22,18 +26,18 @@
       filter: drop-shadow(0 1px 0 rgba(0,0,0,.15));
     }
 
-    /* ✅ Nav 2 lignes sur téléphone (6 items => 3 + 3) */
+    /* ✅ NAV — FORCÉE EN 2 LIGNES (3 colonnes fixes) */
     .nav-step{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap:8px;
-      flex-wrap:wrap;
-      justify-content:space-between;
     }
     .nav-step a{
-      padding:8px 12px;
-      flex: 1 1 auto;
+      display:block;
       text-align:center;
       white-space:nowrap;
-      flex-basis:33.333%;
+      min-width:0;
+      padding:8px 10px;
     }
     .nav a[aria-current="page"]{
       background: rgba(255,255,255,.26);
@@ -41,7 +45,10 @@
       box-shadow: 0 6px 14px rgba(0,0,0,.10);
     }
     @media (max-width:420px){
-      .nav-step a{ padding:7px 10px; font-size:13px; }
+      .nav-step a{
+        padding:7px 8px;
+        font-size:13px;
+      }
       .step-title-img{ max-height:74px; }
     }
 
@@ -127,16 +134,14 @@
       font-weight:950;
       color:#111;
       text-decoration:none;
-      word-break:break-word;
     }
 
-    /* ✅ Email : tenir sur 1 ligne sur téléphone */
+    /* ✅ Email tient sur UNE ligne */
     .value.email{
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
-      word-break:normal;
-      font-size:16px;
+      font-size:15px;
     }
     @media (max-width:420px){
       .value.email{
@@ -168,7 +173,6 @@
       white-space:nowrap;
       flex: 1 1 auto;
     }
-    .btn-sm:active{ transform: translateY(1px); }
     .btn-sm.primary{
       background:#fff;
       border-color:#cfcfcf;
@@ -177,12 +181,11 @@
 
     @media (min-width:760px){
       .contacts{ grid-template-columns:1fr 1fr; }
-      .contact-card{ padding:16px; }
       .btn-sm{ flex: 0 0 auto; }
-      .value.email{ font-size:16px; }
     }
   </style>
 </head>
+
 <body>
 
 <header class="topbar">
@@ -193,12 +196,12 @@
         <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
       </div>
 
-      <div class="step-title-wrap" aria-label="Open BT — BT250">
-        <img class="step-title-img" src="../assets/img/bt250.png" alt="Open BT Bricorama — BT250">
+      <div class="step-title-wrap">
+        <img class="step-title-img" src="../assets/img/bt250.png" alt="BT250">
       </div>
 
       <div class="brand-logo">
-        <img src="../assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
+        <img src="../assets/img/logo-openbt.png" alt="Logo Open BT">
       </div>
     </div>
 
@@ -228,33 +231,31 @@
 
       <!-- EMAIL -->
       <div class="contact-card">
-        <div class="card-head">
-          <div class="card-title">
-            <div class="ico">📧</div>
-            <div>
-              <div class="who">Email</div>
-              <div class="sub">Commission Beach Tennis</div>
-            </div>
+        <div class="card-title">
+          <div class="ico">📧</div>
+          <div>
+            <div class="who">Email</div>
+            <div class="sub">Commission Beach Tennis</div>
           </div>
         </div>
 
-        <a class="value email" href="mailto:tcsuzini.beachtennis@gmail.com">tcsuzini.beachtennis@gmail.com</a>
+        <a class="value email" href="mailto:tcsuzini.beachtennis@gmail.com">
+          tcsuzini.beachtennis@gmail.com
+        </a>
 
         <div class="actions">
-          <a class="btn-sm primary" href="mailto:tcsuzini.beachtennis@gmail.com">✉️ Écrire un email</a>
+          <a class="btn-sm primary" href="mailto:tcsuzini.beachtennis@gmail.com">✉️ Écrire</a>
           <button class="btn-sm" type="button" data-copy="tcsuzini.beachtennis@gmail.com">📋 Copier</button>
         </div>
       </div>
 
       <!-- JULES -->
       <div class="contact-card">
-        <div class="card-head">
-          <div class="card-title">
-            <div class="ico">📱</div>
-            <div>
-              <div class="who">Jules</div>
-              <div class="sub">Organisation</div>
-            </div>
+        <div class="card-title">
+          <div class="ico">📱</div>
+          <div>
+            <div class="who">Jules</div>
+            <div class="sub">Organisation</div>
           </div>
         </div>
 
@@ -262,50 +263,7 @@
 
         <div class="actions">
           <a class="btn-sm primary" href="tel:+594694406099">📞 Appeler</a>
-          <a class="btn-sm" href="https://wa.me/594694406099" target="_blank" rel="noopener">💬 WhatsApp</a>
-          <button class="btn-sm" type="button" data-copy="+594694406099">📋 Copier</button>
-        </div>
-      </div>
-
-      <!-- QUENTIN -->
-      <div class="contact-card">
-        <div class="card-head">
-          <div class="card-title">
-            <div class="ico">📱</div>
-            <div>
-              <div class="who">Quentin</div>
-              <div class="sub">Organisation</div>
-            </div>
-          </div>
-        </div>
-
-        <a class="value" href="tel:+33660063692">+33 6 60 06 36 92</a>
-
-        <div class="actions">
-          <a class="btn-sm primary" href="tel:+33660063692">📞 Appeler</a>
-          <a class="btn-sm" href="https://wa.me/33660063692" target="_blank" rel="noopener">💬 WhatsApp</a>
-          <button class="btn-sm" type="button" data-copy="+33660063692">📋 Copier</button>
-        </div>
-      </div>
-
-      <!-- MÉLANIE -->
-      <div class="contact-card">
-        <div class="card-head">
-          <div class="card-title">
-            <div class="ico">📱</div>
-            <div>
-              <div class="who">Mélanie</div>
-              <div class="sub">Organisation</div>
-            </div>
-          </div>
-        </div>
-
-        <a class="value" href="tel:+33613255475">+33 6 13 25 54 75</a>
-
-        <div class="actions">
-          <a class="btn-sm primary" href="tel:+33613255475">📞 Appeler</a>
-          <a class="btn-sm" href="https://wa.me/33613255475" target="_blank" rel="noopener">💬 WhatsApp</a>
-          <button class="btn-sm" type="button" data-copy="+33613255475">📋 Copier</button>
+          <a class="btn-sm" href="https://wa.me/594694406099" target="_blank">💬 WhatsApp</a>
         </div>
       </div>
 
@@ -315,18 +273,16 @@
 </main>
 
 <script>
-  // ✅ Boutons "Copier"
   document.addEventListener("click", async (e)=>{
     const btn = e.target.closest("[data-copy]");
     if(!btn) return;
     const txt = btn.getAttribute("data-copy") || "";
     try{
       await navigator.clipboard.writeText(txt);
-      const old = btn.textContent;
       btn.textContent = "✅ Copié";
-      setTimeout(()=> btn.textContent = old, 900);
+      setTimeout(()=> btn.textContent = "📋 Copier", 900);
     }catch(err){
-      alert("Copie impossible. Valeur : " + txt);
+      alert("Copie impossible.");
     }
   });
 </script>
