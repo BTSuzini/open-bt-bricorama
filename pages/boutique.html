@@ -4,8 +4,58 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Boutique — Open BT Bricorama</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260219" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260224" />
   <style>
+    /* ===== BANDEAU IDENTIQUE INDEX ===== */
+    .topbar-row-step{
+      grid-template-columns: var(--logo-size) 1fr var(--logo-size);
+    }
+    .step-title-wrap{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height: calc(var(--logo-size) * 0.55);
+    }
+    .step-title-img{
+      width: min(520px, 100%);
+      max-height: 88px;
+      height: auto;
+      object-fit: contain;
+      display:block;
+      filter: drop-shadow(0 1px 0 rgba(0,0,0,.15));
+    }
+
+    /* Nav 2 lignes sur téléphone (6 onglets => 3 + 3) */
+    .nav-step{
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .nav-step a{
+      padding:8px 12px;
+      flex: 0 0 auto;
+      text-align:center;
+      white-space:nowrap;
+    }
+    @media (max-width: 560px){
+      .nav-step{ justify-content:space-between; }
+      .nav-step a{ width: calc((100% - 16px) / 3); }
+    }
+    @media (max-width: 420px){
+      .nav-step a{
+        padding:7px 10px;
+        font-size: 13px;
+      }
+      .step-title-img{ max-height: 74px; }
+    }
+
+    /* Lien actif */
+    .nav a[aria-current="page"]{
+      background: rgba(255,255,255,.26);
+      border-color: rgba(255,255,255,.45);
+      box-shadow: 0 6px 14px rgba(0,0,0,.10);
+    }
+
+    /* Contenu boutique */
     .note{
       border:1px solid #eee;
       border-radius:14px;
@@ -20,27 +70,31 @@
 
 <header class="topbar">
   <div class="container">
-    <div class="topbar-row">
+
+    <div class="topbar-row topbar-row-step">
       <div class="brand-logo">
         <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
       </div>
 
-      <h1 class="brand-title">Open BT Bricorama</h1>
+      <div class="step-title-wrap" aria-label="Open BT Bricorama">
+        <img class="step-title-img" src="../assets/img/bt250.png" alt="BT250 — Open BT Bricorama">
+      </div>
 
       <div class="brand-logo">
         <img src="../assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
       </div>
     </div>
 
-    <nav class="nav">
-      <a href="../index.html">Accueil</a>
-      <a href="../dh/index.html">DM</a>
-      <a href="../dd/index.html">DD</a>
-      <a href="infos.html">Infos</a>
-      <a href="reglement.html">Règlement</a>
-      <a href="boutique.html" aria-current="page">Boutique</a>
-      <a href="contact.html">Contact</a>
+    <!-- Ordre demandé : Accueil / Règlement / Infos / Repas / Boutique / Contact -->
+    <nav class="nav nav-step">
+      <a href="../index.html">🏠 Accueil</a>
+      <a href="reglement.html">📘 Règlement</a>
+      <a href="infos.html">ℹ️ Infos</a>
+      <a href="repas.html">🍽️ Repas</a>
+      <a href="boutique.html" aria-current="page">🛍️ Boutique</a>
+      <a href="contact.html">📩 Contact</a>
     </nav>
+
   </div>
 </header>
 
@@ -51,21 +105,25 @@
 
     <div class="note">
       <p style="margin:0 0 10px;">
-        👉 Vous allez être redirigé vers <b>SumUp</b> pour effectuer le paiement de l’<b>Open BT Bricorama</b>.
+        Paiement des inscriptions via <b>SumUp</b> (ouverture via le bouton ci-dessous).
       </p>
       <ul style="margin:0 0 10px 18px;">
         <li>Paiement <b>par équipe : 20€</b></li>
       </ul>
       <p class="muted small" style="margin:0;">
-        (La boutique SumUp s’ouvre dans un nouvel onglet.)
+        Astuce : vérifiez avant que votre partenaire n’a pas déjà réglé 😜
       </p>
     </div>
 
     <div class="grid" style="margin-top:12px;">
-      <a class="btn" id="btnGo"
-         href="https://tennis-club-de-suzini.sumupstore.com/produits?category=9f1abbf3-0643-4296-996c-b2b9495e716a"
-         target="_blank" rel="noopener"
-         style="font-weight:900; color:#111;">
+      <a
+        class="btn"
+        id="btnGo"
+        href="https://tennis-club-de-suzini.sumupstore.com/produits?category=9f1abbf3-0643-4296-996c-b2b9495e716a"
+        target="_blank"
+        rel="noopener"
+        style="font-weight:900; color:#111;"
+      >
         🔗 Ouvrir la boutique SumUp
       </a>
       <a class="btn" href="../index.html" style="font-weight:900; color:#111;">⬅️ Retour</a>
@@ -77,20 +135,6 @@
   </section>
 
 </main>
-
-<script>
-  // Redirection douce (sans forcer) : on laisse 1,2s puis on ouvre dans un nouvel onglet.
-  // Sur iOS, l'ouverture auto peut être bloquée : le bouton reste la méthode fiable.
-  setTimeout(() => {
-    try {
-      window.open(
-        "https://tennis-club-de-suzini.sumupstore.com/produits?category=9f1abbf3-0643-4296-996c-b2b9495e716a",
-        "_blank",
-        "noopener"
-      );
-    } catch(e) {}
-  }, 1200);
-</script>
 
 </body>
 </html>
