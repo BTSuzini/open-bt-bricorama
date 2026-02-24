@@ -79,6 +79,7 @@
       box-shadow:0 8px 18px rgba(0,0,0,.05);
       display:grid;
       gap:10px;
+      min-width:0;
     }
 
     .card-head{
@@ -129,6 +130,20 @@
       word-break:break-word;
     }
 
+    /* ✅ Email : tenir sur 1 ligne sur téléphone */
+    .value.email{
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      word-break:normal;
+      font-size:16px;
+    }
+    @media (max-width:420px){
+      .value.email{
+        font-size:14px;
+      }
+    }
+
     .actions{
       display:flex;
       gap:8px;
@@ -164,6 +179,7 @@
       .contacts{ grid-template-columns:1fr 1fr; }
       .contact-card{ padding:16px; }
       .btn-sm{ flex: 0 0 auto; }
+      .value.email{ font-size:16px; }
     }
   </style>
 </head>
@@ -222,7 +238,7 @@
           </div>
         </div>
 
-        <a class="value" href="mailto:tcsuzini.beachtennis@gmail.com">tcsuzini.beachtennis@gmail.com</a>
+        <a class="value email" href="mailto:tcsuzini.beachtennis@gmail.com">tcsuzini.beachtennis@gmail.com</a>
 
         <div class="actions">
           <a class="btn-sm primary" href="mailto:tcsuzini.beachtennis@gmail.com">✉️ Écrire un email</a>
