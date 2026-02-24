@@ -4,33 +4,35 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Équipes — Double Dames — Open BT Bricorama</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260219" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260224" />
 </head>
 <body>
 
 <header class="topbar">
   <div class="container">
-    <div class="topbar-row">
+    <!-- ✅ Bandeau harmonisé (logo / image / logo) -->
+    <div class="topbar-row topbar-row-step">
       <div class="brand-logo">
         <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
       </div>
 
-      <h1 class="brand-title">
-        Open BT Bricorama<br>
-        <span style="opacity:.95;font-weight:800;">Double Dames</span>
-      </h1>
+      <!-- ✅ Image au centre -->
+      <div class="step-title-wrap" aria-label="BT250 — Double Dames">
+        <img class="step-title-img" src="../assets/img/bt250-dd.png" alt="BT250 — Double Dames">
+      </div>
 
       <div class="brand-logo">
         <img src="../assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
       </div>
     </div>
 
-    <nav class="nav">
-      <a href="../index.html">Accueil</a>
-      <a href="programmation.html">Programmation</a>
-      <a href="equipes.html" aria-current="page">Équipes</a>
-      <a href="inscriptions.html">Inscriptions</a>
-      <a href="tirage.html">Tirage</a>
+    <!-- ✅ Nav Open BT : 2 lignes fixes sur téléphone (3 + 2), justifiée -->
+    <nav class="nav nav-step">
+      <a href="../index.html" title="Accueil" aria-label="Accueil">🏠</a>
+      <a href="inscriptions.html">📝 Inscriptions</a>
+      <a href="tirage.html" title="Tirage" aria-label="Tirage">🎲</a>
+      <a href="equipes.html" aria-current="page">👥 Équipes</a>
+      <a href="programmation.html">🗓️ Programme</a>
     </nav>
   </div>
 </header>
@@ -72,20 +74,7 @@
         <span class="muted" style="font-weight:700;"><span id="mainCount2">0</span>/10</span>
       </h2>
 
-      <div class="table-wrap">
-        <table class="teams-table" aria-label="Liste principale">
-          <thead>
-            <tr>
-              <th style="width:44px;">#</th>
-              <th>Équipe</th>
-              <th>Joueuse 1</th>
-              <th>Joueuse 2</th>
-              <th style="width:90px;">Statut</th>
-            </tr>
-          </thead>
-          <tbody id="mainBody"></tbody>
-        </table>
-      </div>
+      <div id="mainList" class="teams-list" aria-label="Liste principale"></div>
     </section>
 
     <!-- Liste d'attente -->
@@ -95,20 +84,7 @@
         <span class="muted" style="font-weight:700;"><span id="waitCount2">0</span></span>
       </h2>
 
-      <div class="table-wrap">
-        <table class="teams-table" aria-label="Liste d’attente">
-          <thead>
-            <tr>
-              <th style="width:44px;">#</th>
-              <th>Équipe</th>
-              <th>Joueuse 1</th>
-              <th>Joueuse 2</th>
-              <th style="width:90px;">Statut</th>
-            </tr>
-          </thead>
-          <tbody id="waitBody"></tbody>
-        </table>
-      </div>
+      <div id="waitList" class="teams-list" aria-label="Liste d’attente"></div>
     </section>
 
   </div>
@@ -124,27 +100,10 @@
         <span class="muted" style="font-weight:700;"><span id="rankedCount">0</span> équipe(s)</span>
       </h2>
 
-      <p class="muted" style="margin-top:0;">
-        Tri : <b>classement équipe croissant</b> (Joueuse 1 + Joueuse 2). Le plus petit est en haut.
-      </p>
-
-      <div class="table-wrap">
-        <table class="teams-table" aria-label="Équipes classées">
-          <thead>
-            <tr>
-              <th style="width:44px;">#</th>
-              <th>Équipe</th>
-              <th>Joueuse 1</th>
-              <th>Joueuse 2</th>
-              <th style="width:90px;">Statut</th>
-            </tr>
-          </thead>
-          <tbody id="rankedBody"></tbody>
-        </table>
-      </div>
+      <div id="rankedList" class="teams-list" aria-label="Équipes classées"></div>
 
       <p class="muted" style="margin:10px 0 0;">
-        ⚠️ Si le classement d’un joueur n’est pas encore renseigné par l’admin, l’équipe apparaît en bas avec “—”.
+        ⚠️ Si le classement d’un joueur n’est pas encore renseigné, l’équipe apparaît en bas avec “—”.
       </p>
     </section>
 
@@ -153,37 +112,140 @@
 </main>
 
 <style>
-  .table-wrap{
-    overflow:auto;
+  /* ✅ Bandeau "image au centre" */
+  .topbar-row-step{
+    grid-template-columns: var(--logo-size) 1fr var(--logo-size);
+  }
+  .step-title-wrap{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height: calc(var(--logo-size) * 0.55);
+  }
+  .step-title-img{
+    width: min(520px, 100%);
+    max-height: 88px;
+    height: auto;
+    object-fit: contain;
+    display:block;
+    filter: drop-shadow(0 1px 0 rgba(0,0,0,.15));
+  }
+
+  /* ✅ NAV: desktop = 1 ligne; téléphone = 2 lignes fixes (3 + 2) */
+  .nav-step{
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .nav-step a{
+    padding:8px 12px;
+    flex: 0 0 auto;
+    text-align:center;
+    white-space:nowrap;
+  }
+
+  @media (max-width: 560px){
+    .nav-step{ justify-content:space-between; }
+    .nav-step a{ width: calc((100% - 16px) / 3); }               /* 3 items ligne 1 */
+    .nav-step a:nth-child(n+4){ width: calc((100% - 8px) / 2); } /* 2 items ligne 2 */
+  }
+
+  @media (max-width: 420px){
+    .nav-step a{
+      padding:7px 10px;
+      font-size: 13px;
+    }
+    .step-title-img{ max-height: 74px; }
+  }
+
+  /* ✅ Lien actif plus visible */
+  .nav a[aria-current="page"]{
+    background: rgba(255,255,255,.26);
+    border-color: rgba(255,255,255,.45);
+    box-shadow: 0 6px 14px rgba(0,0,0,.10);
+  }
+
+  /* ======================================
+     LISTES ÉQUIPES (mobile-friendly)
+  ======================================= */
+  .teams-list{
+    display:grid;
+    gap:10px;
+    margin-top:12px;
+  }
+
+  .team-card{
     border:1px solid #eee;
     border-radius:14px;
     background:#fff;
-  }
-  .teams-table{
-    width:100%;
-    border-collapse:separate;
-    border-spacing:0;
-    min-width: 620px;
-  }
-  .teams-table thead th{
-    text-align:left;
-    font-size:13px;
-    letter-spacing:.2px;
-    color:#444;
-    background:#f7f7f7;
-    border-bottom:1px solid #eee;
     padding:12px 12px;
-    position:sticky;
-    top:0;
-    z-index:1;
+    box-shadow: 0 6px 16px rgba(0,0,0,.04);
+    display:flex;
+    gap:12px;
+    align-items:stretch;
+    justify-content:space-between;
   }
-  .teams-table tbody td{
-    padding:12px 12px;
-    border-bottom:1px solid #f0f0f0;
-    vertical-align:top;
-    font-size:14px;
+
+  .team-left{
+    min-width:0;
+    flex: 1 1 auto;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
   }
-  .teams-table tbody tr:last-child td{ border-bottom:none; }
+
+  .team-line1{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    flex-wrap:wrap;
+    min-width:0;
+  }
+
+  .team-num{
+    color:#666;
+    font-variant-numeric: tabular-nums;
+    white-space:nowrap;
+    font-weight:800;
+  }
+
+  .team-name{
+    font-weight:900;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    max-width: 100%;
+  }
+
+  .team-rank{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:12px;
+    border:1px solid #d9e6ff;
+    background:#f3f7ff;
+    font-weight:900;
+    white-space:nowrap;
+  }
+
+  /* ✅ 2e ligne NON gras */
+  .team-line2{
+    color:#222;
+    font-weight:500;
+    line-height:1.25;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    max-width: 100%;
+  }
+
+  .team-right{
+    flex: 0 0 auto;
+    display:flex;
+    align-items:flex-start;
+    justify-content:flex-end;
+  }
 
   .pill{
     display:inline-block;
@@ -194,24 +256,14 @@
     background:#fafafa;
     color:#333;
     white-space:nowrap;
+    font-weight:900;
   }
   .pill.stby{
     border-color:#ffd37a;
     background:#fff7e6;
   }
-  .pill.rank{
-    border-color:#d9e6ff;
-    background:#f3f7ff;
-    font-weight:800;
-  }
 
-  .num{
-    color:#666;
-    font-variant-numeric: tabular-nums;
-    white-space:nowrap;
-  }
-  .team{ font-weight:800; }
-
+  /* Sous-onglets */
   .subtabs{
     display:flex;
     gap:10px;
@@ -231,10 +283,6 @@
     background:#fff;
     border-color:#cfcfcf;
     box-shadow: 0 6px 14px rgba(0,0,0,.06);
-  }
-
-  @media (max-width: 520px){
-    .teams-table{ min-width: 600px; }
   }
 </style>
 
@@ -262,9 +310,9 @@
 
   const rankedCountEl = document.getElementById("rankedCount");
 
-  const mainBody = document.getElementById("mainBody");
-  const waitBody = document.getElementById("waitBody");
-  const rankedBody = document.getElementById("rankedBody");
+  const mainList = document.getElementById("mainList");
+  const waitList = document.getElementById("waitList");
+  const rankedList = document.getElementById("rankedList");
 
   // Tabs
   const tabInscrits = document.getElementById("tabInscrits");
@@ -293,46 +341,46 @@
     return r.stby ? `<span class="pill stby">STBY</span>` : `<span class="pill">OK</span>`;
   }
 
-  function rowHtml(idx, r){
+  // ✅ INSCRITS : 2 lignes, statut à droite
+  function cardInscritHtml(idx, r){
     return `
-      <tr>
-        <td class="num">#${idx}</td>
-        <td class="team">${esc(r.teamName)}</td>
-        <td><span class="pill">${esc(r.p1FirstName)}</span></td>
-        <td><span class="pill">${esc(r.p2FirstName)}</span></td>
-        <td>${statusPill(r)}</td>
-      </tr>
+      <div class="team-card">
+        <div class="team-left">
+          <div class="team-line1">
+            <span class="team-num">#${idx}</span>
+            <span class="team-name">${esc(r.teamName)}</span>
+          </div>
+          <div class="team-line2">${esc(r.p1FirstName)} / ${esc(r.p2FirstName)}</div>
+        </div>
+        <div class="team-right">
+          ${statusPill(r)}
+        </div>
+      </div>
     `;
   }
 
-  function rowRankedHtml(idx, r){
+  // ✅ CLASSEES : ligne 1 = # + équipe + 🏷️ rank ; ligne 2 = p1(rank1) / p2(rank2) ; statut à droite
+  function cardClasseeHtml(idx, r){
     const p1 = toNum(r.p1Rank);
     const p2 = toNum(r.p2Rank);
     const teamRank = (p1 !== null && p2 !== null) ? (p1 + p2) : null;
 
     return `
-      <tr>
-        <td class="num">#${idx}</td>
-        <td class="team">
-          ${esc(r.teamName)}
-          <div style="margin-top:6px;">
-            <span class="pill rank">🏷️ Équipe : ${esc(fmtRank(teamRank))}</span>
+      <div class="team-card">
+        <div class="team-left">
+          <div class="team-line1">
+            <span class="team-num">#${idx}</span>
+            <span class="team-name">${esc(r.teamName)}</span>
+            <span class="team-rank">🏷️ ${esc(fmtRank(teamRank))}</span>
           </div>
-        </td>
-        <td>
-          <span class="pill">${esc(r.p1FirstName)}</span>
-          <div style="margin-top:6px;">
-            <span class="pill rank">BT : ${esc(fmtRank(p1))}</span>
+          <div class="team-line2">
+            ${esc(r.p1FirstName)} (${esc(fmtRank(p1))}) / ${esc(r.p2FirstName)} (${esc(fmtRank(p2))})
           </div>
-        </td>
-        <td>
-          <span class="pill">${esc(r.p2FirstName)}</span>
-          <div style="margin-top:6px;">
-            <span class="pill rank">BT : ${esc(fmtRank(p2))}</span>
-          </div>
-        </td>
-        <td>${statusPill(r)}</td>
-      </tr>
+        </div>
+        <div class="team-right">
+          ${statusPill(r)}
+        </div>
+      </div>
     `;
   }
 
@@ -377,15 +425,16 @@
     waitCount2El.textContent = wait.length;
 
     // INSCRITS
-    mainBody.innerHTML = main.length
-      ? main.map((r,i) => rowHtml(i+1, r)).join("")
-      : `<tr><td colspan="5" class="muted" style="padding:14px;">Aucune équipe pour le moment.</td></tr>`;
+    mainList.innerHTML = main.length
+      ? main.map((r,i) => cardInscritHtml(i+1, r)).join("")
+      : `<p class="muted" style="margin:0;">Aucune équipe pour le moment.</p>`;
 
-    waitBody.innerHTML = wait.length
-      ? wait.map((r,i) => rowHtml(main.length + i + 1, r)).join("")
-      : `<tr><td colspan="5" class="muted" style="padding:14px;">Aucune équipe en liste d’attente.</td></tr>`;
+    // Wait index continue après main
+    waitList.innerHTML = wait.length
+      ? wait.map((r,i) => cardInscritHtml(main.length + i + 1, r)).join("")
+      : `<p class="muted" style="margin:0;">Aucune équipe en liste d’attente.</p>`;
 
-    // CLASSÉES : seulement main
+    // CLASSÉES : seulement main, tri par teamRank asc (missing ranks => en bas)
     const ranked = [...main];
     ranked.sort((a,b)=>{
       const a1 = toNum(a.p1Rank), a2 = toNum(a.p2Rank);
@@ -398,9 +447,9 @@
 
     rankedCountEl.textContent = ranked.length;
 
-    rankedBody.innerHTML = ranked.length
-      ? ranked.map((r,i) => rowRankedHtml(i+1, r)).join("")
-      : `<tr><td colspan="5" class="muted" style="padding:14px;">Aucune équipe sur la liste principale.</td></tr>`;
+    rankedList.innerHTML = ranked.length
+      ? ranked.map((r,i) => cardClasseeHtml(i+1, r)).join("")
+      : `<p class="muted" style="margin:0;">Aucune équipe sur la liste principale.</p>`;
   }
 
   // Tabs behavior
