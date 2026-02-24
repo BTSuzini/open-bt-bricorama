@@ -4,36 +4,87 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Infos — Open BT Bricorama</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260220" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260224" />
+
+  <style>
+    /* ===== BANDEAU IDENTIQUE INDEX ===== */
+    .topbar-row-step{
+      grid-template-columns: var(--logo-size) 1fr var(--logo-size);
+    }
+    .step-title-wrap{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height: calc(var(--logo-size) * 0.55);
+    }
+    .step-title-img{
+      width: min(520px, 100%);
+      max-height: 88px;
+      height: auto;
+      object-fit: contain;
+      display:block;
+      filter: drop-shadow(0 1px 0 rgba(0,0,0,.15));
+    }
+
+    /* Nav 2 lignes sur téléphone (6 onglets => 3 + 3) */
+    .nav-step{
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .nav-step a{
+      padding:8px 12px;
+      flex: 0 0 auto;
+      text-align:center;
+      white-space:nowrap;
+    }
+    @media (max-width: 560px){
+      .nav-step{ justify-content:space-between; }
+      .nav-step a{ width: calc((100% - 16px) / 3); }
+    }
+    @media (max-width: 420px){
+      .nav-step a{
+        padding:7px 10px;
+        font-size: 13px;
+      }
+      .step-title-img{ max-height: 74px; }
+    }
+
+    /* Lien actif */
+    .nav a[aria-current="page"]{
+      background: rgba(255,255,255,.26);
+      border-color: rgba(255,255,255,.45);
+      box-shadow: 0 6px 14px rgba(0,0,0,.10);
+    }
+  </style>
 </head>
 <body>
 
 <header class="topbar">
   <div class="container">
-    <div class="topbar-row">
+
+    <div class="topbar-row topbar-row-step">
       <div class="brand-logo">
         <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
       </div>
 
-      <h1 class="brand-title">Open BT Bricorama</h1>
+      <div class="step-title-wrap" aria-label="Open BT Bricorama">
+        <img class="step-title-img" src="../assets/img/bt250.png" alt="BT250 — Open BT Bricorama">
+      </div>
 
       <div class="brand-logo">
         <img src="../assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
       </div>
     </div>
 
-    <nav class="nav">
-      <a href="../index.html">Accueil</a>
-
-      <!-- ✅ pas d'index DH/DD => redirection vers programmation -->
-      <a href="../dh/programmation.html">DM</a>
-      <a href="../dd/programmation.html">DD</a>
-
-      <a href="infos.html" aria-current="page">Infos</a>
-      <a href="reglement.html">Règlement</a>
-      <a href="repas.html">Repas</a>
-      <a href="contact.html">Contact</a>
+    <nav class="nav nav-step">
+      <a href="../index.html">🏠 Accueil</a>
+      <a href="reglement.html">📘 Règlement</a>
+      <a href="infos.html" aria-current="page">ℹ️ Infos</a>
+      <a href="repas.html">🍽️ Repas</a>
+      <a href="boutique.html">🛍️ Boutique</a>
+      <a href="contact.html">📩 Contact</a>
     </nav>
+
   </div>
 </header>
 
@@ -104,7 +155,7 @@
 
     for(const it of items){
       const title = escapeHTML(it.title);
-      const text  = escapeHTML(it.text).replaceAll("\n","<br>");
+      const text  = escapeHTML(it.text).replaceAll("\\n","<br>");
       const date  = fmtDate(it.createdAt);
 
       const card = document.createElement("div");
