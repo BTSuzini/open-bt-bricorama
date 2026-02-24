@@ -5,57 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Boutique — Open BT Bricorama</title>
   <link rel="stylesheet" href="../assets/css/main.css?v=20260224" />
+
   <style>
-    /* ===== BANDEAU IDENTIQUE INDEX ===== */
-    .topbar-row-step{
-      grid-template-columns: var(--logo-size) 1fr var(--logo-size);
-    }
-    .step-title-wrap{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      min-height: calc(var(--logo-size) * 0.55);
-    }
-    .step-title-img{
-      width: min(520px, 100%);
-      max-height: 88px;
-      height: auto;
-      object-fit: contain;
-      display:block;
-      filter: drop-shadow(0 1px 0 rgba(0,0,0,.15));
-    }
-
-    /* Nav 2 lignes sur téléphone (6 onglets => 3 + 3) */
-    .nav-step{
-      gap:8px;
-      flex-wrap:wrap;
-    }
-    .nav-step a{
-      padding:8px 12px;
-      flex: 0 0 auto;
-      text-align:center;
-      white-space:nowrap;
-    }
-    @media (max-width: 560px){
-      .nav-step{ justify-content:space-between; }
-      .nav-step a{ width: calc((100% - 16px) / 3); }
-    }
-    @media (max-width: 420px){
-      .nav-step a{
-        padding:7px 10px;
-        font-size: 13px;
-      }
-      .step-title-img{ max-height: 74px; }
-    }
-
-    /* Lien actif */
-    .nav a[aria-current="page"]{
-      background: rgba(255,255,255,.26);
-      border-color: rgba(255,255,255,.45);
-      box-shadow: 0 6px 14px rgba(0,0,0,.10);
-    }
-
-    /* Contenu boutique */
     .note{
       border:1px solid #eee;
       border-radius:14px;
@@ -64,66 +15,211 @@
       line-height:1.55;
     }
     .small{ font-size:14px; }
+
+    /* =========================
+       Subtabs (2 boutons)
+    ========================== */
+    .subtabs{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+    .subtab{
+      appearance:none;
+      border:1px solid #ddd;
+      background:#fafafa;
+      border-radius:999px;
+      padding:10px 14px;
+      font-weight:900;
+      cursor:pointer;
+      text-align:center;
+      white-space:nowrap;
+    }
+    .subtab[aria-selected="true"]{
+      background:#fff;
+      border-color:#cfcfcf;
+      box-shadow: 0 6px 14px rgba(0,0,0,.06);
+    }
+
+    /* =========================
+       Paiements - liste (no scroll horizontal)
+    ========================== */
+    .pay-list{
+      display:grid;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .pay-card{
+      border:1px solid #eee;
+      border-radius:16px;
+      background:#fff;
+      padding:12px 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,.04);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      min-width:0;
+    }
+
+    .pay-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      min-width:0;
+    }
+
+    .pay-team{
+      font-weight:900;
+      font-size:16px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      min-width:0;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-weight:900;
+      border:1px solid #eee;
+      background:#fafafa;
+      white-space:nowrap;
+      flex: 0 0 auto;
+    }
+
+    .dot{
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      display:inline-block;
+      background:#bbb;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.12);
+    }
+    .dot.red{ background:#e74c3c; }
+    .dot.orange{ background:#f39c12; }
+    .dot.green{ background:#2ecc71; }
+
+    .players{
+      display:grid;
+      gap:8px;
+    }
+
+    .player-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border:1px solid #f0f0f0;
+      background:#fbfbfb;
+      border-radius:12px;
+      padding:10px 10px;
+      min-width:0;
+    }
+
+    .player-name{
+      font-weight:800;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      min-width:0;
+    }
+
+    .player-right{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      white-space:nowrap;
+      flex: 0 0 auto;
+      font-weight:900;
+    }
+
+    .paid-ok{ color:#111; }
+    .paid-no{ color:#111; opacity:.9; }
+
+    .mutedline{
+      margin:10px 0 0;
+    }
+
+    @media (max-width: 420px){
+      .player-row{ padding:9px 9px; }
+      .pay-team{ font-size:15px; }
+      .badge{ padding:6px 9px; font-size:13px; }
+    }
   </style>
 </head>
+
 <body>
 
 <header class="topbar">
   <div class="container">
-
-    <div class="topbar-row topbar-row-step">
+    <!-- Bandeau général (même style que index, via main.css) -->
+    <div class="topbar-row">
       <div class="brand-logo">
         <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
       </div>
 
-      <div class="step-title-wrap" aria-label="Open BT Bricorama">
-        <img class="step-title-img" src="../assets/img/bt250.png" alt="BT250 — Open BT Bricorama">
-      </div>
+      <h1 class="brand-title">Open BT Bricorama</h1>
 
       <div class="brand-logo">
         <img src="../assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
       </div>
     </div>
 
-    <!-- Ordre demandé : Accueil / Règlement / Infos / Repas / Boutique / Contact -->
+    <!-- Nav générale (2 lignes sur mobile : géré côté main.css / logique index) -->
     <nav class="nav nav-step">
-      <a href="../index.html">🏠 Accueil</a>
+      <a href="../index.html" title="Accueil" aria-label="Accueil">🏠</a>
       <a href="reglement.html">📘 Règlement</a>
       <a href="infos.html">ℹ️ Infos</a>
       <a href="repas.html">🍽️ Repas</a>
       <a href="boutique.html" aria-current="page">🛍️ Boutique</a>
       <a href="contact.html">📩 Contact</a>
     </nav>
-
   </div>
 </header>
 
 <main class="container">
 
+  <!-- Sous-onglets -->
   <section class="card">
-    <h2>🛒 Boutique / Paiement</h2>
+    <h2 style="margin-bottom:6px;">🛒 Boutique / Paiement</h2>
 
+    <div class="subtabs" role="tablist" aria-label="Boutique / Paiements">
+      <button class="subtab" id="tabShop" type="button" aria-selected="true">🛍️ Boutique</button>
+      <button class="subtab" id="tabPaid" type="button" aria-selected="false">✅ Paiements effectués</button>
+    </div>
+
+    <p class="muted mutedline" id="paidHint" style="display:none;">
+      Affichage en direct. Le statut “payé / pas payé” est mis à jour par l’organisation.
+    </p>
+  </section>
+
+  <!-- ======================
+        ONGLET 1 — BOUTIQUE
+  ======================= -->
+  <section class="card" id="panelShop">
     <div class="note">
       <p style="margin:0 0 10px;">
-        Paiement des inscriptions via <b>SumUp</b> (ouverture via le bouton ci-dessous).
+        👉 Vous allez être redirigé vers <b>SumUp</b> pour effectuer le paiement de l’<b>Open BT Bricorama</b>.
       </p>
       <ul style="margin:0 0 10px 18px;">
         <li>Paiement <b>par équipe : 20€</b></li>
       </ul>
       <p class="muted small" style="margin:0;">
-        Astuce : vérifiez avant que votre partenaire n’a pas déjà réglé 😜
+        (La boutique SumUp s’ouvre dans un nouvel onglet.)
       </p>
     </div>
 
     <div class="grid" style="margin-top:12px;">
-      <a
-        class="btn"
-        id="btnGo"
-        href="https://tennis-club-de-suzini.sumupstore.com/produits?category=9f1abbf3-0643-4296-996c-b2b9495e716a"
-        target="_blank"
-        rel="noopener"
-        style="font-weight:900; color:#111;"
-      >
+      <a class="btn" id="btnGo"
+         href="https://tennis-club-de-suzini.sumupstore.com/produits?category=9f1abbf3-0643-4296-996c-b2b9495e716a"
+         target="_blank" rel="noopener"
+         style="font-weight:900; color:#111;">
         🔗 Ouvrir la boutique SumUp
       </a>
       <a class="btn" href="../index.html" style="font-weight:900; color:#111;">⬅️ Retour</a>
@@ -134,7 +230,235 @@
     </p>
   </section>
 
+  <!-- ======================
+        ONGLET 2 — PAIEMENTS
+  ======================= -->
+  <section class="card" id="panelPaid" style="display:none;">
+    <h2 style="margin:0;">✅ Paiements effectués</h2>
+    <p class="muted" style="margin:8px 0 0;">
+      Tri : <b>non payé</b> → <b>partiel</b> → <b>payé</b>.
+    </p>
+
+    <p class="muted" id="paidStatus" style="margin:10px 0 0;">Chargement…</p>
+
+    <div id="payList" class="pay-list" aria-label="Liste des paiements"></div>
+  </section>
+
 </main>
+
+<script type="module">
+  import { db } from "../assets/js/firebase.js";
+  import {
+    collection,
+    query,
+    orderBy,
+    onSnapshot
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+  // =========================
+  // CONFIG FIRESTORE
+  // =========================
+  const COL_TEAMS_DM_PUBLIC = "equipes_dh_public";
+  const COL_TEAMS_DD_PUBLIC = "equipes_dd_public";
+
+  // 1 doc / équipe (id = "dm_<teamDocId>" ou "dd_<teamDocId>")
+  // fields: p1Paid (bool), p2Paid (bool)
+  const COL_PAYMENTS = "paiements_openbt";
+
+  // =========================
+  // TABS
+  // =========================
+  const tabShop = document.getElementById("tabShop");
+  const tabPaid = document.getElementById("tabPaid");
+  const panelShop = document.getElementById("panelShop");
+  const panelPaid = document.getElementById("panelPaid");
+  const paidHint = document.getElementById("paidHint");
+
+  function showShop(){
+    tabShop.setAttribute("aria-selected","true");
+    tabPaid.setAttribute("aria-selected","false");
+    panelShop.style.display = "block";
+    panelPaid.style.display = "none";
+    paidHint.style.display = "none";
+    try{ localStorage.setItem("openbt_boutique_tab","shop"); }catch(e){}
+  }
+
+  function showPaid(){
+    tabShop.setAttribute("aria-selected","false");
+    tabPaid.setAttribute("aria-selected","true");
+    panelShop.style.display = "none";
+    panelPaid.style.display = "block";
+    paidHint.style.display = "block";
+    try{ localStorage.setItem("openbt_boutique_tab","paid"); }catch(e){}
+  }
+
+  tabShop.addEventListener("click", showShop);
+  tabPaid.addEventListener("click", showPaid);
+
+  try{
+    const saved = localStorage.getItem("openbt_boutique_tab");
+    if(saved === "paid") showPaid(); else showShop();
+  }catch(e){
+    showShop();
+  }
+
+  // =========================
+  // UI PAIEMENTS
+  // =========================
+  const payList = document.getElementById("payList");
+  const paidStatus = document.getElementById("paidStatus");
+
+  function esc(s){
+    return (s ?? "").toString()
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;");
+  }
+
+  function statusDotClass(paidCount){
+    if(paidCount >= 2) return "green";
+    if(paidCount === 1) return "orange";
+    return "red";
+  }
+
+  function statusLabel(paidCount){
+    return paidCount >= 2 ? "Payé"
+      : paidCount === 1 ? "Partiel"
+      : "Non payé";
+  }
+
+  function paidIcon(isPaid){
+    return isPaid ? "✅" : "❌";
+  }
+
+  // =========================
+  // DATA (DM + DD + PAYMENTS)
+  // =========================
+  let snapDM = null;
+  let snapDD = null;
+  let snapPay = null;
+
+  function rebuild(){
+    if(!snapDM || !snapDD || !snapPay){
+      paidStatus.textContent = "Chargement…";
+      return;
+    }
+
+    // Build payments map
+    const payMap = new Map(); // id -> {p1Paid, p2Paid}
+    snapPay.forEach(d=>{
+      const x = d.data() || {};
+      payMap.set(d.id, {
+        p1Paid: x.p1Paid === true,
+        p2Paid: x.p2Paid === true
+      });
+    });
+
+    // Build teams list (DM + DD)
+    const teams = [];
+
+    function feed(prefix, snap){
+      snap.forEach(d=>{
+        const x = d.data() || {};
+        const teamName = (x.teamName || "").trim();
+        const p1 = (x.p1FirstName || "").trim();
+        const p2 = (x.p2FirstName || "").trim();
+        if(!teamName) return;
+
+        const payId = `${prefix}_${d.id}`;
+        const pay = payMap.get(payId) || { p1Paid:false, p2Paid:false }; // default = non payé
+
+        const paidCount = (pay.p1Paid?1:0) + (pay.p2Paid?1:0);
+
+        teams.push({
+          payId,
+          cat: prefix, // "dm" | "dd"
+          teamName,
+          p1,
+          p2,
+          p1Paid: pay.p1Paid,
+          p2Paid: pay.p2Paid,
+          paidCount
+        });
+      });
+    }
+
+    feed("dm", snapDM);
+    feed("dd", snapDD);
+
+    // Sort: non payé (0) -> partiel (1) -> payé (2)
+    teams.sort((a,b)=>{
+      if(a.paidCount !== b.paidCount) return a.paidCount - b.paidCount;
+      // secondaire : nom équipe
+      return (a.teamName||"").localeCompare((b.teamName||""), "fr");
+    });
+
+    paidStatus.textContent = `🟢 En direct — ${teams.length} équipe(s)`;
+
+    if(teams.length === 0){
+      payList.innerHTML = `<p class="muted" style="margin:0;">Aucune équipe pour le moment.</p>`;
+      return;
+    }
+
+    payList.innerHTML = teams.map(t=>{
+      const dot = statusDotClass(t.paidCount);
+      const label = statusLabel(t.paidCount);
+
+      const p1Name = t.p1 || "—";
+      const p2Name = t.p2 || "—";
+
+      return `
+        <div class="pay-card">
+          <div class="pay-head">
+            <div class="pay-team">${esc(t.teamName)}</div>
+            <div class="badge" title="${esc(label)}">
+              <span class="dot ${dot}"></span>
+              ${esc(label)}
+            </div>
+          </div>
+
+          <div class="players">
+            <div class="player-row">
+              <div class="player-name">${esc(p1Name)}</div>
+              <div class="player-right ${t.p1Paid ? "paid-ok" : "paid-no"}">
+                ${paidIcon(t.p1Paid)}
+              </div>
+            </div>
+
+            <div class="player-row">
+              <div class="player-name">${esc(p2Name)}</div>
+              <div class="player-right ${t.p2Paid ? "paid-ok" : "paid-no"}">
+                ${paidIcon(t.p2Paid)}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  // Snapshots
+  const qDM = query(collection(db, COL_TEAMS_DM_PUBLIC), orderBy("createdAt","asc"));
+  const qDD = query(collection(db, COL_TEAMS_DD_PUBLIC), orderBy("createdAt","asc"));
+  const qPay = query(collection(db, COL_PAYMENTS), orderBy("updatedAt","desc"));
+
+  onSnapshot(qDM, (s)=>{ snapDM = s; rebuild(); }, (e)=>{ console.error(e); paidStatus.textContent="🔴 Erreur de connexion (DM)"; });
+  onSnapshot(qDD, (s)=>{ snapDD = s; rebuild(); }, (e)=>{ console.error(e); paidStatus.textContent="🔴 Erreur de connexion (DD)"; });
+  onSnapshot(qPay, (s)=>{ snapPay = s; rebuild(); }, (e)=>{ console.error(e); paidStatus.textContent="🔴 Erreur de connexion (paiements)"; });
+
+  // =========================
+  // Boutique: ouverture douce (comme avant)
+  // =========================
+  setTimeout(() => {
+    try {
+      window.open(
+        "https://tennis-club-de-suzini.sumupstore.com/produits?category=9f1abbf3-0643-4296-996c-b2b9495e716a",
+        "_blank",
+        "noopener"
+      );
+    } catch(e) {}
+  }, 1200);
+</script>
 
 </body>
 </html>
