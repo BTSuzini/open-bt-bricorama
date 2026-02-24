@@ -222,7 +222,7 @@
          style="font-weight:900; color:#111;">
         🔗 Ouvrir la boutique SumUp
       </a>
-      <a class="btn" href="../index.html" style="font-weight:900; color:#111;">⬅️ Retour</a>
+      
     </div>
 
     <p class="muted small" style="margin-top:10px;">
@@ -446,18 +446,6 @@
   onSnapshot(qDD, (s)=>{ snapDD = s; rebuild(); }, (e)=>{ console.error(e); paidStatus.textContent="🔴 Erreur de connexion (DD)"; });
   onSnapshot(qPay, (s)=>{ snapPay = s; rebuild(); }, (e)=>{ console.error(e); paidStatus.textContent="🔴 Erreur de connexion (paiements)"; });
 
-  // =========================
-  // Boutique: ouverture douce (comme avant)
-  // =========================
-  setTimeout(() => {
-    try {
-      window.open(
-        "https://tennis-club-de-suzini.sumupstore.com/produits?category=9f1abbf3-0643-4296-996c-b2b9495e716a",
-        "_blank",
-        "noopener"
-      );
-    } catch(e) {}
-  }, 1200);
 </script>
 
 </body>
