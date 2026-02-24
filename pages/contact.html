@@ -7,21 +7,17 @@
   <link rel="stylesheet" href="../assets/css/main.css?v=20260224" />
 
   <style>
-    /* ✅ Bandeau "image au centre" (comme index) */
-    .topbar-row-step{
-      grid-template-columns: var(--logo-size) 1fr var(--logo-size);
-    }
+    /* ✅ Bandeau index */
+    .topbar-row-step{ grid-template-columns: var(--logo-size) 1fr var(--logo-size); }
     .step-title-wrap{
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      display:flex; align-items:center; justify-content:center;
       min-height: calc(var(--logo-size) * 0.55);
     }
     .step-title-img{
-      width: min(520px, 100%);
-      max-height: 88px;
-      height: auto;
-      object-fit: contain;
+      width:min(520px,100%);
+      max-height:88px;
+      height:auto;
+      object-fit:contain;
       display:block;
       filter: drop-shadow(0 1px 0 rgba(0,0,0,.15));
     }
@@ -37,144 +33,137 @@
       flex: 1 1 auto;
       text-align:center;
       white-space:nowrap;
+      flex-basis:33.333%;
     }
-    .nav-step a{ flex-basis: 33.333%; }
-
-    /* ✅ Actif plus visible */
     .nav a[aria-current="page"]{
       background: rgba(255,255,255,.26);
       border-color: rgba(255,255,255,.45);
       box-shadow: 0 6px 14px rgba(0,0,0,.10);
     }
-
-    @media (max-width: 420px){
-      .nav-step a{
-        padding:7px 10px;
-        font-size: 13px;
-      }
-      .step-title-img{ max-height: 74px; }
+    @media (max-width:420px){
+      .nav-step a{ padding:7px 10px; font-size:13px; }
+      .step-title-img{ max-height:74px; }
     }
 
-    /* =========================
-       CONTACT (clean + mobile)
-    ========================== */
-    .contact-hero{
+    /* ✅ Contact */
+    .hero{
       text-align:center;
       padding:6px 0 0;
     }
-    .contact-hero h2{
-      font-size:30px;
-      margin:0 0 8px 0;
+    .hero h2{
+      margin:0 0 6px;
+      font-size:34px;
+      line-height:1.1;
+      letter-spacing:-.3px;
     }
-    .contact-hero p{
+    .hero p{
+      margin:0 auto;
+      max-width:680px;
       font-size:18px;
       line-height:1.45;
-      margin:0 auto;
-      max-width:720px;
-    }
-    .highlight{
-      font-weight:900;
-      color:#111;
+      color:#222;
+      font-weight:700;
     }
 
-    .contact-grid{
-      margin-top:18px;
+    .contacts{
+      margin-top:16px;
       display:grid;
       gap:12px;
     }
 
-    .contact-box{
+    .contact-card{
+      border:1px solid #eee;
       border-radius:18px;
+      background:#fff;
       padding:14px;
-      background:linear-gradient(135deg,#ffffff,#fbfbfb);
-      border:1px solid #e6e6e6;
-      box-shadow:0 4px 14px rgba(0,0,0,0.05);
+      box-shadow:0 8px 18px rgba(0,0,0,.05);
+      display:grid;
+      gap:10px;
+    }
+
+    .card-head{
       display:flex;
-      gap:12px;
       align-items:flex-start;
       justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
     }
 
-    .contact-left{
-      min-width:0;
-      flex: 1 1 auto;
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-
-    .contact-line1{
+    .card-title{
       display:flex;
       align-items:center;
       gap:10px;
       min-width:0;
     }
 
-    .contact-icon{
-      font-size:24px;
+    .ico{
+      font-size:22px;
       width:34px;
-      text-align:center;
+      height:34px;
+      display:grid;
+      place-items:center;
+      border-radius:12px;
+      border:1px solid #eee;
+      background:#fafafa;
       flex:0 0 auto;
     }
 
-    .contact-name{
-      font-weight:1000;
+    .who{
+      font-weight:950;
       font-size:18px;
-      line-height:1.15;
+      line-height:1.1;
     }
 
-    .contact-value{
-      font-size:16px;
+    .sub{
+      color:#555;
       font-weight:800;
+      font-size:13px;
+      margin-top:2px;
+    }
+
+    .value{
+      font-size:18px;
+      font-weight:950;
       color:#111;
       text-decoration:none;
-      opacity:.95;
       word-break:break-word;
     }
 
-    .contact-actions{
-      flex: 0 0 auto;
-      display:grid;
+    .actions{
+      display:flex;
       gap:8px;
-      align-content:start;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:flex-start;
     }
 
-    .btn-mini{
+    .btn-sm{
       display:inline-flex;
       align-items:center;
       justify-content:center;
       gap:8px;
       padding:10px 12px;
-      border-radius:14px;
-      border:1px solid rgba(0,0,0,.12);
-      background:rgba(255,255,255,.55);
-      font-weight:900;
+      border-radius:999px;
+      border:1px solid #ddd;
+      background:#fafafa;
+      font-weight:950;
       color:#111;
       text-decoration:none;
-      box-shadow:0 6px 14px rgba(0,0,0,.06);
+      cursor:pointer;
       white-space:nowrap;
+      flex: 1 1 auto;
+    }
+    .btn-sm:active{ transform: translateY(1px); }
+    .btn-sm.primary{
+      background:#fff;
+      border-color:#cfcfcf;
+      box-shadow:0 6px 14px rgba(0,0,0,.06);
     }
 
-    /* ✅ Deux boutons sur une ligne, sans dépasser */
-    .btn-row{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:8px;
-      min-width: 220px;
-    }
-
-    @media (max-width: 520px){
-      .contact-box{ padding:12px; }
-      .contact-hero h2{ font-size:28px; }
-      .contact-hero p{ font-size:17px; }
-      .btn-row{ min-width: 200px; }
-      .btn-mini{ padding:10px 10px; font-size:14px; }
-    }
-
-    @media (max-width: 380px){
-      /* sur tout petit écran, on empile */
-      .contact-box{ flex-direction:column; }
-      .btn-row{ grid-template-columns: 1fr; min-width: 100%; }
+    @media (min-width:760px){
+      .contacts{ grid-template-columns:1fr 1fr; }
+      .contact-card{ padding:16px; }
+      .btn-sm{ flex: 0 0 auto; }
     }
   </style>
 </head>
@@ -183,7 +172,6 @@
 <header class="topbar">
   <div class="container">
 
-    <!-- ✅ Bandeau index -->
     <div class="topbar-row topbar-row-step">
       <div class="brand-logo">
         <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
@@ -198,9 +186,8 @@
       </div>
     </div>
 
-    <!-- ✅ Nav générale (2 lignes) -->
     <nav class="nav nav-step">
-      <a href="../index.html" title="Accueil" aria-label="Accueil">🏠 Accueil</a>
+      <a href="../index.html">🏠 Accueil</a>
       <a href="reglement.html">📘 Règlement</a>
       <a href="infos.html">ℹ️ Infos</a>
       <a href="repas.html">🍽️ Repas</a>
@@ -214,108 +201,119 @@
 <main class="container">
 
   <section class="card">
-
-    <div class="contact-hero">
+    <div class="hero">
       <h2>📩 Contact</h2>
       <p>
-        Pour toute question sur l’<b>Open BT Bricorama</b>, contactez la
-        <span class="highlight">commission Beach Tennis</span>.
+        Pour toute question sur l’<b>Open BT Bricorama</b>, contacte la <b>commission Beach Tennis</b>.
       </p>
     </div>
 
-    <div class="contact-grid">
+    <div class="contacts">
 
-      <!-- Email -->
-      <div class="contact-box">
-        <div class="contact-left">
-          <div class="contact-line1">
-            <div class="contact-icon">📧</div>
-            <div class="contact-name">Email</div>
+      <!-- EMAIL -->
+      <div class="contact-card">
+        <div class="card-head">
+          <div class="card-title">
+            <div class="ico">📧</div>
+            <div>
+              <div class="who">Email</div>
+              <div class="sub">Commission Beach Tennis</div>
+            </div>
           </div>
-          <a class="contact-value" href="mailto:tcsuzini.beachtennis@gmail.com">
-            tcsuzini.beachtennis@gmail.com
-          </a>
         </div>
 
-        <div class="contact-actions">
-          <a class="btn-mini" href="mailto:tcsuzini.beachtennis@gmail.com?subject=Open%20BT%20Bricorama%20—%20Question&body=Bonjour,%0A%0AJe%20vous%20contacte%20concernant%20l%27Open%20BT%20Bricorama.%0A%0AMerci%20!"
-             style="min-width:220px;">
-            ✉️ Écrire un email
-          </a>
-        </div>
-      </div>
+        <a class="value" href="mailto:tcsuzini.beachtennis@gmail.com">tcsuzini.beachtennis@gmail.com</a>
 
-      <!-- Jules -->
-      <div class="contact-box">
-        <div class="contact-left">
-          <div class="contact-line1">
-            <div class="contact-icon">📱</div>
-            <div class="contact-name">Jules</div>
-          </div>
-          <a class="contact-value" href="tel:+594694406099">+594 694 40 60 99</a>
-        </div>
-
-        <div class="contact-actions">
-          <div class="btn-row">
-            <a class="btn-mini" href="tel:+594694406099">📞 Appeler</a>
-            <a class="btn-mini"
-               href="https://wa.me/594694406099?text=Bonjour%20!%20Je%20vous%20contacte%20concernant%20l%27Open%20BT%20Bricorama.%20%F0%9F%8F%96%EF%B8%8F%F0%9F%8E%BE"
-               target="_blank" rel="noopener">
-              💬 WhatsApp
-            </a>
-          </div>
+        <div class="actions">
+          <a class="btn-sm primary" href="mailto:tcsuzini.beachtennis@gmail.com">✉️ Écrire un email</a>
+          <button class="btn-sm" type="button" data-copy="tcsuzini.beachtennis@gmail.com">📋 Copier</button>
         </div>
       </div>
 
-      <!-- Quentin -->
-      <div class="contact-box">
-        <div class="contact-left">
-          <div class="contact-line1">
-            <div class="contact-icon">📱</div>
-            <div class="contact-name">Quentin</div>
+      <!-- JULES -->
+      <div class="contact-card">
+        <div class="card-head">
+          <div class="card-title">
+            <div class="ico">📱</div>
+            <div>
+              <div class="who">Jules</div>
+              <div class="sub">Organisation</div>
+            </div>
           </div>
-          <a class="contact-value" href="tel:+33660063692">+33 6 60 06 36 92</a>
         </div>
 
-        <div class="contact-actions">
-          <div class="btn-row">
-            <a class="btn-mini" href="tel:+33660063692">📞 Appeler</a>
-            <a class="btn-mini"
-               href="https://wa.me/33660063692?text=Bonjour%20!%20Je%20vous%20contacte%20concernant%20l%27Open%20BT%20Bricorama.%20%F0%9F%8F%96%EF%B8%8F%F0%9F%8E%BE"
-               target="_blank" rel="noopener">
-              💬 WhatsApp
-            </a>
-          </div>
+        <a class="value" href="tel:+594694406099">+594 694 40 60 99</a>
+
+        <div class="actions">
+          <a class="btn-sm primary" href="tel:+594694406099">📞 Appeler</a>
+          <a class="btn-sm" href="https://wa.me/594694406099" target="_blank" rel="noopener">💬 WhatsApp</a>
+          <button class="btn-sm" type="button" data-copy="+594694406099">📋 Copier</button>
         </div>
       </div>
 
-      <!-- Mélanie -->
-      <div class="contact-box">
-        <div class="contact-left">
-          <div class="contact-line1">
-            <div class="contact-icon">📱</div>
-            <div class="contact-name">Mélanie</div>
+      <!-- QUENTIN -->
+      <div class="contact-card">
+        <div class="card-head">
+          <div class="card-title">
+            <div class="ico">📱</div>
+            <div>
+              <div class="who">Quentin</div>
+              <div class="sub">Organisation</div>
+            </div>
           </div>
-          <a class="contact-value" href="tel:+33613255475">+33 6 13 25 54 75</a>
         </div>
 
-        <div class="contact-actions">
-          <div class="btn-row">
-            <a class="btn-mini" href="tel:+33613255475">📞 Appeler</a>
-            <a class="btn-mini"
-               href="https://wa.me/33613255475?text=Bonjour%20!%20Je%20vous%20contacte%20concernant%20l%27Open%20BT%20Bricorama.%20%F0%9F%8F%96%EF%B8%8F%F0%9F%8E%BE"
-               target="_blank" rel="noopener">
-              💬 WhatsApp
-            </a>
+        <a class="value" href="tel:+33660063692">+33 6 60 06 36 92</a>
+
+        <div class="actions">
+          <a class="btn-sm primary" href="tel:+33660063692">📞 Appeler</a>
+          <a class="btn-sm" href="https://wa.me/33660063692" target="_blank" rel="noopener">💬 WhatsApp</a>
+          <button class="btn-sm" type="button" data-copy="+33660063692">📋 Copier</button>
+        </div>
+      </div>
+
+      <!-- MÉLANIE -->
+      <div class="contact-card">
+        <div class="card-head">
+          <div class="card-title">
+            <div class="ico">📱</div>
+            <div>
+              <div class="who">Mélanie</div>
+              <div class="sub">Organisation</div>
+            </div>
           </div>
+        </div>
+
+        <a class="value" href="tel:+33613255475">+33 6 13 25 54 75</a>
+
+        <div class="actions">
+          <a class="btn-sm primary" href="tel:+33613255475">📞 Appeler</a>
+          <a class="btn-sm" href="https://wa.me/33613255475" target="_blank" rel="noopener">💬 WhatsApp</a>
+          <button class="btn-sm" type="button" data-copy="+33613255475">📋 Copier</button>
         </div>
       </div>
 
     </div>
-
   </section>
 
 </main>
+
+<script>
+  // ✅ Boutons "Copier"
+  document.addEventListener("click", async (e)=>{
+    const btn = e.target.closest("[data-copy]");
+    if(!btn) return;
+    const txt = btn.getAttribute("data-copy") || "";
+    try{
+      await navigator.clipboard.writeText(txt);
+      const old = btn.textContent;
+      btn.textContent = "✅ Copié";
+      setTimeout(()=> btn.textContent = old, 900);
+    }catch(err){
+      alert("Copie impossible. Valeur : " + txt);
+    }
+  });
+</script>
 
 </body>
 </html>
