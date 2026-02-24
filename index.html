@@ -4,22 +4,21 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Open BT Bricorama — Infos & Inscriptions</title>
-  <link rel="stylesheet" href="assets/css/main.css?v=20260220" />
+  <link rel="stylesheet" href="assets/css/main.css?v=20260224" />
 </head>
 <body>
 
 <header class="topbar">
   <div class="container">
-    <div class="topbar-row">
+    <!-- ✅ Bandeau harmonisé (logo / image / logo) -->
+    <div class="topbar-row topbar-row-step">
       <div class="brand-logo">
         <img src="assets/img/logo-suzini.png" alt="Logo Suzini">
       </div>
 
-
-      
       <!-- ✅ Image au centre -->
-      <div class="step-title-wrap" aria-label="Étape 1">
-        <img class="step-title-img" src=".../assets/img/bt250.png" alt="Brico">
+      <div class="step-title-wrap" aria-label="BT250 — Open BT Bricorama">
+        <img class="step-title-img" src="assets/img/bt250.png" alt="BT250 — Open BT Bricorama">
       </div>
 
       <div class="brand-logo">
@@ -27,14 +26,14 @@
       </div>
     </div>
 
-    <nav class="nav">
-      <a href="index.html" aria-current="page">Accueil</a>
-      <a href="dd/equipes.html">DD</a>
-      <a href="dh/equipes.html">DM</a>
-      <a href="pages/infos.html">Infos</a>
-      <a href="pages/reglement.html">Règlement</a>
-      <a href="pages/repas.html">Repas</a>
-      <a href="pages/contact.html">Contact</a>
+    <!-- ✅ Nav générale (2 lignes sur téléphone, ordre demandé) -->
+    <nav class="nav nav-step">
+      <a href="index.html" aria-current="page">🏠 Accueil</a>
+      <a href="pages/reglement.html">📘 Règlement</a>
+      <a href="pages/infos.html">ℹ️ Infos</a>
+      <a href="pages/repas.html">🍽️ Repas</a>
+      <a href="pages/boutique.html">🛍️ Boutique</a>
+      <a href="pages/contact.html">📩 Contact</a>
     </nav>
   </div>
 </header>
@@ -84,6 +83,59 @@
   </div>
 </footer>
 
+<style>
+  /* ✅ Bandeau "image au centre" */
+  .topbar-row-step{
+    grid-template-columns: var(--logo-size) 1fr var(--logo-size);
+  }
+  .step-title-wrap{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height: calc(var(--logo-size) * 0.55);
+  }
+  .step-title-img{
+    width: min(520px, 100%);
+    max-height: 88px;
+    height: auto;
+    object-fit: contain;
+    display:block;
+    filter: drop-shadow(0 1px 0 rgba(0,0,0,.15));
+  }
+
+  /* ✅ NAV: desktop = 1 ligne ; téléphone = 2 lignes fixes (3 + 3) */
+  .nav-step{
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .nav-step a{
+    padding:8px 12px;
+    flex: 0 0 auto;
+    text-align:center;
+    white-space:nowrap;
+  }
+
+  @media (max-width: 560px){
+    .nav-step{ justify-content:space-between; }
+    .nav-step a{ width: calc((100% - 16px) / 3); } /* 3 items par ligne => 2 lignes */
+  }
+
+  @media (max-width: 420px){
+    .nav-step a{
+      padding:7px 10px;
+      font-size: 13px;
+    }
+    .step-title-img{ max-height: 74px; }
+  }
+
+  /* ✅ Lien actif plus visible */
+  .nav a[aria-current="page"]{
+    background: rgba(255,255,255,.26);
+    border-color: rgba(255,255,255,.45);
+    box-shadow: 0 6px 14px rgba(0,0,0,.10);
+  }
+</style>
+
 <script type="module">
   import { auth } from "./assets/js/firebase.js";
   import { loginAndRedirect, logout, getRoleByEmail } from "./assets/js/session.js";
@@ -92,7 +144,6 @@
   const hint = document.getElementById("authHint");
 
   async function guardAdminAndGo(url){
-    // ✅ Si pas connecté : login
     if(!auth.currentUser){
       await loginAndRedirect();
     }
@@ -103,7 +154,6 @@
       return;
     }
 
-    // ✅ Check rôle
     const role = await getRoleByEmail(u.email);
     if(role !== "admin"){
       alert("Accès refusé : rôle requis = admin");
@@ -115,7 +165,6 @@
 
   document.getElementById("btnAdmin").onclick = async (e)=>{
     e.preventDefault();
-    // ✅ arrive direct sur le scope général (Infos)
     await guardAdminAndGo("admin/index.html?scope=general");
   };
 
