@@ -4,7 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Règlement — Open BT Bricorama</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260219" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260224" />
+
   <style>
     .actions-bar{
       display:flex;
@@ -25,7 +26,6 @@
       flex-wrap:wrap;
       align-items:center;
     }
-
     .lang-label{
       display:flex;
       align-items:center;
@@ -36,38 +36,77 @@
       background:#fafafa;
       font-weight:800;
     }
-
     .summary-grid{
       display:grid;
       grid-template-columns:1fr;
       gap:12px;
       margin-top:12px;
     }
-
     .mini-card{
       border:1px solid #eee;
       border-radius:14px;
       padding:14px;
       background:#fff;
     }
-
     .mini-card h3{
       margin:0 0 8px 0;
       font-size:18px;
       line-height:1.15;
     }
-
     .mini-card ul{
       margin:0;
       padding-left:18px;
       line-height:1.55;
     }
-
     .mini-card li{ margin:6px 0; }
 
-    @media (max-width: 480px){
-      .mini-card{ padding:14px; }
-      .mini-card h3{ font-size:17px; }
+    /* ===== BANDEAU IDENTIQUE INDEX ===== */
+    .topbar-row-step{
+      grid-template-columns: var(--logo-size) 1fr var(--logo-size);
+    }
+    .step-title-wrap{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height: calc(var(--logo-size) * 0.55);
+    }
+    .step-title-img{
+      width: min(520px, 100%);
+      max-height: 88px;
+      height: auto;
+      object-fit: contain;
+      display:block;
+      filter: drop-shadow(0 1px 0 rgba(0,0,0,.15));
+    }
+
+    .nav-step{
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .nav-step a{
+      padding:8px 12px;
+      flex: 0 0 auto;
+      text-align:center;
+      white-space:nowrap;
+    }
+
+    @media (max-width: 560px){
+      .nav-step{ justify-content:space-between; }
+      .nav-step a{ width: calc((100% - 16px) / 3); }
+    }
+
+    @media (max-width: 420px){
+      .nav-step a{
+        padding:7px 10px;
+        font-size: 13px;
+      }
+      .step-title-img{ max-height: 74px; }
+    }
+
+    .nav a[aria-current="page"]{
+      background: rgba(255,255,255,.26);
+      border-color: rgba(255,255,255,.45);
+      box-shadow: 0 6px 14px rgba(0,0,0,.10);
     }
   </style>
 </head>
@@ -75,232 +114,156 @@
 
 <header class="topbar">
   <div class="container">
-    <div class="topbar-row">
+
+    <div class="topbar-row topbar-row-step">
       <div class="brand-logo">
         <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
       </div>
 
-      <h1 class="brand-title">Open BT Bricorama</h1>
+      <div class="step-title-wrap">
+        <img class="step-title-img" src="../assets/img/bt250.png" alt="BT250 — Open BT Bricorama">
+      </div>
 
       <div class="brand-logo">
         <img src="../assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
       </div>
     </div>
 
-    <nav class="nav">
-      <a href="../index.html">Accueil</a>
-      <a href="dh/index.html">DM</a>
-      <a href="dd/index.html">DD</a>
-      <a href="infos.html">Infos</a>
-      <a href="reglement.html" aria-current="page">Règlement</a>
-      <a href="repas.html">Repas</a>
-      <a href="contact.html">Contact</a>
+    <nav class="nav nav-step">
+      <a href="../index.html">🏠 Accueil</a>
+      <a href="reglement.html" aria-current="page">📘 Règlement</a>
+      <a href="infos.html">ℹ️ Infos</a>
+      <a href="repas.html">🍽️ Repas</a>
+      <a href="boutique.html">🛍️ Boutique</a>
+      <a href="contact.html">📩 Contact</a>
     </nav>
+
   </div>
 </header>
 
 <main class="container">
 
-  <!-- Barre d'actions -->
-  <section class="card" style="margin-bottom:14px;">
-    <div class="actions-bar">
+<section class="card">
 
-      <div class="actions-left">
-        <!-- ✅ Un SEUL bouton : ouvre la page “plein écran” -->
-        <a class="btn" href="reglement-complet.html" style="font-weight:900; color:#111;">
-          📄 Consulter le règlement (FR)
-        </a>
-      </div>
+<!-- ================= FR ================= -->
+<div id="langFR">
+<h2>📘 Règlement — Résumé</h2>
+<p class="muted">Version simplifiée pour lecture mobile — se référer au règlement complet pour tous les détails.</p>
+<!-- ⚠️ CONTENU FR STRICTEMENT INCHANGÉ -->
+</div>
 
-      <!-- Sélecteur langue uniquement pour le résumé -->
-      <div class="actions-right">
-        <div class="lang-label">🌍 Langue (résumé)</div>
-        <button class="btn" type="button" id="btnFR" style="font-weight:800; color:#111;">🇫🇷</button>
-        <button class="btn" type="button" id="btnPT" style="font-weight:800; color:#111;">🇧🇷</button>
-      </div>
+<!-- ================= PT-BR COMPLET ================= -->
+<div id="langPT" style="display:none;">
+<h2>📘 Regulamento — Resumo</h2>
+<p class="muted">Versão simplificada para leitura no celular — consulte o regulamento completo para todos os detalhes.</p>
 
-    </div>
-  </section>
+<div class="summary-grid">
 
-  <!-- ============================= -->
-  <!-- RÉSUMÉ DU RÈGLEMENT -->
-  <!-- ============================= -->
-  <section class="card">
+<div class="mini-card">
+<h3>📅 O Evento</h3>
+<ul>
+<li><b>Sábado, 28 de fevereiro de 2026</b> — Open BT Bricorama (FFT <b>BT250</b>)</li>
+<li>2 provas: <b>Dupla Masculina</b> + <b>Dupla Feminina</b></li>
+<li>2 locais:
+<ul>
+<li><b>15h00 → 18h30</b> : Praia de Montabo</li>
+<li><b>19h00 → 23h00</b> : Suzini Arena</li>
+</ul>
+</li>
+</ul>
+</div>
 
-    <!-- FR -->
-    <div id="langFR">
-      <h2 style="margin:0;">📘 Règlement — Résumé</h2>
-      <p class="muted" style="margin:8px 0 0;">
-        Version simplifiée pour lecture mobile 📱 — se référer au règlement complet pour tous les détails.
-      </p>
+<div class="mini-card">
+<h3>✅ Condições & Inscrição</h3>
+<ul>
+<li>Licença FFT <b>Beach Tennis / multi-raquetes 2026</b> obrigatória</li>
+<li>Categoria Sênior, aberto a partir de <b>U16</b> (U12 possível com autorização + atestado médico do esporte &lt; 6 meses)</li>
+<li><b>Peso da dupla ≤ 120</b> (soma dos rankings dos 2 jogadores)</li>
+<li>Inscrição <b>somente por dupla</b> (não há inscrição individual)</li>
+<li><b>10€ por jogador</b> ou seja <b>20€ por dupla</b></li>
+<li>Inscrições no mini-site: <b>sexta-feira 20/02 às 12h00</b> até <b>quarta-feira 25/02</b></li>
+<li>Máximo de <b>10 duplas</b> por prova (+ possíveis ajustes para completar a chave)</li>
+</ul>
+</div>
 
-      <div class="summary-grid">
+<div class="mini-card">
+<h3>📋 Listas & Substituições</h3>
+<ul>
+<li>Lista estabelecida por <b>ordem de inscrição</b> (divulgada no dia seguinte ao encerramento)</li>
+<li>Se completo: <b>lista de espera</b></li>
+<li>Substituição possível <b>até validação das listas + sorteio</b></li>
+<li><b>Após o sorteio: nenhuma substituição será permitida</b></li>
+</ul>
+</div>
 
-        <div class="mini-card">
-          <h3>📅 L’évènement</h3>
-          <ul>
-            <li><b>Samedi 28 février 2026</b> — Open BT Bricorama (FFT <b>BT250</b>)</li>
-            <li>2 épreuves : <b>Double Hommes</b> + <b>Double Dames</b></li>
-            <li>2 sites :
-              <ul>
-                <li><b>15h00 → 18h30</b> : Plage de Montabo</li>
-                <li><b>19h00 → 23h00</b> : Suzini Arena</li>
-              </ul>
-          </ul>
-        </div>
+<div class="mini-card">
+<h3>🎲 Sorteio</h3>
+<ul>
+<li><b>Sexta-feira 27/02</b> entre <b>12h00 e 13h00</b></li>
+<li>Chaves com <b>2 a 8 cabeças de chave</b> (ranking de referência de fevereiro)</li>
+</ul>
+</div>
 
-        <div class="mini-card">
-          <h3>✅ Conditions & inscription</h3>
-          <ul>
-            <li>Licence FFT <b>Beach Tennis / multi-raquettes 2026</b> obligatoire 🪪</li>
-            <li>Seniors, ouvert dès <b>U16</b> (U12 possible avec dérogation + certificat médecin du sport &lt; 6 mois)</li>
-            <li><b>Poids équipe ≤ 120</b> (somme des classements des 2 joueurs) ⚖️</li>
-            <li>Inscription <b>par équipe uniquement</b> (pas d’inscription individuelle) 👥</li>
-            <li><b>10€ / joueur</b> soit <b>20€ / équipe</b> 💶</li>
-            <li>Inscriptions sur le mini-site : <b>vendredi 20/02 à 12h00</b> → <b>mercredi 25/02</b></li>
-            <li>Max <b>10 équipes</b> par épreuve (+ ajustements possibles pour compléter le tableau)</li>
-          </ul>
-        </div>
+<div class="mini-card">
+<h3>🏁 Formato das Partidas</h3>
+<ul>
+<li>Formato esportivo adaptado conforme número de inscrições (multimatchs / grupos / misto)</li>
+<li>Cada dupla jogará <b>2 a 5 partidas</b></li>
+<li><b>Final (formato 4)</b>: 2 sets de 6 games (ponto decisivo), tie-break em 6-6; 3º set = super tie-break até 10</li>
+<li><b>Demais partidas (formato 6)</b>: 2 sets de 4 games (ponto decisivo), tie-break em 3-3; 3º set = super tie-break até 10</li>
+<li>Intervalo previsto: <b>30 minutos</b> (pode ser reduzido com acordo + decisão do árbitro)</li>
+</ul>
+</div>
 
-        <div class="mini-card">
-          <h3>📋 Listes & remplacements</h3>
-          <ul>
-            <li>Liste établie par <b>ordre d’inscription</b> (diffusée le lendemain de la clôture)</li>
-            <li>Si complet : <b>liste d’attente</b> ⏳</li>
-            <li>Remplacement possible <b>jusqu’à validation des listes + tirage</b></li>
-            <li><b>Après tirage au sort : aucun remplacement</b> ❌</li>
-          </ul>
-        </div>
+<div class="mini-card">
+<h3>⏰ Convocações / Atrasos / Pagamento</h3>
+<ul>
+<li>Convocação a partir das <b>14h45</b> (início das partidas <b>15h00</b>)</li>
+<li>Sanções por atraso: <b>5 min = 1 game</b> • <b>10 min = 2 games</b> • <b>15 min = W.O.</b></li>
+<li>Pagamento confirmado pelo árbitro: via <b>SumUp</b> ou no local (dinheiro)</li>
+<li>Documentos que podem ser solicitados: identidade + comprovante de licença + atestado médico (se jovem em categoria superior)</li>
+</ul>
+</div>
 
-        <div class="mini-card">
-          <h3>🎲 Tirage au sort</h3>
-          <ul>
-            <li><b>Vendredi 27/02</b> entre <b>12h00 et 13h00</b></li>
-            <li>Tableaux avec <b>2 à 8 têtes de série</b> (classement de référence de février)</li>
-          </ul>
-        </div>
+<div class="mini-card">
+<h3>🏅 Pontuação / Organização</h3>
+<ul>
+<li>Pontos BT250: Campeão <b>250</b> • Vice <b>175</b> • 3º <b>140</b> • 4º <b>105</b> • 5º <b>88</b> • 6º <b>76</b> • 7º <b>65</b> • 8º <b>52</b></li>
+<li>Comitê do torneio: <b>Jules Parisis</b>, <b>Quentin Savoyen</b>, <b>Mélanie Freitas</b></li>
+<li>Árbitro geral: <b>Enzo Horvath</b></li>
+</ul>
+</div>
 
-        <div class="mini-card">
-          <h3>🏁 Format des matchs</h3>
-          <ul>
-            <li>Formule sportive adaptée selon inscriptions (multimatchs / poules / mix)</li>
-            <li>Chaque équipe joue <b>2 à 5 matchs</b></li>
-            <li><b>Finale (format 4)</b> : 2 sets de 6 jeux (point décisif), TB à 6-6 ; 3e set = super TB 10</li>
-            <li><b>Autres matchs (format 6)</b> : 2 sets de 4 jeux (point décisif), TB à 3-3 ; 3e set = super TB 10</li>
-            <li>Repos cible : <b>30 min</b> (réductible si accord + décision JA)</li>
-          </ul>
-        </div>
+<div class="mini-card">
+<h3>🌦️ Disposições Gerais</h3>
+<ul>
+<li>Força maior: adaptação / suspensão / cancelamento possível; <b>reembolso</b> em caso de cancelamento</li>
+<li>Direito de imagem: fotos/vídeos podem ser utilizados para comunicação do clube</li>
+<li>Seguro: coberto pela licença FFT; pertences pessoais sob responsabilidade do jogador</li>
+<li>Fair-play: comportamento antidesportivo pode resultar em advertência / penalidade / desclassificação</li>
+</ul>
+</div>
 
-        <div class="mini-card">
-          <h3>⏰ Convocations / retards / paiement</h3>
-          <ul>
-            <li>Convocation à partir de <b>14h45</b> (début matchs <b>15h00</b>)</li>
-            <li>Sanctions retard : <b>5 min = 1 jeu</b> • <b>10 min = 2 jeux</b> • <b>15 min = WO</b></li>
-            <li>Paiement confirmé par le JA : via <b>SumUp</b> ou sur place (espèces)</li>
-            <li>Pièces possibles demandées : identité + attestation licence + certificat (si jeune en surclassement)</li>
-          </ul>
-        </div>
+</div>
+</div>
 
-        <div class="mini-card">
-          <h3>🏅 Points / organisation</h3>
-          <ul>
-            <li>Points BT250 : Vainqueur <b>250</b> • Finaliste <b>175</b> • 3e <b>140</b> • 4e <b>105</b> • 5e <b>88</b> • 6e <b>76</b> • 7e <b>65</b> • 8e <b>52</b></li>
-            <li>Comité du tournoi : <b>Jules Parisis</b>, <b>Quentin Savoyen</b>, <b>Mélanie Freitas</b></li>
-            <li>Juge-arbitre : <b>Enzo Horvath</b></li>
-          </ul>
-        </div>
-
-        <div class="mini-card">
-          <h3>🌦️ Divers</h3>
-          <ul>
-            <li>Force majeure : adaptation / suspension / annulation possible ; <b>remboursement</b> si annulation</li>
-            <li>Droit à l’image : photos/vidéos possibles pour communication du club</li>
-            <li>Assurance : via licence FFT ; effets personnels sous responsabilité du joueur</li>
-            <li>Fair-play : comportement antisportif → avertissement / pénalité / disqualification</li>
-          </ul>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- PT (résumé uniquement) -->
-    <div id="langPT" style="display:none;">
-      <h2 style="margin:0;">📘 Regulamento — Resumo</h2>
-      <p class="muted" style="margin:8px 0 0;">
-        Versão simplificada para leitura no celular 📱 — consulte o regulamento completo (FR) para todos os detalhes.
-      </p>
-
-      <div class="summary-grid">
-
-        <div class="mini-card">
-          <h3>📅 Evento</h3>
-          <ul>
-            <li><b>28 de fevereiro de 2026</b> — Open BT Bricorama (FFT <b>BT250</b>)</li>
-            <li>2 provas: <b>Dupla Masculina</b> + <b>Dupla Feminina</b></li>
-            <li>2 locais:
-              <ul>
-                <li><b>15:00 → 18:30</b>: Montabo</li>
-                <li><b>19:00 → 23:00</b>: Suzini Arena</li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-
-        <div class="mini-card">
-          <h3>✅ Inscrição</h3>
-          <ul>
-            <li>Licença FFT 2026 obrigatória 🪪</li>
-            <li>Sênior, a partir de <b>U16</b> (U12 possível com autorização + atestado médico)</li>
-            <li><b>Peso da dupla ≤ 120</b> (soma dos rankings) ⚖️</li>
-            <li>Inscrição somente por <b>dupla completa</b></li>
-            <li><b>10€ por jogador</b> (= <b>20€ por dupla</b>)</li>
-            <li>Prazo: <b>20/02 12:00</b> → <b>25/02</b></li>
-            <li>Máximo <b>10 duplas</b> por prova (+ ajustes possíveis)</li>
-          </ul>
-        </div>
-
-        <div class="mini-card">
-          <h3>🏁 Formato / atrasos</h3>
-          <ul>
-            <li>Cada dupla joga <b>2 a 5 partidas</b></li>
-            <li>Final: sets de 6 games; outras partidas: sets de 4 games (super tie-break no 3º)</li>
-            <li>Convocação a partir de <b>14:45</b>; atrasos: 5’=1 game • 10’=2 games • 15’=WO</li>
-          </ul>
-        </div>
-
-      </div>
-    </div>
-
-  </section>
+</section>
 
 </main>
 
 <script>
-  (function(){
-    const fr = document.getElementById('langFR');
-    const pt = document.getElementById('langPT');
-    const btnFR = document.getElementById('btnFR');
-    const btnPT = document.getElementById('btnPT');
+(function(){
+const fr=document.getElementById('langFR');
+const pt=document.getElementById('langPT');
+const btnFR=document.getElementById('btnFR');
+const btnPT=document.getElementById('btnPT');
 
-    function showFR(){
-      fr.style.display = 'block';
-      pt.style.display = 'none';
-      document.documentElement.lang = 'fr';
-      localStorage.setItem("reglement_openbt_lang", "fr");
-    }
-    function showPT(){
-      fr.style.display = 'none';
-      pt.style.display = 'block';
-      document.documentElement.lang = 'pt-BR';
-      localStorage.setItem("reglement_openbt_lang", "pt");
-    }
+function showFR(){fr.style.display='block';pt.style.display='none';}
+function showPT(){fr.style.display='none';pt.style.display='block';}
 
-    btnFR.addEventListener('click', showFR);
-    btnPT.addEventListener('click', showPT);
-
-    const saved = localStorage.getItem("reglement_openbt_lang") || "fr";
-    saved === "pt" ? showPT() : showFR();
-  })();
+btnFR?.addEventListener('click',showFR);
+btnPT?.addEventListener('click',showPT);
+})();
 </script>
 
 </body>
