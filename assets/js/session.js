@@ -23,19 +23,24 @@ export async function getRoleByEmail(email){
 }
 
 // Login minimal (prompt email + mdp)
+// ✅ Retourne userCredential.user si OK
+// ✅ throw si annulé ou erreur (pour que la page puisse gérer)
 export async function loginAndRedirect(){
   const email = prompt("Email (admin) :");
-  if(!email) return;
+  if(!email) throw new Error("login_cancelled_email");
+
   const pass = prompt("Mot de passe :");
-  if(!pass) return;
+  if(!pass) throw new Error("login_cancelled_password");
 
   try{
-    // ✅ Persistance locale => reste connecté sur ce navigateur/appareil
+    // Persistance locale => reste connecté sur ce navigateur/appareil
     await setPersistence(auth, browserLocalPersistence);
 
-    await signInWithEmailAndPassword(auth, email, pass);
+    const cred = await signInWithEmailAndPassword(auth, email, pass);
+    return cred.user;
   } catch(e){
-    alert("Erreur login : " + (e.message || e));
+    alert("Erreur login : " + (e?.message || e));
+    throw e;
   }
 }
 
