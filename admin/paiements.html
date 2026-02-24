@@ -1,0 +1,588 @@
+<!-- admin/paiements.html -->
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin — Paiements — Open BT Bricorama</title>
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260224" />
+
+  <style>
+    .admin-top{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .admin-top h2{ margin:0; }
+    .admin-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .subtabs{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+    .subtab{
+      appearance:none;
+      border:1px solid #ddd;
+      background:#fafafa;
+      border-radius:999px;
+      padding:10px 14px;
+      font-weight:900;
+      cursor:pointer;
+      text-align:center;
+      white-space:nowrap;
+    }
+    .subtab[aria-selected="true"]{
+      background:#fff;
+      border-color:#cfcfcf;
+      box-shadow: 0 6px 14px rgba(0,0,0,.06);
+    }
+
+    .filters{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:12px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .search{
+      flex: 1 1 260px;
+      min-width: 220px;
+    }
+    .search input{
+      width:100%;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid #ddd;
+      background:#fff;
+      font-weight:800;
+      outline:none;
+    }
+
+    .stats{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      justify-content:flex-end;
+      font-weight:900;
+      white-space:nowrap;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid #eee;
+      background:#fafafa;
+      font-weight:900;
+      white-space:nowrap;
+    }
+    .dot{
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      display:inline-block;
+      background:#bbb;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.12);
+    }
+    .dot.red{ background:#e74c3c; }
+    .dot.orange{ background:#f39c12; }
+    .dot.green{ background:#2ecc71; }
+
+    /* list */
+    .pay-list{
+      display:grid;
+      gap:10px;
+      margin-top:12px;
+    }
+    .pay-card{
+      border:1px solid #eee;
+      border-radius:16px;
+      background:#fff;
+      padding:12px 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,.04);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      min-width:0;
+    }
+    .pay-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      min-width:0;
+    }
+    .pay-team{
+      font-weight:900;
+      font-size:16px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      min-width:0;
+    }
+
+    .players{
+      display:grid;
+      gap:8px;
+    }
+    .player-row{
+      border:1px solid #f0f0f0;
+      background:#fbfbfb;
+      border-radius:12px;
+      padding:10px 10px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      min-width:0;
+    }
+    .player-name{
+      font-weight:900;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      min-width:0;
+    }
+    .toggle{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex: 0 0 auto;
+      white-space:nowrap;
+    }
+    .toggle button{
+      appearance:none;
+      border:1px solid #ddd;
+      background:#fff;
+      border-radius:999px;
+      padding:8px 10px;
+      font-weight:900;
+      cursor:pointer;
+    }
+    .toggle button.paid{
+      border-color:#bfe9c8;
+      background:#ecfff0;
+    }
+    .toggle button.unpaid{
+      border-color:#ffd0cb;
+      background:#fff0ef;
+    }
+
+    .meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      margin-top:4px;
+    }
+    .meta small{ opacity:.75; }
+
+    @media (max-width:420px){
+      .pay-team{ font-size:15px; }
+      .toggle button{ padding:7px 9px; font-size:13px; }
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="container">
+    <div class="topbar-row">
+      <div class="brand-logo">
+        <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
+      </div>
+      <h1 class="brand-title">Admin — Open BT Bricorama</h1>
+      <div class="brand-logo">
+        <img src="../assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
+      </div>
+    </div>
+
+    <nav class="nav nav-step">
+      <a href="../index.html" title="Accueil" aria-label="Accueil">🏠</a>
+      <a href="../pages/infos.html">ℹ️ Infos</a>
+      <a href="../pages/boutique.html">🛍️ Boutique</a>
+      <a href="../pages/contact.html">📩 Contact</a>
+      <a href="index.html?scope=general">🛠️ Admin</a>
+      <a href="#" id="btnLogout">🚪 Déconnexion</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="card">
+    <div class="admin-top">
+      <div>
+        <h2>✅ Paiements — Administration</h2>
+        <p class="muted" style="margin:6px 0 0;">
+          Cliquez sur “Payé / Non payé” pour chaque joueur. (Enregistré en direct)
+        </p>
+      </div>
+
+      <div class="admin-actions">
+        <span class="pill" id="authState">Connexion…</span>
+      </div>
+    </div>
+
+    <div class="subtabs" role="tablist" aria-label="Filtre épreuve">
+      <button class="subtab" id="tabAll" type="button" aria-selected="true">⭐ Toutes</button>
+      <button class="subtab" id="tabDM" type="button" aria-selected="false">👨 DM</button>
+      <button class="subtab" id="tabDD" type="button" aria-selected="false">👩 DD</button>
+    </div>
+
+    <div class="filters">
+      <div class="search">
+        <input id="q" type="search" placeholder="Rechercher équipe / prénom…" autocomplete="off">
+      </div>
+
+      <div class="stats">
+        <span class="badge"><span class="dot red"></span><span id="c0">0</span> non payé</span>
+        <span class="badge"><span class="dot orange"></span><span id="c1">0</span> partiel</span>
+        <span class="badge"><span class="dot green"></span><span id="c2">0</span> payé</span>
+      </div>
+    </div>
+
+    <p class="muted" id="status" style="margin:10px 0 0;">Chargement…</p>
+  </section>
+
+  <section class="card">
+    <div id="list" class="pay-list" aria-label="Liste paiements"></div>
+  </section>
+
+</main>
+
+<script type="module">
+  import { auth, db } from "../assets/js/firebase.js";
+  import { logout, getRoleByEmail, loginAndRedirect } from "../assets/js/session.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+  import {
+    collection, query, orderBy, onSnapshot,
+    doc, setDoc, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+  // =========================
+  // FIRESTORE CONFIG
+  // =========================
+  const COL_TEAMS_DM_PUBLIC = "equipes_dh_public";
+  const COL_TEAMS_DD_PUBLIC = "equipes_dd_public";
+
+  // docId = "dm_<teamDocId>" | "dd_<teamDocId>"
+  // fields = { p1Paid:boolean, p2Paid:boolean, updatedAt }
+  const COL_PAYMENTS = "paiements_openbt";
+
+  // =========================
+  // AUTH GUARD (admin only)
+  // =========================
+  const authState = document.getElementById("authState");
+  const statusEl = document.getElementById("status");
+
+  async function guardAdmin(){
+    if(!auth.currentUser){
+      await loginAndRedirect();
+    }
+    const u = auth.currentUser;
+    if(!u){
+      alert("Connexion annulée.");
+      throw new Error("not_logged");
+    }
+    const role = await getRoleByEmail(u.email);
+    if(role !== "admin"){
+      alert("Accès refusé : rôle requis = admin");
+      throw new Error("not_admin");
+    }
+    authState.textContent = "🟢 Admin : " + u.email;
+  }
+
+  document.getElementById("btnLogout").onclick = async (e)=>{
+    e.preventDefault();
+    await logout();
+    alert("Déconnecté ✅");
+    window.location.href = "../index.html";
+  };
+
+  onAuthStateChanged(auth, (user)=>{
+    authState.textContent = user ? ("Connecté : " + user.email) : "Non connecté";
+  });
+
+  // =========================
+  // UI
+  // =========================
+  const tabAll = document.getElementById("tabAll");
+  const tabDM  = document.getElementById("tabDM");
+  const tabDD  = document.getElementById("tabDD");
+  const qInput = document.getElementById("q");
+  const listEl = document.getElementById("list");
+
+  const c0 = document.getElementById("c0");
+  const c1 = document.getElementById("c1");
+  const c2 = document.getElementById("c2");
+
+  let view = "all"; // all | dm | dd
+  let queryText = "";
+
+  function setView(v){
+    view = v;
+    tabAll.setAttribute("aria-selected", v==="all" ? "true":"false");
+    tabDM.setAttribute("aria-selected",  v==="dm"  ? "true":"false");
+    tabDD.setAttribute("aria-selected",  v==="dd"  ? "true":"false");
+    try{ localStorage.setItem("openbt_admin_pay_view", v); }catch(e){}
+    render();
+  }
+
+  tabAll.onclick = ()=>setView("all");
+  tabDM.onclick  = ()=>setView("dm");
+  tabDD.onclick  = ()=>setView("dd");
+
+  qInput.addEventListener("input", ()=>{
+    queryText = (qInput.value || "").trim().toLowerCase();
+    render();
+  });
+
+  function esc(s){
+    return (s ?? "").toString()
+      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+  }
+
+  function dotClass(paidCount){
+    if(paidCount >= 2) return "green";
+    if(paidCount === 1) return "orange";
+    return "red";
+  }
+
+  function label(paidCount){
+    return paidCount >= 2 ? "Payé" : paidCount === 1 ? "Partiel" : "Non payé";
+  }
+
+  // =========================
+  // DATA
+  // =========================
+  let snapDM = null;
+  let snapDD = null;
+  let snapPay = null;
+
+  function getPay(payMap, payId){
+    return payMap.get(payId) || { p1Paid:false, p2Paid:false, updatedAt:null };
+  }
+
+  function buildRows(){
+    if(!snapDM || !snapDD || !snapPay) return null;
+
+    const payMap = new Map();
+    snapPay.forEach(d=>{
+      const x = d.data() || {};
+      payMap.set(d.id, {
+        p1Paid: x.p1Paid === true,
+        p2Paid: x.p2Paid === true,
+        updatedAt: x.updatedAt || null
+      });
+    });
+
+    const rows = [];
+
+    function feed(prefix, snap){
+      snap.forEach(d=>{
+        const x = d.data() || {};
+        const teamName = (x.teamName || "").trim();
+        if(!teamName) return;
+
+        const p1 = (x.p1FirstName || "").trim();
+        const p2 = (x.p2FirstName || "").trim();
+
+        const payId = `${prefix}_${d.id}`;
+        const pay = getPay(payMap, payId);
+        const paidCount = (pay.p1Paid?1:0) + (pay.p2Paid?1:0);
+
+        rows.push({
+          prefix, teamDocId: d.id,
+          payId, teamName,
+          p1, p2,
+          p1Paid: pay.p1Paid,
+          p2Paid: pay.p2Paid,
+          paidCount,
+          updatedAt: pay.updatedAt
+        });
+      });
+    }
+
+    feed("dm", snapDM);
+    feed("dd", snapDD);
+
+    return rows;
+  }
+
+  function matches(r){
+    if(view !== "all" && r.prefix !== view) return false;
+    if(!queryText) return true;
+    const hay = `${r.teamName} ${r.p1} ${r.p2}`.toLowerCase();
+    return hay.includes(queryText);
+  }
+
+  function fmtUpdated(ts){
+    try{
+      const d = ts?.toDate ? ts.toDate() : null;
+      if(!d) return "—";
+      return d.toLocaleString("fr-FR", { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+    }catch{
+      return "—";
+    }
+  }
+
+  async function setPaid(payId, who, paid){
+    // who = "p1" | "p2"
+    // paid = true/false
+    const ref = doc(db, COL_PAYMENTS, payId);
+    const payload = {
+      updatedAt: serverTimestamp()
+    };
+    payload[who === "p1" ? "p1Paid" : "p2Paid"] = paid;
+
+    // merge:true => crée le doc si absent (default false implicite pour l'autre joueur)
+    await setDoc(ref, payload, { merge: true });
+  }
+
+  function render(){
+    const rows = buildRows();
+    if(!rows){
+      statusEl.textContent = "Chargement…";
+      return;
+    }
+
+    const filtered = rows.filter(matches);
+
+    // stats globales (sur filtré)
+    let n0=0, n1=0, n2=0;
+    for(const r of filtered){
+      if(r.paidCount === 0) n0++;
+      else if(r.paidCount === 1) n1++;
+      else n2++;
+    }
+    c0.textContent = String(n0);
+    c1.textContent = String(n1);
+    c2.textContent = String(n2);
+
+    // tri: 0 -> 1 -> 2, puis nom équipe
+    filtered.sort((a,b)=>{
+      if(a.paidCount !== b.paidCount) return a.paidCount - b.paidCount;
+      return (a.teamName||"").localeCompare((b.teamName||""), "fr");
+    });
+
+    statusEl.textContent = `🟢 En direct — ${filtered.length} équipe(s)`;
+
+    if(filtered.length === 0){
+      listEl.innerHTML = `<p class="muted" style="margin:0;">Aucun résultat.</p>`;
+      return;
+    }
+
+    listEl.innerHTML = filtered.map(r=>{
+      const dot = dotClass(r.paidCount);
+      const lab = label(r.paidCount);
+
+      const p1Name = r.p1 || "—";
+      const p2Name = r.p2 || "—";
+
+      const meta = `Dernière mise à jour : ${esc(fmtUpdated(r.updatedAt))}`;
+
+      return `
+        <div class="pay-card" data-payid="${esc(r.payId)}">
+          <div class="pay-head">
+            <div class="pay-team">${esc(r.teamName)}</div>
+            <div class="badge" title="${esc(lab)}">
+              <span class="dot ${dot}"></span>
+              ${esc(lab)}
+            </div>
+          </div>
+
+          <div class="players">
+            <div class="player-row">
+              <div class="player-name">${esc(p1Name)}</div>
+              <div class="toggle">
+                <button class="${r.p1Paid ? "paid" : "unpaid"}" data-who="p1" data-next="${r.p1Paid ? "0" : "1"}">
+                  ${r.p1Paid ? "✅ Payé" : "❌ Non payé"}
+                </button>
+              </div>
+            </div>
+
+            <div class="player-row">
+              <div class="player-name">${esc(p2Name)}</div>
+              <div class="toggle">
+                <button class="${r.p2Paid ? "paid" : "unpaid"}" data-who="p2" data-next="${r.p2Paid ? "0" : "1"}">
+                  ${r.p2Paid ? "✅ Payé" : "❌ Non payé"}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="meta">
+            <small class="muted">${esc(r.prefix.toUpperCase())} • id: ${esc(r.teamDocId)}</small>
+            <small class="muted">${meta}</small>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    // bind toggles
+    listEl.querySelectorAll("button[data-who]").forEach(btn=>{
+      btn.addEventListener("click", async ()=>{
+        const card = btn.closest(".pay-card");
+        const payId = card?.dataset?.payid;
+        const who = btn.dataset.who;
+        const next = btn.dataset.next === "1"; // true => paid
+
+        btn.disabled = true;
+        try{
+          await setPaid(payId, who, next);
+        }catch(e){
+          console.error(e);
+          alert("❌ Erreur : impossible d’enregistrer.");
+        }finally{
+          btn.disabled = false;
+        }
+      });
+    });
+  }
+
+  // =========================
+  // INIT
+  // =========================
+  (async function init(){
+    try{
+      await guardAdmin();
+
+      try{
+        const saved = localStorage.getItem("openbt_admin_pay_view");
+        if(saved === "dm" || saved === "dd" || saved === "all") setView(saved);
+      }catch(e){}
+
+      // snapshots
+      const qDM = query(collection(db, COL_TEAMS_DM_PUBLIC), orderBy("createdAt","asc"));
+      const qDD = query(collection(db, COL_TEAMS_DD_PUBLIC), orderBy("createdAt","asc"));
+      const qPay = query(collection(db, COL_PAYMENTS), orderBy("updatedAt","desc"));
+
+      onSnapshot(qDM, s=>{ snapDM=s; render(); }, e=>{ console.error(e); statusEl.textContent="🔴 Erreur DM"; });
+      onSnapshot(qDD, s=>{ snapDD=s; render(); }, e=>{ console.error(e); statusEl.textContent="🔴 Erreur DD"; });
+      onSnapshot(qPay, s=>{ snapPay=s; render(); }, e=>{ console.error(e); statusEl.textContent="🔴 Erreur paiements"; });
+
+    }catch(err){
+      console.error(err);
+      statusEl.textContent = "🔴 Accès refusé / non connecté.";
+      listEl.innerHTML = `<p class="muted" style="margin:0;">Impossible d’accéder à la page admin.</p>`;
+    }
+  })();
+</script>
+
+</body>
+</html>
