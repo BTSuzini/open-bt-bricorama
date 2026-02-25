@@ -4,14 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Repas — Open BT Bricorama</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260224" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260225-1" />
 </head>
 <body>
 
 <header class="topbar">
   <div class="container">
 
-    <!-- ✅ Bandeau index -->
     <div class="topbar-row topbar-row-step">
       <div class="brand-logo">
         <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
@@ -26,7 +25,6 @@
       </div>
     </div>
 
-    <!-- ✅ Nav générale (2 lignes sur téléphone) -->
     <nav class="nav nav-step">
       <a href="../index.html" title="Accueil" aria-label="Accueil">🏠 Accueil</a>
       <a href="reglement.html">📘 Règlement</a>
@@ -41,7 +39,6 @@
 
 <main class="container">
 
-  <!-- Sous-onglets -->
   <section class="card">
     <h2 style="margin-bottom:6px;">🍽️ Espace repas</h2>
 
@@ -50,14 +47,13 @@
       <button class="subtab" id="tabCommander" type="button" aria-selected="false">🛒 Commander</button>
       <button class="subtab" id="tabCommandes" type="button" aria-selected="false">📦 Commandes</button>
     </div>
+
+    <p class="muted" id="pageStatus" style="margin:10px 0 0;">Chargement…</p>
   </section>
 
-  <!-- ======================
-        FLYER
-  ======================= -->
+  <!-- FLYER -->
   <section class="card" id="panelFlyer">
     <h2>📄 Flyer officiel</h2>
-
     <div style="text-align:center; margin-top:15px;">
       <img
         src="../assets/img/lasagnes.PNG"
@@ -67,16 +63,12 @@
     </div>
   </section>
 
-  <!-- ======================
-        COMMANDER
-  ======================= -->
+  <!-- COMMANDER -->
   <section class="card" id="panelCommander" style="display:none;">
     <h2>🛒 Commander</h2>
 
     <div style="margin-top:12px; line-height:1.6;">
-      <p style="font-size:18px; font-weight:900; margin:0;">
-        🎾 Offre repas (Open BT) !
-      </p>
+      <p style="font-size:18px; font-weight:900; margin:0;">🎾 Offre repas (Open BT) !</p>
 
       <p style="margin:10px 0 0;">
         Réserve ton repas pour le tournoi 🍝<br>
@@ -88,13 +80,12 @@
       </p>
 
       <p style="margin:10px 0 0;">
-        Pour les non-beacheurs, réservations par WhatsApp au +594 694 40 60 99<br>
+        Pour les non-beacheurs, réservations par WhatsApp au +594 694 40 60 99
       </p>
-      
+
       <hr class="sep" style="margin:14px 0;" />
     </div>
 
-    <!-- Form -->
     <form id="orderForm" class="form" autocomplete="off">
       <div class="field">
         <label for="beacheurSelect">Beacheur *</label>
@@ -127,42 +118,31 @@
       <p id="orderStatus" class="muted" role="status" aria-live="polite" style="margin-top:10px;"></p>
     </form>
 
-    <!-- Success box -->
     <div id="orderDone" class="card" style="display:none; margin:14px 0 0;">
       <h3 style="margin:0 0 6px;">✅ Commande enregistrée</h3>
       <p class="muted" id="orderDoneText" style="margin:0;"></p>
       <div class="grid" style="margin-top:12px;">
-        <button class="btn" id="btnNewOrder" type="button" style="font-weight:900; color:#111;">
-          ➕ Autre commande
-        </button>
-        <button class="btn" id="btnGoList" type="button" style="font-weight:900; color:#111;">
-          📦 Voir commandes
-        </button>
+        <button class="btn" id="btnNewOrder" type="button" style="font-weight:900; color:#111;">➕ Autre commande</button>
+        <button class="btn" id="btnGoList" type="button" style="font-weight:900; color:#111;">📦 Voir commandes</button>
       </div>
     </div>
-
   </section>
 
-  <!-- ======================
-        COMMANDES EFFECTUÉES
-  ======================= -->
+  <!-- COMMANDES -->
   <section class="card" id="panelCommandes" style="display:none;">
     <h2>📦 Commandes</h2>
 
     <p class="muted" style="margin-top:10px;">
-      1 ligne par beacheur (les commandes se <b>cumulent automatiquement</b>).
+      1 ligne par beacheur (1 commande modifiable via “✏️ Modifier”).
     </p>
 
     <p class="muted" id="ordersStatus" style="margin:10px 0 0;">Chargement…</p>
-
-    <!-- ✅ Liste mobile-friendly (no horizontal scroll) -->
     <div id="ordersList" class="orders-list" aria-label="Commandes repas" style="margin-top:10px;"></div>
 
     <p class="muted" style="margin:10px 0 0;">
       💡 La quantité correspond au nombre de <b>repas</b>.
     </p>
 
-    <!-- ✅ NOUVEL ENCADRÉ : Non-beacheurs -->
     <hr class="sep" style="margin:16px 0;" />
 
     <h3 style="margin:0 0 8px;">👥 Commandes non-beacheurs</h3>
@@ -183,16 +163,8 @@
 </main>
 
 <style>
-  /* ✅ Bandeau index */
-  .topbar-row-step{
-    grid-template-columns: var(--logo-size) 1fr var(--logo-size);
-  }
-  .step-title-wrap{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    min-height: calc(var(--logo-size) * 0.55);
-  }
+  .topbar-row-step{ grid-template-columns: var(--logo-size) 1fr var(--logo-size); }
+  .step-title-wrap{ display:flex; align-items:center; justify-content:center; min-height: calc(var(--logo-size) * 0.55); }
   .step-title-img{
     width: min(520px, 100%);
     max-height: 88px;
@@ -201,7 +173,7 @@
     display:block;
     filter: drop-shadow(0 1px 0 rgba(0,0,0,.15));
   }
-  /* ✅ NAV — FORCÉE EN 2 LIGNES (3 colonnes fixes) */
+
   .nav-step{
     display:grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -215,10 +187,7 @@
     padding:8px 10px;
   }
   @media (max-width:420px){
-    .nav-step a{
-      padding:7px 8px;
-      font-size:13px;
-    }
+    .nav-step a{ padding:7px 8px; font-size:13px; }
   }
   .nav a[aria-current="page"]{
     background: rgba(255,255,255,.26);
@@ -230,7 +199,6 @@
     .step-title-img{ max-height:74px; }
   }
 
-  /* ✅ Subtabs : Flyer ligne 1, les 2 autres ligne 2 */
   .subtabs{
     display:grid;
     grid-template-columns: 1fr 1fr;
@@ -238,7 +206,6 @@
     margin-top:10px;
   }
   #tabFlyer{ grid-column: 1 / -1; }
-
   .subtab{
     appearance:none;
     border:1px solid #ddd;
@@ -254,11 +221,7 @@
     box-shadow: 0 6px 14px rgba(0,0,0,.06);
   }
 
-  /* ✅ Commandes : liste compacte (zéro scroll horizontal) */
-  .orders-list{
-    display:grid;
-    gap:8px;
-  }
+  .orders-list{ display:grid; gap:8px; }
   .order-row{
     border:1px solid #eee;
     border-radius:14px;
@@ -289,21 +252,16 @@
     text-overflow:ellipsis;
     line-height:1.15;
   }
-  .order-sub{
-    font-size:12px;
-    color:#666;
-    line-height:1.15;
-  }
+  .order-sub{ font-size:12px; color:#666; line-height:1.15; }
   .order-right{
     display:flex;
     flex-direction:column;
     align-items:flex-end;
-    gap:2px;
+    gap:6px;
     white-space:nowrap;
   }
   .order-total{ font-weight:900; }
 
-  /* ✅ Non-beacheurs box */
   .nb-box{
     border:1px solid #eee;
     border-radius:14px;
@@ -329,10 +287,7 @@
     font-weight:900;
     white-space:nowrap;
   }
-  .nb-list{
-    display:grid;
-    gap:8px;
-  }
+  .nb-list{ display:grid; gap:8px; }
   .nb-row{
     border:1px solid #f0f0f0;
     background:#fbfbfb;
@@ -351,44 +306,32 @@
     text-overflow:ellipsis;
     min-width:0;
   }
-  .nb-right{
-    flex:0 0 auto;
-    white-space:nowrap;
-    font-weight:900;
-  }
+  .nb-right{ flex:0 0 auto; white-space:nowrap; font-weight:900; }
 </style>
 
 <script type="module">
   import { db } from "../assets/js/firebase.js";
   import {
-    collection,
-    query,
-    orderBy,
-    onSnapshot,
-    doc,
-    runTransaction,
-    serverTimestamp
+    collection, query, orderBy, onSnapshot,
+    doc, getDoc, setDoc, updateDoc, serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-  // =========================================================
-  // Open BT — Collections
-  // =========================================================
+  // Collections
   const COL_TEAMS_DH_PUBLIC = "equipes_dh_public";
   const COL_TEAMS_DD_PUBLIC = "equipes_dd_public";
+  const COL_ORDERS = "repas_openbt";                 // beacheurs (1 doc / beacheurKey)
+  const COL_NB     = "repas_openbt_nonbeacheurs";    // non-beacheurs (read-only public)
+  const UNIT_PRICE = 11;
 
-  // 1 doc par beacheurKey (cumul)
-  const COL_ORDERS = "repas_openbt";
+  // Status
+  const pageStatus = document.getElementById("pageStatus");
+  function setPageStatus(s){ if(pageStatus) pageStatus.textContent = s; }
+  setPageStatus("🟢 Connexion…");
 
-  // ✅ Non-beacheurs (admin input)
-  const COL_NB = "repas_openbt_nonbeacheurs";
-
-  const UNIT_PRICE = 11; // 1 repas = 11€
-
-  // ===== Tabs
+  // Tabs
   const tabFlyer = document.getElementById("tabFlyer");
   const tabCommander = document.getElementById("tabCommander");
   const tabCommandes = document.getElementById("tabCommandes");
-
   const panelFlyer = document.getElementById("panelFlyer");
   const panelCommander = document.getElementById("panelCommander");
   const panelCommandes = document.getElementById("panelCommandes");
@@ -397,32 +340,17 @@
     panelFlyer.style.display = "none";
     panelCommander.style.display = "none";
     panelCommandes.style.display = "none";
-
     tabFlyer.setAttribute("aria-selected","false");
     tabCommander.setAttribute("aria-selected","false");
     tabCommandes.setAttribute("aria-selected","false");
-
     panel.style.display = "block";
   }
+  tabFlyer.onclick = ()=>{ show(panelFlyer); tabFlyer.setAttribute("aria-selected","true"); };
+  tabCommander.onclick = ()=>{ show(panelCommander); tabCommander.setAttribute("aria-selected","true"); };
+  tabCommandes.onclick = ()=>{ show(panelCommandes); tabCommandes.setAttribute("aria-selected","true"); };
+  show(panelFlyer); tabFlyer.setAttribute("aria-selected","true");
 
-  tabFlyer.onclick = ()=>{
-    show(panelFlyer);
-    tabFlyer.setAttribute("aria-selected","true");
-  };
-  tabCommander.onclick = ()=>{
-    show(panelCommander);
-    tabCommander.setAttribute("aria-selected","true");
-  };
-  tabCommandes.onclick = ()=>{
-    show(panelCommandes);
-    tabCommandes.setAttribute("aria-selected","true");
-  };
-
-  // init
-  show(panelFlyer);
-  tabFlyer.setAttribute("aria-selected","true");
-
-  // ===== Commander UI
+  // Commander UI
   const orderForm = document.getElementById("orderForm");
   const beacheurSelect = document.getElementById("beacheurSelect");
   const qtySelect = document.getElementById("qtySelect");
@@ -434,21 +362,19 @@
   const btnNewOrder = document.getElementById("btnNewOrder");
   const btnGoList = document.getElementById("btnGoList");
 
-  // ===== Commandes UI
+  // Commandes UI
   const ordersStatus = document.getElementById("ordersStatus");
   const ordersList = document.getElementById("ordersList");
 
-  // ✅ Non-beacheurs UI
+  // Non-beacheurs UI
   const nbStatus = document.getElementById("nbStatus");
   const nbCount = document.getElementById("nbCount");
   const nbTotalQty = document.getElementById("nbTotalQty");
   const nbList = document.getElementById("nbList");
 
   function esc(s){
-    return (s ?? "").toString()
-      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+    return (s ?? "").toString().replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
   }
-
   function setOrderStatus(msg){ orderStatus.textContent = msg || ""; }
 
   function setOrderEnabled(enabled){
@@ -457,21 +383,16 @@
     btnOrder.disabled = !enabled;
     btnOrder.classList.toggle("disabled", !enabled);
   }
-
   function resetOrderUI(){
     orderDone.style.display = "none";
     orderForm.style.display = "block";
     setOrderStatus("");
     setOrderEnabled(true);
   }
-
   btnNewOrder.onclick = ()=> resetOrderUI();
-  btnGoList.onclick = ()=>{
-    show(panelCommandes);
-    tabCommandes.setAttribute("aria-selected","true");
-  };
+  btnGoList.onclick = ()=>{ show(panelCommandes); tabCommandes.setAttribute("aria-selected","true"); };
 
-  // ===== Charger beacheurs depuis DH + DD
+  // ===== Charger beacheurs DH + DD
   function setBeacheurLoading(){
     beacheurSelect.innerHTML = `<option value="" selected disabled>Chargement…</option>`;
   }
@@ -480,20 +401,18 @@
   }
   setBeacheurLoading();
 
+  let snapDH = null, snapDD = null;
+
   function feedBeacheursFromSnap(prefix, snap, out){
     snap.forEach(d=>{
       const data = d.data() || {};
       const teamName = (data.teamName || "").trim();
       const p1 = (data.p1FirstName || "").trim();
       const p2 = (data.p2FirstName || "").trim();
-
       if(teamName && p1) out.push({ key: `${prefix}_${d.id}_p1`, name: p1, team: teamName });
       if(teamName && p2) out.push({ key: `${prefix}_${d.id}_p2`, name: p2, team: teamName });
     });
   }
-
-  let snapDH = null;
-  let snapDD = null;
 
   function rebuildBeacheurSelect(){
     const opts = [];
@@ -513,41 +432,34 @@
       opts.map(o =>
         `<option value="${esc(o.key)}" data-name="${esc(o.name)}" data-team="${esc(o.team)}">${esc(o.name)} (${esc(o.team)})</option>`
       ).join("");
+
+    setPageStatus("🟢 En direct");
   }
 
   const qDH = query(collection(db, COL_TEAMS_DH_PUBLIC), orderBy("createdAt","asc"));
   const qDD = query(collection(db, COL_TEAMS_DD_PUBLIC), orderBy("createdAt","asc"));
 
-  onSnapshot(qDH, (snap)=>{ snapDH = snap; rebuildBeacheurSelect(); }, (err)=>{ console.error(err); setBeacheurError(); });
-  onSnapshot(qDD, (snap)=>{ snapDD = snap; rebuildBeacheurSelect(); }, (err)=>{ console.error(err); setBeacheurError(); });
+  onSnapshot(qDH, (snap)=>{ snapDH = snap; rebuildBeacheurSelect(); }, (err)=>{ console.error(err); setBeacheurError(); setPageStatus("🔴 Erreur chargement DH"); });
+  onSnapshot(qDD, (snap)=>{ snapDD = snap; rebuildBeacheurSelect(); }, (err)=>{ console.error(err); setBeacheurError(); setPageStatus("🔴 Erreur chargement DD"); });
 
-  // ===== Transaction cumul (beacheurs)
-  async function upsertCumulativeOrder({ beacheurKey, beacheurName, teamName, addQty }){
+  // ===== Principe "1 commande max" : create once
+  async function createOrderOnce({ beacheurKey, beacheurName, teamName, qty }){
     const ref = doc(db, COL_ORDERS, beacheurKey);
+    const snap = await getDoc(ref);
+    if(snap.exists()) return { ok:false };
 
-    await runTransaction(db, async (tx)=>{
-      const snap = await tx.get(ref);
-      const curQty = snap.exists() ? (snap.data().qty || 0) : 0;
-      const nextQty = curQty + addQty;
-
-      const payload = {
-        beacheurKey,
-        beacheurName,
-        teamName,
-        qty: nextQty,
-        unitPrice: UNIT_PRICE,
-        total: nextQty * UNIT_PRICE,
-        updatedAt: serverTimestamp()
-      };
-
-      if(!snap.exists()){
-        payload.createdAt = serverTimestamp();
-      } else {
-        payload.createdAt = snap.data().createdAt;
-      }
-
-      tx.set(ref, payload, { merge: false });
+    await setDoc(ref, {
+      beacheurKey,
+      beacheurName,
+      teamName,
+      qty,
+      unitPrice: UNIT_PRICE,
+      total: qty * UNIT_PRICE,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
     });
+
+    return { ok:true };
   }
 
   orderForm.addEventListener("submit", async (e)=>{
@@ -567,28 +479,44 @@
     setOrderStatus("Enregistrement…");
 
     try{
-      await upsertCumulativeOrder({ beacheurKey:key, beacheurName, teamName, addQty:qty });
+      const res = await createOrderOnce({ beacheurKey:key, beacheurName, teamName, qty });
 
-      alert("Commande enregistrée ✅");
+      if(!res.ok){
+        alert("⚠️ Tu as déjà une commande.\n\n👉 Celle-ci n’est PAS prise en compte.\n\nVa dans l’onglet “📦 Commandes” pour la modifier.");
+        setOrderEnabled(true);
+        setOrderStatus("");
+        show(panelCommandes);
+        tabCommandes.setAttribute("aria-selected","true");
+        return;
+      }
 
       orderForm.reset();
       orderForm.style.display = "none";
       orderDone.style.display = "block";
       orderDoneText.innerHTML = `
         <b>${esc(beacheurName)}</b> (${esc(teamName)})<br>
-        Ajout : <b>+${esc(String(qty))}</b> repas — Total cumulé visible dans “Commandes”.
+        Commande : <b>${esc(String(qty))}</b> repas.
       `;
       setOrderStatus("");
     }catch(err){
       console.error(err);
       setOrderEnabled(true);
       setOrderStatus("❌ Erreur : impossible d’enregistrer la commande.");
+      alert("❌ Erreur Firestore (rules / droits).");
     }
   });
 
+  // ===== Modifier commande (depuis Commandes)
+  async function updateOrderQty(id,newQty){
+    await updateDoc(doc(db, COL_ORDERS, id),{
+      qty: newQty,
+      total: newQty * UNIT_PRICE,
+      updatedAt: serverTimestamp()
+    });
+  }
+
   // ===== Liste commandes beacheurs
   const ordersQ = query(collection(db, COL_ORDERS), orderBy("beacheurName","asc"));
-
   onSnapshot(ordersQ, (snap)=>{
     const rows = [];
     snap.forEach(d=>{
@@ -597,8 +525,8 @@
         id: d.id,
         beacheurName: x.beacheurName || "",
         teamName: x.teamName || "",
-        qty: Number.isFinite(x.qty) ? x.qty : (x.qty || 0),
-        total: Number.isFinite(x.total) ? x.total : (x.total || 0)
+        qty: (typeof x.qty === "number" ? x.qty : Number(x.qty || 0)),
+        total: (typeof x.total === "number" ? x.total : Number(x.total || 0))
       });
     });
 
@@ -617,20 +545,49 @@
         </div>
         <div class="order-right">
           <div class="order-total">${esc(String(r.total))} €</div>
+          <button class="btn" data-edit="${esc(r.id)}" style="font-weight:900; color:#111;">✏️ Modifier</button>
         </div>
       </div>
     `).join("");
 
     ordersStatus.textContent = `🟢 En direct — ${rows.length} ligne(s)`;
+
+    ordersList.querySelectorAll("button[data-edit]").forEach(btn=>{
+      btn.onclick = async ()=>{
+        const id = btn.dataset.edit;
+        const row = rows.find(x=>x.id===id);
+        if(!row) return;
+
+        const v = prompt("Nouvelle quantité (entier >= 1) :", String(row.qty));
+        if(v === null) return;
+
+        const n = Number(String(v).trim());
+        if(!Number.isFinite(n) || n < 1 || !Number.isInteger(n)){
+          alert("Quantité invalide (entier >= 1).");
+          return;
+        }
+
+        btn.disabled = true;
+        try{
+          await updateOrderQty(id, n);
+          alert("✅ Commande modifiée");
+        }catch(e){
+          console.error(e);
+          alert("❌ Impossible de modifier (rules Firestore).");
+        }finally{
+          btn.disabled = false;
+        }
+      };
+    });
+
   }, (err)=>{
     console.error(err);
     ordersStatus.textContent = "🔴 Erreur de connexion";
     ordersList.innerHTML = `<p class="muted" style="margin:0;">Erreur de connexion.</p>`;
   });
 
-  // ===== ✅ Non-beacheurs (lecture seule)
+  // ===== Non-beacheurs (lecture seule)
   const nbQ = query(collection(db, COL_NB), orderBy("createdAt","asc"));
-
   onSnapshot(nbQ, (snap)=>{
     const rows = [];
     snap.forEach(d=>{
@@ -639,13 +596,12 @@
         id: d.id,
         firstName: (x.firstName || "").trim(),
         lastName: (x.lastName || "").trim(),
-        qty: Number.isFinite(x.qty) ? x.qty : (x.qty || 0),
+        qty: (typeof x.qty === "number" ? x.qty : Number(x.qty || 0))
       });
     });
 
     nbCount.textContent = String(rows.length);
     nbTotalQty.textContent = String(rows.reduce((s,r)=> s + (r.qty||0), 0));
-
     nbStatus.textContent = `🟢 En direct — ${rows.length} ligne(s)`;
 
     if(rows.length === 0){
