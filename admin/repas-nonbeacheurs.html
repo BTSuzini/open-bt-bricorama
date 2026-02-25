@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin — Repas Non-Beacheurs — Open BT Bricorama</title>
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260224" />
+
+  <style>
+    .admin-top{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .admin-top h2{ margin:0; }
+    .admin-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .note{
+      border:1px solid #eee;
+      border-radius:14px;
+      padding:12px 12px;
+      background:#fff;
+      line-height:1.55;
+    }
+
+    .form3{
+      display:grid;
+      grid-template-columns: 1fr 1fr 140px;
+      gap:10px;
+      align-items:end;
+      margin-top:12px;
+    }
+    .form3 .field{ margin:0; }
+    .form3 input, .form3 select{
+      width:100%;
+      padding:12px;
+      border:1px solid #ddd;
+      border-radius:12px;
+      font:inherit;
+      background:#fff;
+      font-weight:800;
+    }
+
+    .list{
+      display:grid;
+      gap:10px;
+      margin-top:12px;
+    }
+    .row{
+      border:1px solid #eee;
+      border-radius:14px;
+      background:#fff;
+      padding:12px 12px;
+      box-shadow: 0 6px 16px rgba(0,0,0,.04);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      min-width:0;
+    }
+    .left{
+      min-width:0;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .name{
+      font-weight:900;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .sub{
+      font-size:12px;
+      color:#666;
+      line-height:1.2;
+    }
+    .right{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex:0 0 auto;
+      white-space:nowrap;
+      font-weight:900;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid #eee;
+      background:#fafafa;
+      font-weight:900;
+    }
+    .btnx{
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid #ddd;
+      background:#fff;
+      cursor:pointer;
+      font-weight:900;
+    }
+    .btnx:hover{ background:#f5f5f5; }
+    .danger{ border-color:#f1b2b2; }
+    .danger:hover{ background:#ffecec; }
+
+    .stats{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      justify-content:flex-end;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    @media (max-width: 520px){
+      .form3{
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="container">
+    <div class="topbar-row">
+      <div class="brand-logo">
+        <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
+      </div>
+      <h1 class="brand-title">Admin — Open BT Bricorama</h1>
+      <div class="brand-logo">
+        <img src="../assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
+      </div>
+    </div>
+
+    <nav class="nav nav-step">
+      <a href="../index.html" title="Accueil" aria-label="Accueil">🏠</a>
+      <a href="../pages/infos.html">ℹ️ Infos</a>
+      <a href="../pages/repas.html">🍽️ Repas</a>
+      <a href="../pages/boutique.html">🛍️ Boutique</a>
+      <a href="../pages/contact.html">📩 Contact</a>
+      <a href="index.html?scope=general">🛠️ Admin</a>
+      <a href="#" id="btnLogout">🚪 Déconnexion</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="card">
+    <div class="admin-top">
+      <div>
+        <h2>🍽️ Repas — Non-Beacheurs</h2>
+        <p class="muted" style="margin:6px 0 0;">
+          Ajout manuel par l’organisation (admin). Visible en lecture seule sur la page publique “Repas” &gt; “Commandes”.
+        </p>
+      </div>
+      <div class="admin-actions">
+        <span class="pill" id="authState">Connexion…</span>
+      </div>
+    </div>
+
+    <div class="note" style="margin-top:12px;">
+      ✅ Règle : <b>Nom + Prénom</b> + <b>quantité</b>.<br>
+      💡 Exemple : “DUPONT Marie — 2 repas”.
+    </div>
+
+    <form id="addForm" class="form3" autocomplete="off" style="margin-top:12px;">
+      <div class="field">
+        <label for="firstName">Prénom *</label>
+        <input id="firstName" required placeholder="Ex : Marie">
+      </div>
+
+      <div class="field">
+        <label for="lastName">Nom *</label>
+        <input id="lastName" required placeholder="Ex : Dupont">
+      </div>
+
+      <div class="field">
+        <label for="qty">Qté *</label>
+        <select id="qty" required>
+          <option value="1" selected>1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+          <option value="10">10</option>
+        </select>
+      </div>
+
+      <button class="btn" type="submit" style="grid-column:1 / -1; font-weight:900; color:#111;">
+        ➕ Ajouter la réservation
+      </button>
+
+      <p id="status" class="muted" role="status" aria-live="polite" style="grid-column:1 / -1; margin:0;"></p>
+    </form>
+  </section>
+
+  <section class="card">
+    <div style="display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+      <h2 style="margin:0;">📦 Réservations enregistrées</h2>
+      <div class="stats">
+        <span class="pill">Lignes : <span id="count">0</span></span>
+        <span class="pill">Total repas : <span id="totalQty">0</span></span>
+      </div>
+    </div>
+
+    <p class="muted" id="live" style="margin:8px 0 0;">Chargement…</p>
+
+    <div id="list" class="list" aria-label="Liste non-beacheurs"></div>
+  </section>
+
+</main>
+
+<script type="module">
+  import { auth, db } from "../assets/js/firebase.js";
+  import { logout, getRoleByEmail, loginAndRedirect } from "../assets/js/session.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+  import {
+    collection, addDoc, doc, updateDoc, deleteDoc,
+    query, orderBy, onSnapshot, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+  // =========================
+  // CONFIG
+  // =========================
+  const COL_NB = "repas_openbt_nonbeacheurs";
+
+  // =========================
+  // AUTH GUARD (admin only)
+  // =========================
+  const authState = document.getElementById("authState");
+
+  function waitAuthOnce(){
+    return new Promise((resolve) => {
+      const unsub = onAuthStateChanged(auth, (user) => { unsub(); resolve(user); });
+    });
+  }
+
+  async function guardAdmin(){
+    let u = auth.currentUser;
+    if(!u){
+      await loginAndRedirect();
+      u = await waitAuthOnce();
+    }
+    if(!u){
+      alert("Connexion annulée.");
+      throw new Error("not_logged");
+    }
+    const role = await getRoleByEmail(u.email);
+    if(role !== "admin"){
+      alert("Accès refusé : rôle requis = admin");
+      throw new Error("not_admin");
+    }
+    authState.textContent = "🟢 Admin : " + u.email;
+    return u;
+  }
+
+  document.getElementById("btnLogout").onclick = async (e)=>{
+    e.preventDefault();
+    await logout();
+    alert("Déconnecté ✅");
+    window.location.href = "../index.html";
+  };
+
+  onAuthStateChanged(auth, (user)=>{
+    authState.textContent = user ? ("Connecté : " + user.email) : "Non connecté";
+  });
+
+  // =========================
+  // UI
+  // =========================
+  const addForm = document.getElementById("addForm");
+  const firstNameEl = document.getElementById("firstName");
+  const lastNameEl = document.getElementById("lastName");
+  const qtyEl = document.getElementById("qty");
+  const statusEl = document.getElementById("status");
+
+  const listEl = document.getElementById("list");
+  const liveEl = document.getElementById("live");
+  const countEl = document.getElementById("count");
+  const totalQtyEl = document.getElementById("totalQty");
+
+  function esc(s){
+    return (s ?? "").toString()
+      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+  }
+
+  function normName(s){
+    return (s || "").trim().replace(/\s+/g, " ");
+  }
+
+  function fmtTs(ts){
+    try{
+      const d = ts?.toDate ? ts.toDate() : null;
+      if(!d) return "—";
+      return d.toLocaleString("fr-FR", { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+    }catch{ return "—"; }
+  }
+
+  // =========================
+  // CRUD
+  // =========================
+  let currentUserEmail = "";
+
+  async function addRow(firstName, lastName, qty){
+    await addDoc(collection(db, COL_NB), {
+      firstName,
+      lastName,
+      qty,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+      createdBy: currentUserEmail
+    });
+  }
+
+  async function editRow(id, cur){
+    const firstName = prompt("Prénom :", cur.firstName || "");
+    if(firstName === null) return;
+
+    const lastName = prompt("Nom :", cur.lastName || "");
+    if(lastName === null) return;
+
+    const qtyStr = prompt("Quantité (nombre) :", String(cur.qty ?? 1));
+    if(qtyStr === null) return;
+
+    const qty = Number((qtyStr || "").trim());
+    if(!Number.isFinite(qty) || qty < 1 || qty > 99){
+      alert("Quantité invalide.");
+      return;
+    }
+
+    await updateDoc(doc(db, COL_NB, id), {
+      firstName: normName(firstName),
+      lastName: normName(lastName),
+      qty,
+      updatedAt: serverTimestamp()
+    });
+  }
+
+  async function deleteRow(id){
+    const ok = confirm("Supprimer cette réservation ?\n\n⚠️ Action irréversible.");
+    if(!ok) return;
+    await deleteDoc(doc(db, COL_NB, id));
+  }
+
+  // =========================
+  // LIVE LIST
+  // =========================
+  const q = query(collection(db, COL_NB), orderBy("createdAt","asc"));
+
+  function render(rows){
+    countEl.textContent = String(rows.length);
+    totalQtyEl.textContent = String(rows.reduce((s,r)=> s + (r.qty||0), 0));
+
+    liveEl.textContent = `🟢 En direct — ${rows.length} ligne(s)`;
+
+    if(rows.length === 0){
+      listEl.innerHTML = `<p class="muted" style="margin:0;">Aucune réservation “non-beacheur” pour le moment.</p>`;
+      return;
+    }
+
+    listEl.innerHTML = rows.map((r)=>{
+      const full = `${r.lastName} ${r.firstName}`.trim();
+      return `
+        <div class="row" data-id="${esc(r.id)}">
+          <div class="left">
+            <div class="name">${esc(full)}</div>
+            <div class="sub">Ajout : ${esc(fmtTs(r.createdAt))} • Maj : ${esc(fmtTs(r.updatedAt))}</div>
+          </div>
+          <div class="right">
+            <span class="pill">Qté : ${esc(String(r.qty || 0))}</span>
+            <button class="btnx" data-act="edit">✏️ Modifier</button>
+            <button class="btnx danger" data-act="del">🗑️ Supprimer</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
+  listEl.addEventListener("click", async (e)=>{
+    const btn = e.target.closest("button[data-act]");
+    if(!btn) return;
+    const wrap = btn.closest(".row");
+    const id = wrap?.dataset?.id;
+    if(!id) return;
+
+    // retrouver la row via cache DOM
+    const all = cacheRows;
+    const cur = all.find(x => x.id === id);
+    if(!cur) return;
+
+    try{
+      btn.disabled = true;
+      if(btn.dataset.act === "edit") await editRow(id, cur);
+      if(btn.dataset.act === "del")  await deleteRow(id);
+    }catch(err){
+      console.error(err);
+      alert("❌ Erreur : impossible d’enregistrer.");
+    }finally{
+      btn.disabled = false;
+    }
+  });
+
+  let cacheRows = [];
+
+  // =========================
+  // INIT
+  // =========================
+  (async function init(){
+    try{
+      const u = await guardAdmin();
+      currentUserEmail = u.email || "";
+
+      addForm.addEventListener("submit", async (e)=>{
+        e.preventDefault();
+        const firstName = normName(firstNameEl.value);
+        const lastName  = normName(lastNameEl.value);
+        const qty = Number(qtyEl.value || "0");
+
+        if(!firstName || !lastName){
+          statusEl.textContent = "❌ Nom et prénom obligatoires.";
+          return;
+        }
+        if(!Number.isFinite(qty) || qty < 1){
+          statusEl.textContent = "❌ Quantité invalide.";
+          return;
+        }
+
+        statusEl.textContent = "Enregistrement…";
+        try{
+          await addRow(firstName, lastName, qty);
+          addForm.reset();
+          statusEl.textContent = "✅ Ajouté.";
+          firstNameEl.focus();
+        }catch(err){
+          console.error(err);
+          statusEl.textContent = "❌ Erreur : ajout impossible.";
+        }
+      });
+
+      onSnapshot(q, (snap)=>{
+        const rows = [];
+        snap.forEach(d=>{
+          const x = d.data() || {};
+          rows.push({
+            id: d.id,
+            firstName: x.firstName || "",
+            lastName: x.lastName || "",
+            qty: Number.isFinite(x.qty) ? x.qty : (x.qty || 0),
+            createdAt: x.createdAt || null,
+            updatedAt: x.updatedAt || null,
+          });
+        });
+        cacheRows = rows;
+        render(rows);
+      }, (err)=>{
+        console.error(err);
+        liveEl.textContent = "🔴 Erreur de connexion";
+        listEl.innerHTML = `<p class="muted" style="margin:0;">Erreur de connexion.</p>`;
+      });
+
+    }catch(err){
+      console.error(err);
+      statusEl.textContent = "🔴 Accès refusé / non connecté.";
+      liveEl.textContent = "🔴 Accès refusé.";
+      listEl.innerHTML = `<p class="muted" style="margin:0;">Impossible d’accéder à la page admin.</p>`;
+    }
+  })();
+</script>
+
+</body>
+</html>
