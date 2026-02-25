@@ -39,6 +39,21 @@
 
       <hr class="sep" />
 
+      <!-- ✅ NOUVEAU : accès repas non-beacheurs (scope général) -->
+      <section class="card" style="margin:0;">
+        <h3 style="margin:0 0 6px;">🍽️ Repas — Non-beacheurs</h3>
+        <p class="muted" style="margin:0;">
+          Saisie manuelle par l’admin (nom/prénom/quantité) + affichage public dans l’encart “Commandes”.
+        </p>
+        <div class="grid" style="margin-top:12px;">
+          <a class="btn" id="goRepasNonBeacheurs" href="#" style="font-weight:900; color:#111;">
+            ➕ Ajouter / gérer les repas non-beacheurs
+          </a>
+        </div>
+      </section>
+
+      <hr class="sep" style="margin-top:16px;" />
+
       <p class="muted" id="infosCount" style="margin:0;">Chargement…</p>
       <div id="infosList" style="display:grid; gap:10px; margin-top:10px;"></div>
     </div>
@@ -50,12 +65,12 @@
         Choisis DM ou DD dans le menu déroulant “Zone”.
       </p>
 
- <div class="grid" style="margin-top:12px;">
-  <a class="btn" id="goEquipes" href="#" style="font-weight:900; color:#111;">👥 Équipes</a>
-  <a class="btn" id="goInscriptions" href="#" style="font-weight:900; color:#111;">📝 Inscriptions</a>
-  <a class="btn" id="goTirage" href="#" style="font-weight:900; color:#111;">🎲 Tirage</a>
-  <a class="btn" id="goPaiements" href="#" style="font-weight:900; color:#111;">💳 Paiements</a>
-</div>
+      <div class="grid" style="margin-top:12px;">
+        <a class="btn" id="goEquipes" href="#" style="font-weight:900; color:#111;">👥 Équipes</a>
+        <a class="btn" id="goInscriptions" href="#" style="font-weight:900; color:#111;">📝 Inscriptions</a>
+        <a class="btn" id="goTirage" href="#" style="font-weight:900; color:#111;">🎲 Tirage</a>
+        <a class="btn" id="goPaiements" href="#" style="font-weight:900; color:#111;">💳 Paiements</a>
+      </div>
 
       <p class="muted" style="margin-top:10px;">
         (La gestion détaillée est dans les pages dédiées, accessibles via les onglets.)
@@ -96,6 +111,9 @@
   const infosCount = document.getElementById("infosCount");
   const infosList = document.getElementById("infosList");
   let unsubscribeInfos = null;
+
+  // ✅ NOUVEAU : lien vers admin repas non-beacheurs
+  const goRepasNonBeacheurs = document.getElementById("goRepasNonBeacheurs");
 
   function esc(str){
     return (str || "")
@@ -218,12 +236,14 @@
   const goEquipes = document.getElementById("goEquipes");
   const goInscriptions = document.getElementById("goInscriptions");
   const goTirage = document.getElementById("goTirage");
+  const goPaiements = document.getElementById("goPaiements");
   const scopeHint = document.getElementById("scopeHint");
 
   function applyScopePanel(s){
     goEquipes.href = `equipes.html?scope=${encodeURIComponent(s)}`;
     goInscriptions.href = `inscriptions.html?scope=${encodeURIComponent(s)}`;
     goTirage.href = `tirage.html?scope=${encodeURIComponent(s)}`;
+    goPaiements.href = `paiements.html?scope=${encodeURIComponent(s)}`;
 
     scopeHint.textContent = s === "dh"
       ? "Zone DM : administration du Double Messieurs."
@@ -244,8 +264,15 @@
     pageContent.style.display = "block";
 
     const s = scope;
+
     if(s === "general"){
       panelGeneral.style.display = "block";
+
+      // ✅ lien vers la page admin non-beacheurs (à créer : admin/repas-nonbeacheurs.html)
+      if(goRepasNonBeacheurs){
+        goRepasNonBeacheurs.href = "repas-nonbeacheurs.html";
+      }
+
       startInfos();
     } else if(s === "dh" || s === "dd") {
       panelScope.style.display = "block";
