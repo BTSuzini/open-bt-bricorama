@@ -87,6 +87,10 @@
         ⏳ Réservations possibles jusqu’au <span style="white-space:nowrap;">25/02</span>
       </p>
 
+      <p style="margin:10px 0 0;">
+        Pour les non-beacheurs, réservations par WhatsApp au +594 694 40 60 99<br>
+      </p>
+      
       <hr class="sep" style="margin:14px 0;" />
     </div>
 
@@ -157,6 +161,23 @@
     <p class="muted" style="margin:10px 0 0;">
       💡 La quantité correspond au nombre de <b>repas</b>.
     </p>
+
+    <!-- ✅ NOUVEL ENCADRÉ : Non-beacheurs -->
+    <hr class="sep" style="margin:16px 0;" />
+
+    <h3 style="margin:0 0 8px;">👥 Commandes non-beacheurs</h3>
+    <p class="muted" style="margin:0 0 10px;">
+      Réservations saisies par l’organisation (lecture seule).
+    </p>
+
+    <p class="muted" id="nbStatus" style="margin:0;">Chargement…</p>
+    <div class="nb-box" style="margin-top:10px;">
+      <div class="nb-top">
+        <span class="pill">Lignes : <span id="nbCount">0</span></span>
+        <span class="pill">Total repas : <span id="nbTotalQty">0</span></span>
+      </div>
+      <div id="nbList" class="nb-list" aria-label="Commandes non-beacheurs" style="margin-top:10px;"></div>
+    </div>
   </section>
 
 </main>
@@ -180,25 +201,25 @@
     display:block;
     filter: drop-shadow(0 1px 0 rgba(0,0,0,.15));
   }
-/* ✅ NAV — FORCÉE EN 2 LIGNES (3 colonnes fixes) */
-.nav-step{
-  display:grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap:8px;
-}
-.nav-step a{
-  display:block;
-  text-align:center;
-  white-space:nowrap;
-  min-width:0;
-  padding:8px 10px;
-}
-@media (max-width:420px){
-  .nav-step a{
-    padding:7px 8px;
-    font-size:13px;
+  /* ✅ NAV — FORCÉE EN 2 LIGNES (3 colonnes fixes) */
+  .nav-step{
+    display:grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap:8px;
   }
-}
+  .nav-step a{
+    display:block;
+    text-align:center;
+    white-space:nowrap;
+    min-width:0;
+    padding:8px 10px;
+  }
+  @media (max-width:420px){
+    .nav-step a{
+      padding:7px 8px;
+      font-size:13px;
+    }
+  }
   .nav a[aria-current="page"]{
     background: rgba(255,255,255,.26);
     border-color: rgba(255,255,255,.45);
@@ -281,6 +302,60 @@
     white-space:nowrap;
   }
   .order-total{ font-weight:900; }
+
+  /* ✅ Non-beacheurs box */
+  .nb-box{
+    border:1px solid #eee;
+    border-radius:14px;
+    background:#fff;
+    padding:12px 12px;
+    box-shadow: 0 6px 16px rgba(0,0,0,.04);
+  }
+  .nb-top{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    align-items:center;
+    justify-content:flex-start;
+  }
+  .pill{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:6px 10px;
+    border-radius:999px;
+    border:1px solid #eee;
+    background:#fafafa;
+    font-weight:900;
+    white-space:nowrap;
+  }
+  .nb-list{
+    display:grid;
+    gap:8px;
+  }
+  .nb-row{
+    border:1px solid #f0f0f0;
+    background:#fbfbfb;
+    border-radius:12px;
+    padding:10px 10px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    min-width:0;
+  }
+  .nb-name{
+    font-weight:900;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    min-width:0;
+  }
+  .nb-right{
+    flex:0 0 auto;
+    white-space:nowrap;
+    font-weight:900;
+  }
 </style>
 
 <script type="module">
@@ -303,6 +378,9 @@
 
   // 1 doc par beacheurKey (cumul)
   const COL_ORDERS = "repas_openbt";
+
+  // ✅ Non-beacheurs (admin input)
+  const COL_NB = "repas_openbt_nonbeacheurs";
 
   const UNIT_PRICE = 11; // 1 repas = 11€
 
@@ -359,6 +437,12 @@
   // ===== Commandes UI
   const ordersStatus = document.getElementById("ordersStatus");
   const ordersList = document.getElementById("ordersList");
+
+  // ✅ Non-beacheurs UI
+  const nbStatus = document.getElementById("nbStatus");
+  const nbCount = document.getElementById("nbCount");
+  const nbTotalQty = document.getElementById("nbTotalQty");
+  const nbList = document.getElementById("nbList");
 
   function esc(s){
     return (s ?? "").toString()
@@ -437,7 +521,7 @@
   onSnapshot(qDH, (snap)=>{ snapDH = snap; rebuildBeacheurSelect(); }, (err)=>{ console.error(err); setBeacheurError(); });
   onSnapshot(qDD, (snap)=>{ snapDD = snap; rebuildBeacheurSelect(); }, (err)=>{ console.error(err); setBeacheurError(); });
 
-  // ===== Transaction cumul
+  // ===== Transaction cumul (beacheurs)
   async function upsertCumulativeOrder({ beacheurKey, beacheurName, teamName, addQty }){
     const ref = doc(db, COL_ORDERS, beacheurKey);
 
@@ -502,7 +586,7 @@
     }
   });
 
-  // ===== Liste commandes (no horizontal scroll)
+  // ===== Liste commandes beacheurs
   const ordersQ = query(collection(db, COL_ORDERS), orderBy("beacheurName","asc"));
 
   onSnapshot(ordersQ, (snap)=>{
@@ -542,6 +626,46 @@
     console.error(err);
     ordersStatus.textContent = "🔴 Erreur de connexion";
     ordersList.innerHTML = `<p class="muted" style="margin:0;">Erreur de connexion.</p>`;
+  });
+
+  // ===== ✅ Non-beacheurs (lecture seule)
+  const nbQ = query(collection(db, COL_NB), orderBy("createdAt","asc"));
+
+  onSnapshot(nbQ, (snap)=>{
+    const rows = [];
+    snap.forEach(d=>{
+      const x = d.data() || {};
+      rows.push({
+        id: d.id,
+        firstName: (x.firstName || "").trim(),
+        lastName: (x.lastName || "").trim(),
+        qty: Number.isFinite(x.qty) ? x.qty : (x.qty || 0),
+      });
+    });
+
+    nbCount.textContent = String(rows.length);
+    nbTotalQty.textContent = String(rows.reduce((s,r)=> s + (r.qty||0), 0));
+
+    nbStatus.textContent = `🟢 En direct — ${rows.length} ligne(s)`;
+
+    if(rows.length === 0){
+      nbList.innerHTML = `<p class="muted" style="margin:0;">Aucune réservation non-beacheur.</p>`;
+      return;
+    }
+
+    nbList.innerHTML = rows.map(r=>{
+      const full = `${r.lastName} ${r.firstName}`.trim();
+      return `
+        <div class="nb-row">
+          <div class="nb-name">${esc(full)}</div>
+          <div class="nb-right">Qté : ${esc(String(r.qty || 0))}</div>
+        </div>
+      `;
+    }).join("");
+  }, (err)=>{
+    console.error(err);
+    nbStatus.textContent = "🔴 Erreur de connexion";
+    nbList.innerHTML = `<p class="muted" style="margin:0;">Erreur de connexion.</p>`;
   });
 </script>
 
