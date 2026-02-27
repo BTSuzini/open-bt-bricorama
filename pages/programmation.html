@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Programmation — Open BT Bricorama</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260227-open-public-programmation-v1" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260227-open-public-programmation-v2-rest-pools" />
 </head>
 <body>
 
@@ -16,7 +16,6 @@
       </div>
 
       <div class="step-title-wrap" aria-label="Open BT — Programmation">
-        <!-- ✅ comme tes pages Open -->
         <img class="step-title-img" src="../assets/img/bt250.png" alt="BT250">
       </div>
 
@@ -25,7 +24,6 @@
       </div>
     </div>
 
-    <!-- ✅ NAV Open : 2 lignes fixes (3 + 2) -->
     <nav class="nav nav-step">
       <a href="../index.html" title="Accueil" aria-label="Accueil">🏠</a>
       <a href="inscriptions.html">📝 Inscriptions</a>
@@ -58,7 +56,10 @@
     <div id="chronoList"></div>
 
     <p class="muted" style="margin-top:10px;">
-      ⏱️ Hypothèse : <b>55 min</b> par match (5’ échauffement + 45’ jeu + 5’ rotation).
+      ⏱️ Règles de timing :
+      <br>• 1 match = <b>50 min</b> (5’ échauffement + 45’ jeu)
+      <br>• Rotation standard = <b>5 min</b> (si aucune équipe ne rejoue)
+      <br>• Si une équipe rejoue, elle doit avoir <b>30 min de pause</b> après la fin ⇒ soit <b>80 min</b> minimum entre 2 débuts de match pour cette équipe.
     </p>
   </section>
 
@@ -289,7 +290,13 @@
   // CONFIG
   // =========================
   const START_TIME = "15:15";
-  const BLOCK_MIN  = 55; // 5 warmup + 45 game + 5 rotation
+
+  // match timing rules
+  const MATCH_MIN = 50;          // 5 warmup + 45 match
+  const ROTATION_MIN = 5;        // standard rotation
+  const REST_AFTER_END_MIN = 30; // pause if team replays
+  const MIN_GAP_SAME_TEAM_START = MATCH_MIN + REST_AFTER_END_MIN; // 80 min between 2 starts
+
   const COURTS = {
     A: "court Manon Queen Bee",
     B: "court Lisa de Los Pimentos"
@@ -337,16 +344,17 @@
     return Number.isFinite(n) ? n : null;
   }
 
-  function fmtRank(v){
-    const n = toNum(v);
-    return n === null ? "—" : String(n);
-  }
-
   function teamRank(t){
     const a = toNum(t?.p1Rank);
     const b = toNum(t?.p2Rank);
     if(a === null || b === null) return null;
     return a + b;
+  }
+
+  function teamIdOf(t){
+    // stable id for rest tracking
+    if(!t) return "—";
+    return (t.id || t.teamId || t.teamName || (t.p1FirstName + "_" + t.p2FirstName) || "team").toString();
   }
 
   function teamTitle(t){
@@ -430,6 +438,23 @@
     `;
   }
 
+  function blockCard({ time, courtKey, title, note }){
+    const cls = courtClass(courtKey);
+    return `
+      <div class="match-card ${esc(cls)}">
+        <div class="match-head">
+          <div class="m-time">${esc(time)}</div>
+          <div class="m-court">${esc(courtLabel(courtKey))}</div>
+          <div class="m-tag">⏳ Bloc</div>
+        </div>
+        <div class="team-row">
+          <div class="team-title">${esc(title)}</div>
+          ${note ? `<div class="team-sub muted">${esc(note)}</div>` : ``}
+        </div>
+      </div>
+    `;
+  }
+
   // =========================
   // DH POOLS from draw (same rule as tirage page)
   // =========================
@@ -468,12 +493,10 @@
   // DD POOL (Top 4 ranked main list)
   // =========================
   function computeDdTop4(rows){
-    // reprend la logique “main list” (MAX 10) comme ta page équipes
     const MAX_MAIN = 10;
 
     const all = [...rows].sort((a,b)=> (a.createdAtMs||0) - (b.createdAtMs||0));
     const forcedMain = all.filter(r => r.list === "main");
-    const forcedWait = all.filter(r => r.list === "wait");
     const auto = all.filter(r => !r.list);
 
     const main = [];
@@ -487,7 +510,6 @@
       if(!used.has(r.id)){ main.push(r); used.add(r.id); }
     }
 
-    // top4 ranked among main
     const ranked = [...main];
     ranked.sort((a,b)=>{
       const at = teamRank(a);
@@ -502,98 +524,165 @@
   }
 
   // =========================
-  // BUILD MATCHES (indicatif)
+  // MATCH GENERATORS (order = règlement)
   // =========================
+  // ✅ Poule à 3 :
+  // M1: 1 vs 3
+  // M2: 2 vs 3
+  // M3: 1 vs 2 (dernier match de poule)
   function rr3Matches(poolName, teams3){
-    // order simple : 1v2, 1v3, 2v3
-    const [t1,t2,t3] = teams3;
+    const [t1,t2,t3] = teams3; // #1, #2, #3
     if(!t1 || !t2 || !t3) return [];
     return [
-      { cat:"DH", stage:`Poule ${poolName} (M1)`, A:t1, B:t2 },
-      { cat:"DH", stage:`Poule ${poolName} (M2)`, A:t1, B:t3 },
-      { cat:"DH", stage:`Poule ${poolName} (M3)`, A:t2, B:t3 },
+      { kind:"match", cat:"DH", stage:`Poule ${poolName} (M1)`, A:t1, B:t3 },
+      { kind:"match", cat:"DH", stage:`Poule ${poolName} (M2)`, A:t2, B:t3 },
+      { kind:"match", cat:"DH", stage:`Poule ${poolName} (M3)`, A:t1, B:t2, isLast:true },
     ];
   }
 
-  function rr4Matches(label, teams4){
-    // 4 équipes => 6 matchs (round-robin)
+  // ✅ Poule DD à 4 : on impose que (#1 vs #2) soit en dernier
+  // Avec 4 équipes (1..4), un ordre “simple” et lisible :
+  // 1v4, 2v3, 1v3, 2v4, 3v4, 1v2 (dernier)
+  function dd4MatchesLastTop2(label, teams4){
     const t = teams4;
-    if(t.length < 4) return [];
+    if(!t || t.length < 4) return [];
+
     const pairs = [
-      [0,1],[2,3],
-      [0,2],[1,3],
-      [0,3],[1,2],
+      [0,3], // 1v4
+      [1,2], // 2v3
+      [0,2], // 1v3
+      [1,3], // 2v4
+      [2,3], // 3v4
+      [0,1], // ✅ 1v2 en dernier
     ];
+
     return pairs.map((p,i)=>({
+      kind:"match",
       cat:"DD",
       stage:`${label} (M${i+1})`,
       A:t[p[0]],
       B:t[p[1]],
+      isLast: (i === pairs.length - 1)
     }));
   }
 
-  function buildChrono(dhPools, ddTop4){
-    // DH pools (2 terrains en parallèle)
-    // puis DH phases finales sur A + DD sur B
+  // =========================
+  // SCHEDULER (rest + rotation)
+  // =========================
+  function scheduleWithConstraints(plans, startMin){
+    // plans: [{kind, courtKey, ...}]
+    // output: same objects with timeMin + time HH:MM
 
+    const courtAvail = new Map(Object.keys(COURTS).map(k => [k, startMin]));
+    const teamLastStart = new Map(); // teamId -> lastStartMin
+
+    function minStartForTeams(m){
+      if(m.kind !== "match") return startMin;
+      const aId = teamIdOf(m.A);
+      const bId = teamIdOf(m.B);
+
+      const aLast = teamLastStart.get(aId);
+      const bLast = teamLastStart.get(bId);
+
+      const aOk = (aLast === undefined) ? startMin : (aLast + MIN_GAP_SAME_TEAM_START);
+      const bOk = (bLast === undefined) ? startMin : (bLast + MIN_GAP_SAME_TEAM_START);
+
+      return Math.max(aOk, bOk);
+    }
+
+    const out = [];
+    for(const p of plans){
+      const c = p.courtKey;
+      const cOk = courtAvail.get(c) ?? startMin;
+
+      const tOk = (p.kind === "match") ? minStartForTeams(p) : startMin;
+
+      // pick start time
+      const start = Math.max(cOk, tOk);
+
+      // set availability for court
+      if(p.kind === "match"){
+        // next match can start after match + rotation
+        courtAvail.set(c, start + MATCH_MIN + ROTATION_MIN);
+
+        // update lastStart for teams
+        teamLastStart.set(teamIdOf(p.A), start);
+        teamLastStart.set(teamIdOf(p.B), start);
+      } else if(p.kind === "block"){
+        // block holds the court; duration is p.durationMin
+        const dur = Number(p.durationMin || 0);
+        courtAvail.set(c, start + Math.max(0, dur));
+      } else {
+        courtAvail.set(c, start);
+      }
+
+      out.push({ ...p, timeMin: start, time: fmtHHMM(start) });
+    }
+
+    // global sort (time then court)
+    out.sort((a,b)=>{
+      if(a.timeMin !== b.timeMin) return a.timeMin - b.timeMin;
+      return (a.courtKey||"").localeCompare(b.courtKey||"");
+    });
+
+    return out;
+  }
+
+  // =========================
+  // BUILD CHRONO (new rules)
+  // =========================
+  function buildChrono(dhPools, ddTop4){
     const startMin = parseHHMM(START_TIME);
 
     const mont = dhPools?.montjoly || [];
     const kou  = dhPools?.kourou || [];
 
+    // DH pools: we show only 3 first teams visible in each pool (TS + 2 tirées)
     const dhMont3 = mont.slice(0,3);
     const dhKou3  = kou.slice(0,3);
 
-    const dhA = rr3Matches("Montjoly", dhMont3);
-    const dhB = rr3Matches("Kourou", dhKou3);
+    const montMatches = rr3Matches("Montjoly", dhMont3);
+    const kouMatches  = rr3Matches("Kourou", dhKou3);
 
-    const ddAll = rr4Matches("Poule DD", ddTop4 || []);
+    // DD pool: top4 ranked
+    const ddMatches = dd4MatchesLastTop2("Poule DD", ddTop4 || []);
 
-    // slot builder
-    const items = [];
+    // ---- Build the “plan” with your court logic:
+    // 1) DH: only first 2 matches of each pool in parallel on A and B
+    // 2) DH: last match of each pool on SAME terrain (A) sequentially
+    // 3) The other terrain (B) becomes DD terrain:
+    //    insert a “reconfiguration + échauffement DD” block of 30 min
+    //    then run DD matches on B (with rest logic)
+    const plan = [];
 
-    // 3 rounds pools: A=Mont match i, B=Kourou match i
-    for(let i=0;i<3;i++){
-      const time = fmtHHMM(startMin + i*BLOCK_MIN);
-      if(dhA[i]) items.push({ time, courtKey:"A", ...dhA[i] });
-      if(dhB[i]) items.push({ time, courtKey:"B", ...dhB[i] });
+    // DH first two rounds on both courts
+    for(let i=0;i<2;i++){
+      if(montMatches[i]) plan.push({ ...montMatches[i], courtKey:"A" });
+      if(kouMatches[i])  plan.push({ ...kouMatches[i],  courtKey:"B" });
     }
 
-    // after pools
-    const afterPoolsMin = startMin + 3*BLOCK_MIN;
+    // DH last matches both on same terrain A
+    if(montMatches[2]) plan.push({ ...montMatches[2], courtKey:"A" });
+    if(kouMatches[2])  plan.push({ ...kouMatches[2],  courtKey:"A" });
 
-    // ✅ DH Finals structure (indicatif)
-    // SF1 / SF2 on court A ; women start on court B at same time
-    const tSF1A = fmtHHMM(afterPoolsMin + 0*BLOCK_MIN);
-    const tSF2A = fmtHHMM(afterPoolsMin + 1*BLOCK_MIN);
-
-    // placeholders (top2 pools)
-    const P = (x)=>({ teamName:x, p1FirstName:"", p2FirstName:"" });
-
-    items.push({ time: tSF1A, courtKey:"A", cat:"DH", stage:"Demi-finale 1", A:P("1er Montjoly"), B:P("2e Kourou") });
-    items.push({ time: tSF2A, courtKey:"A", cat:"DH", stage:"Demi-finale 2", A:P("1er Kourou"),  B:P("2e Montjoly") });
-
-    // DD matches on court B (6 matchs)
-    for(let i=0;i<ddAll.length;i++){
-      const time = fmtHHMM(afterPoolsMin + i*BLOCK_MIN);
-      items.push({ time, courtKey:"B", ...ddAll[i] });
-    }
-
-    // DH classement & finale after semis (on court A)
-    const baseFinalMin = afterPoolsMin + 2*BLOCK_MIN; // after SFs
-
-    items.push({ time: fmtHHMM(baseFinalMin + 0*BLOCK_MIN), courtKey:"A", cat:"DH", stage:"Match 5e place", A:P("3e Montjoly"), B:P("3e Kourou") });
-    items.push({ time: fmtHHMM(baseFinalMin + 1*BLOCK_MIN), courtKey:"A", cat:"DH", stage:"Petite finale (3e place)", A:P("Perdant SF1"), B:P("Perdant SF2") });
-    items.push({ time: fmtHHMM(baseFinalMin + 2*BLOCK_MIN), courtKey:"A", cat:"DH", stage:"Finale", A:P("Gagnant SF1"), B:P("Gagnant SF2") });
-
-    // sort by time then court
-    items.sort((a,b)=>{
-      const ta = parseHHMM(a.time), tb = parseHHMM(b.time);
-      if(ta !== tb) return ta - tb;
-      return (a.courtKey||"").localeCompare(b.courtKey||"");
+    // Reconfig block on B (after DH round 2 ends on B)
+    plan.push({
+      kind:"block",
+      courtKey:"B",
+      title:"🔧 Reconfiguration terrain Dames + échauffement",
+      note:"30 min (mise en place + échauffement DD)",
+      durationMin: 30
     });
 
-    return items;
+    // DD matches on court B
+    for(const m of ddMatches){
+      plan.push({ ...m, courtKey:"B" });
+    }
+
+    // Schedule with constraints (rest + rotation)
+    const scheduled = scheduleWithConstraints(plan, startMin);
+
+    return scheduled;
   }
 
   // =========================
@@ -623,7 +712,6 @@
     const pools = computeDhPools(dhDraw);
     const ddTop4 = computeDdTop4(ddTeams);
 
-    // avoid useless rerender spam
     const key = JSON.stringify({
       dhRev: pools.revealed,
       dhTotal: pools.total,
@@ -633,11 +721,10 @@
     if(key === lastRenderedKey) return;
     lastRenderedKey = key;
 
-    // header status
     statusText.textContent = "🟢 En direct";
-    subtitle.textContent = `DH : poules depuis le tirage • DD : top 4 classées • Début ${START_TIME}`;
+    subtitle.textContent = `Début ${START_TIME} • DH poules (2 terrains puis dernier match sur 1 terrain) • DD après reconfig 30 min • pauses équipes respectées`;
 
-    // poules DH
+    // poules DH (affichage 3 premières)
     dhMontjoly.innerHTML = pools.montjoly.length
       ? pools.montjoly.slice(0,3).map((t,i)=> rowCardTeam(t, `#${i+1}`)).join("")
       : `<p class="muted" style="margin:0;">—</p>`;
@@ -660,14 +747,24 @@
 
     chronoList.innerHTML = chrono.length
       ? `<div class="match-list">${
-          chrono.map(m => matchCard({
-            time: m.time,
-            courtKey: m.courtKey,
-            cat: m.cat,
-            stage: m.stage,
-            teamA: m.A,
-            teamB: m.B
-          })).join("")
+          chrono.map(x=>{
+            if(x.kind === "block"){
+              return blockCard({
+                time: x.time,
+                courtKey: x.courtKey,
+                title: x.title,
+                note: x.note
+              });
+            }
+            return matchCard({
+              time: x.time,
+              courtKey: x.courtKey,
+              cat: x.cat,
+              stage: x.stage,
+              teamA: x.A,
+              teamB: x.B
+            });
+          }).join("")
         }</div>`
       : `<p class="muted" style="margin:0;">Programmation non disponible.</p>`;
   }
@@ -683,7 +780,6 @@
   // =========================
   // FIRESTORE LISTENERS
   // =========================
-  // DH draw
   onSnapshot(doc(db, "tirages_open", "dh"), (snap)=>{
     dhDraw = snap.exists() ? (snap.data() || {}) : null;
     renderAll();
@@ -692,7 +788,6 @@
     statusText.textContent = "🔴 Erreur Firestore (tirage DH)";
   });
 
-  // DD teams
   const qDD = query(collection(db, "equipes_dd_public"), orderBy("createdAt", "asc"));
   onSnapshot(qDD, (snap)=>{
     const rows = [];
