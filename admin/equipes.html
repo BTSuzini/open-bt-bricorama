@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin — Équipes — Open BT Bricorama</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260227-open-admin-equipes-fix" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260227-open-admin-equipes-cards" />
 </head>
 
 <body>
@@ -41,6 +41,7 @@
     <p class="muted" style="margin:0;">Cette page est réservée aux administrateurs.</p>
   </section>
 
+  <!-- ✅ Zone -->
   <section class="card" id="adminZone" style="display:none;">
     <h2 style="margin:0 0 10px;">🧭 Zone</h2>
 
@@ -61,84 +62,148 @@
     <h2 style="margin:0 0 8px;">ℹ️ Choisir DH ou DD</h2>
     <p class="muted" style="margin:0;">
       Sélectionne <b>DH</b> ou <b>DD</b> dans “Zone” pour gérer les équipes.
-      <br>(Le <b>Général</b> sert aux infos / pages admin générales.)
     </p>
   </section>
 
+  <!-- Résumé -->
   <section class="card" id="panelSummary" style="display:none;">
     <h2>📌 Résumé</h2>
-    <p class="muted" style="margin:0;">
-      Total: <strong id="total">0</strong> —
-      Principale (MAIN): <strong id="main">0</strong> —
-      Attente (WAIT): <strong id="wait">0</strong> —
-      AUTO: <strong id="auto">0</strong> —
-      STBY: <strong id="stby">0</strong>
+    <p class="muted" style="margin:0;" id="counts">
+      Chargement…
     </p>
     <p class="muted" id="status" style="margin-top:8px;">Connexion…</p>
   </section>
 
-  <section class="card" id="panelTable" style="display:none;">
-    <h2>🗂️ Liste admin</h2>
+  <!-- ✅ Liste mobile-first -->
+  <section class="card" id="panelList" style="display:none;">
+    <h2 style="margin-bottom:10px;">👥 Équipes (admin)</h2>
 
-    <div class="table-wrap">
-      <table class="teams-table" aria-label="Équipes Open BT (admin)">
-        <thead>
-          <tr>
-            <th style="width:44px;">#</th>
-            <th>Équipe</th>
-            <th>Joueur/Joueuse 1</th>
-            <th>Joueur/Joueuse 2</th>
-            <th style="width:110px;">BT P1</th>
-            <th style="width:110px;">BT P2</th>
-            <th style="width:120px;">Rang équipe</th>
-            <th style="width:110px;">Liste</th>
-            <th style="width:90px;">STBY</th>
-            <th style="width:320px;">Actions</th>
-          </tr>
-        </thead>
-        <tbody id="body"></tbody>
-      </table>
+    <div class="grid" style="margin-bottom:10px;">
+      <button class="btn" id="btnRefresh" style="font-weight:900;color:#111;">🔄 Rafraîchir</button>
+      <button class="btn" id="btnExpand" style="font-weight:900;color:#111;">🧩 Tout développer</button>
+      <button class="btn" id="btnCollapse" style="font-weight:900;color:#111;">🧊 Tout réduire</button>
     </div>
 
+    <div id="list" style="display:grid; gap:12px;"></div>
+
     <p class="muted" style="margin-top:10px;">
-      ⚠️ Si un classement n’est pas renseigné, le rang équipe est “—”.
+      ✅ Mobile friendly : pas de tableau, tout se replie / s’étire sans scroll horizontal.
     </p>
   </section>
 
 </main>
 
 <style>
-  .table-wrap{ overflow:auto; border:1px solid #eee; border-radius:14px; background:#fff; }
-  .teams-table{ width:100%; border-collapse:separate; border-spacing:0; min-width: 1180px; }
-  .teams-table thead th{
-    text-align:left; font-size:13px; color:#444; background:#f7f7f7;
-    border-bottom:1px solid #eee; padding:12px; position:sticky; top:0; z-index:1;
-    white-space:nowrap;
+  /* Cards */
+  .team-card{
+    border:1px solid #eee;
+    border-radius:16px;
+    background:#fff;
+    box-shadow: 0 8px 18px rgba(0,0,0,.04);
+    padding:12px;
+    display:grid;
+    gap:10px;
   }
-  .teams-table tbody td{
-    padding:12px; border-bottom:1px solid #f0f0f0; font-size:14px; vertical-align:top;
+
+  .team-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:10px;
   }
-  .teams-table tbody tr:last-child td{ border-bottom:none; }
+
+  .team-name{
+    font-weight:1000;
+    line-height:1.15;
+    word-break:break-word;
+  }
+
+  .badges{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    justify-content:flex-end;
+  }
 
   .pill{
-    display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px;
-    border:1px solid #eee; background:#fafafa; white-space:nowrap;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:12px;
+    border:1px solid #eee;
+    background:#fafafa;
+    color:#333;
+    white-space:nowrap;
+    font-weight:900;
   }
-  .pill.rank{ border-color:#d9e6ff; background:#f3f7ff; font-weight:900; }
-  .pill.main{ border-color:#d9f2df; background:#f3fff6; font-weight:900; }
-  .pill.wait{ border-color:#ffe1a6; background:#fff8e6; font-weight:900; }
-  .pill.stby{ border-color:#ffd37a; background:#fff7e6; font-weight:900; }
+  .pill.main{ border-color:#d9f2df; background:#f3fff6; }
+  .pill.wait{ border-color:#ffe1a6; background:#fff8e6; }
+  .pill.stby{ border-color:#ffd37a; background:#fff7e6; }
+  .pill.rank{ border-color:#d9e6ff; background:#f3f7ff; }
 
-  .actions{ display:flex; gap:8px; flex-wrap:wrap; }
+  /* Player lines */
+  .player{
+    display:grid;
+    gap:6px;
+    padding:10px;
+    border:1px solid #f1f1f1;
+    border-radius:14px;
+    background:#fcfcfc;
+  }
+  .player-title{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .player-title b{ font-weight:1000; }
+  .player-meta{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;      /* ✅ wrap => jamais de scroll horizontal */
+    line-height:1.25;
+  }
+  .kv{
+    display:inline-flex;
+    gap:6px;
+    padding:4px 10px;
+    border-radius:999px;
+    border:1px solid #eee;
+    background:#fff;
+    font-size:12px;
+    white-space:nowrap;
+  }
+  .kv .k{ color:#666; font-weight:800; }
+  .kv .v{ font-weight:1000; }
+
+  /* Actions */
+  .actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;      /* ✅ wrap */
+  }
   .btnx{
-    padding:8px 10px; border-radius:10px; border:1px solid #ddd;
-    background:#fff; cursor:pointer; font-weight:800;
+    padding:9px 12px;
+    border-radius:999px;
+    border:1px solid #ddd;
+    background:#fff;
+    cursor:pointer;
+    font-weight:1000;
+    color:#111;
   }
   .btnx:hover{ background:#f5f5f5; }
   .danger{ border-color:#f1b2b2; }
   .danger:hover{ background:#ffecec; }
 
-  .mono{ font-variant-numeric: tabular-nums; white-space:nowrap; }
+  details summary{
+    cursor:pointer;
+    list-style:none;
+    font-weight:1000;
+  }
+  details summary::-webkit-details-marker{ display:none; }
 </style>
 
 <script type="module">
@@ -146,15 +211,15 @@
   import { logout, getRoleByEmail } from "../assets/js/session.js";
   import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
   import {
-    collection, query, orderBy, onSnapshot,
-    doc, updateDoc, deleteDoc
+    collection, getDocs, query, orderBy,
+    doc, getDoc, setDoc, updateDoc, deleteDoc, serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
   // ---- scope (URL ?scope=dh|dd|general)
   const params = new URLSearchParams(location.search);
   const scopeFromUrl = (params.get("scope") || "dh").toLowerCase();
 
-  // ---- dom
+  // ---- DOM
   const accessDenied = document.getElementById("accessDenied");
   const adminZone = document.getElementById("adminZone");
   const scopeEl = document.getElementById("scope");
@@ -163,24 +228,18 @@
 
   const panelNeedScope = document.getElementById("panelNeedScope");
   const panelSummary   = document.getElementById("panelSummary");
-  const panelTable     = document.getElementById("panelTable");
+  const panelList      = document.getElementById("panelList");
 
-  const totalEl = document.getElementById("total");
-  const mainEl  = document.getElementById("main");
-  const waitEl  = document.getElementById("wait");
-  const autoEl  = document.getElementById("auto");
-  const stbyEl  = document.getElementById("stby");
-  const statusEl= document.getElementById("status");
-  const bodyEl  = document.getElementById("body");
+  const countsEl = document.getElementById("counts");
+  const statusEl = document.getElementById("status");
+  const listEl   = document.getElementById("list");
 
-  // ---- live state
-  let unsub = null;
-  let liveRows = []; // ✅ garde le snapshot en mémoire => actions fiables
+  const btnRefresh  = document.getElementById("btnRefresh");
+  const btnExpand   = document.getElementById("btnExpand");
+  const btnCollapse = document.getElementById("btnCollapse");
 
-  function stopLive(){
-    if(unsub){ unsub(); unsub = null; }
-    liveRows = [];
-  }
+  let currentScope = (scopeFromUrl === "dd" || scopeFromUrl === "general") ? scopeFromUrl : "dh";
+  let liveRows = [];
 
   function esc(s){
     return (s ?? "").toString()
@@ -193,12 +252,14 @@
     const n = typeof v === "number" ? v : Number(String(v).replace(",", ".").trim());
     return Number.isFinite(n) ? n : null;
   }
-
+  function fmt(v){
+    const t = (v ?? "").toString().trim();
+    return t === "" ? "—" : t;
+  }
   function fmtRank(v){
     const n = toNum(v);
     return n === null ? "—" : String(n);
   }
-
   function teamRank(p1, p2){
     const a = toNum(p1), b = toNum(p2);
     if(a === null || b === null) return null;
@@ -211,9 +272,14 @@
     return "DH";
   }
 
-  function colName(sc){
+  function colPublic(sc){
     if(sc === "dd") return "equipes_dd_public";
     if(sc === "dh") return "equipes_dh_public";
+    return null;
+  }
+  function colPrivate(sc){
+    if(sc === "dd") return "inscriptions_dd_private";
+    if(sc === "dh") return "inscriptions_dh_private";
     return null;
   }
 
@@ -249,128 +315,224 @@
     if(sc === "general"){
       panelNeedScope.style.display = "block";
       panelSummary.style.display = "none";
-      panelTable.style.display = "none";
+      panelList.style.display = "none";
       return;
     }
     panelNeedScope.style.display = "none";
     panelSummary.style.display = "block";
-    panelTable.style.display = "block";
+    panelList.style.display = "block";
   }
 
-  function renderTable(rows, sc){
-    const cMain = rows.filter(r => r.list === "main").length;
-    const cWait = rows.filter(r => r.list === "wait").length;
-    const cAuto = rows.filter(r => !r.list).length;
-    const cStby = rows.filter(r => r.stby === true).length;
+  function pillList(list){
+    if(list === "main") return `<span class="pill main">MAIN</span>`;
+    if(list === "wait") return `<span class="pill wait">WAIT</span>`;
+    return `<span class="pill">AUTO</span>`;
+  }
 
-    totalEl.textContent = rows.length;
-    mainEl.textContent  = cMain;
-    waitEl.textContent  = cWait;
-    autoEl.textContent  = cAuto;
-    stbyEl.textContent  = cStby;
+  function pillStby(stby){
+    return stby ? `<span class="pill stby">STBY</span>` : `<span class="pill">OK</span>`;
+  }
 
-    bodyEl.innerHTML = rows.length ? rows.map((r, i) => {
-      const p1 = toNum(r.p1Rank);
-      const p2 = toNum(r.p2Rank);
-      const tr = teamRank(p1, p2);
+  function computeCounts(rows){
+    const total = rows.length;
+    const main  = rows.filter(r => r.list === "main" && !r.stby).length;
+    const wait  = rows.filter(r => r.list === "wait" && !r.stby).length;
+    const auto  = rows.filter(r => !r.list && !r.stby).length;
+    const stby  = rows.filter(r => r.stby).length;
+    return { total, main, wait, auto, stby };
+  }
 
-      const listPill = (r.list === "main")
-        ? `<span class="pill main">MAIN</span>`
-        : (r.list === "wait")
-          ? `<span class="pill wait">WAIT</span>`
-          : `<span class="pill">AUTO</span>`;
+  function playerLineHtml(label, p){
+    return `
+      <div class="player">
+        <div class="player-title">
+          <b>${label}</b>
+          <span class="pill rank">🏷️ ${esc(fmtRank(p.rank))}</span>
+        </div>
 
-      const stbyPill = r.stby
-        ? `<span class="pill stby">STBY</span>`
-        : `<span class="pill">OK</span>`;
+        <div class="player-meta">
+          <span class="kv"><span class="k">Nom</span><span class="v">${esc(fmt(p.lastName))}</span></span>
+          <span class="kv"><span class="k">Prénom</span><span class="v">${esc(fmt(p.firstName))}</span></span>
+          <span class="kv"><span class="k">Licence</span><span class="v">${esc(fmt(p.licence))}</span></span>
+          <span class="kv"><span class="k">Tél</span><span class="v">${esc(fmt(p.phone))}</span></span>
+        </div>
+      </div>
+    `;
+  }
+
+  function render(rows){
+    liveRows = rows.slice();
+
+    const c = computeCounts(rows);
+    countsEl.innerHTML =
+      `Total : <b>${c.total}</b> — MAIN : <b>${c.main}</b> — WAIT : <b>${c.wait}</b> — AUTO : <b>${c.auto}</b> — STBY : <b>${c.stby}</b>`;
+
+    listEl.innerHTML = rows.length ? rows.map((r, i) => {
+      const tr = teamRank(r.p1Rank, r.p2Rank);
 
       return `
-        <tr>
-          <td class="mono">#${i+1}</td>
-
-          <td>
-            <div style="font-weight:1000;">${esc(r.teamName || "")}</div>
-            <div class="muted" style="margin-top:6px;">ID: <span class="mono">${esc(r.id)}</span></div>
-          </td>
-
-          <td>${esc(r.p1FirstName || "")}</td>
-          <td>${esc(r.p2FirstName || "")}</td>
-
-          <td><span class="pill rank">${esc(fmtRank(p1))}</span></td>
-          <td><span class="pill rank">${esc(fmtRank(p2))}</span></td>
-          <td><span class="pill rank">${esc(tr === null ? "—" : String(tr))}</span></td>
-
-          <td>${listPill}</td>
-          <td>${stbyPill}</td>
-
-          <td>
-            <div class="actions">
-              <button class="btnx" data-act="ranks" data-id="${esc(r.id)}">🏷️ Classements</button>
-              <button class="btnx" data-act="main" data-id="${esc(r.id)}">⬆️ MAIN</button>
-              <button class="btnx" data-act="wait" data-id="${esc(r.id)}">⬇️ WAIT</button>
-              <button class="btnx" data-act="auto" data-id="${esc(r.id)}">🌀 AUTO</button>
-              <button class="btnx" data-act="stby" data-id="${esc(r.id)}">${r.stby ? "✅ Activer" : "⏸️ STBY"}</button>
-              <button class="btnx danger" data-act="del" data-id="${esc(r.id)}">🗑️ Supprimer</button>
+        <div class="team-card" data-id="${esc(r.id)}">
+          <div class="team-head">
+            <div>
+              <div class="team-name">${esc(fmt(r.teamName))}</div>
+              <div class="muted" style="margin-top:6px;">
+                #${i+1} • ID: <span style="font-variant-numeric:tabular-nums;">${esc(r.id)}</span>
+                ${tr === null ? "" : ` • <span class="pill rank">🏷️ Rang équipe: ${esc(String(tr))}</span>`}
+              </div>
             </div>
-          </td>
-        </tr>
-      `;
-    }).join("") : `
-      <tr><td colspan="10" class="muted" style="padding:14px;">Aucune équipe.</td></tr>
-    `;
 
-    statusEl.textContent = `🟢 En direct — ${zoneText(sc)}`;
+            <div class="badges">
+              ${pillList(r.list)}
+              ${pillStby(r.stby)}
+            </div>
+          </div>
+
+          ${playerLineHtml("Joueur/Joueuse 1", {
+            firstName: r.p1FirstName, lastName: r.p1LastName, licence: r.p1Licence, phone: r.p1Phone, rank: r.p1Rank
+          })}
+
+          ${playerLineHtml("Joueur/Joueuse 2", {
+            firstName: r.p2FirstName, lastName: r.p2LastName, licence: r.p2Licence, phone: r.p2Phone, rank: r.p2Rank
+          })}
+
+          <details>
+            <summary>⚙️ Actions / Modifier</summary>
+            <div style="margin-top:10px; display:grid; gap:10px;">
+              <div class="actions">
+                <button class="btnx" data-act="edit"  data-id="${esc(r.id)}">✏️ Modifier équipe</button>
+                <button class="btnx" data-act="ranks" data-id="${esc(r.id)}">🏷️ Classements</button>
+              </div>
+
+              <div class="actions">
+                <button class="btnx" data-act="main" data-id="${esc(r.id)}">⬆️ MAIN</button>
+                <button class="btnx" data-act="wait" data-id="${esc(r.id)}">⬇️ WAIT</button>
+                <button class="btnx" data-act="auto" data-id="${esc(r.id)}">🌀 AUTO</button>
+                <button class="btnx" data-act="stby" data-id="${esc(r.id)}">${r.stby ? "✅ Activer" : "⏸️ STBY"}</button>
+              </div>
+
+              <div class="actions">
+                <button class="btnx danger" data-act="del" data-id="${esc(r.id)}">🗑️ Supprimer</button>
+              </div>
+            </div>
+          </details>
+        </div>
+      `;
+    }).join("") : `<div class="muted">Aucune équipe.</div>`;
   }
 
-  function startLive(sc){
-    stopLive();
-    bodyEl.innerHTML = "";
-    statusEl.textContent = "Connexion…";
+  async function fetchMerged(sc){
+    const priv = colPrivate(sc);
+    const pub  = colPublic(sc);
+    if(!priv || !pub) return [];
 
-    const col = colName(sc);
-    if(!col){
+    statusEl.textContent = "Chargement…";
+
+    const [privSnap, pubSnap] = await Promise.all([
+      getDocs(query(collection(db, priv), orderBy("createdAt","asc"))),
+      getDocs(query(collection(db, pub), orderBy("createdAt","asc")))
+    ]);
+
+    const pubById = new Map();
+    pubSnap.forEach(d => pubById.set(d.id, d.data() || {}));
+
+    const rows = [];
+    privSnap.forEach(d => {
+      const x = d.data() || {};
+      const p = pubById.get(d.id) || {};
+      rows.push({
+        id: d.id,
+        createdAtMs: x.createdAt?.toMillis ? x.createdAt.toMillis() : 0,
+
+        teamName: x.teamName || p.teamName || "",
+
+        p1FirstName: x.p1FirstName || p.p1FirstName || "",
+        p1LastName:  x.p1LastName  || "",
+        p1Licence:   x.p1Licence   || "",
+        p1Phone:     x.p1Phone     || "",
+        p1Rank:      p.p1Rank ?? null,
+
+        p2FirstName: x.p2FirstName || p.p2FirstName || "",
+        p2LastName:  x.p2LastName  || "",
+        p2Licence:   x.p2Licence   || "",
+        p2Phone:     x.p2Phone     || "",
+        p2Rank:      p.p2Rank ?? null,
+
+        list: p.list || null,
+        stby: p.stby === true
+      });
+    });
+
+    rows.sort((a,b)=> (a.createdAtMs||0) - (b.createdAtMs||0));
+    return rows;
+  }
+
+  async function refresh(){
+    if(currentScope === "general"){
       statusEl.textContent = "—";
+      listEl.innerHTML = "";
+      countsEl.textContent = "—";
       return;
     }
 
-    const q = query(collection(db, col), orderBy("createdAt", "asc"));
-    unsub = onSnapshot(q, (snap) => {
-      const rows = snap.docs.map(d => {
-        const x = d.data() || {};
-        return {
-          id: d.id,
-          teamName: x.teamName || "",
-          p1FirstName: x.p1FirstName || "",
-          p2FirstName: x.p2FirstName || "",
-          list: x.list || null,
-          stby: x.stby === true,
-          p1Rank: x.p1Rank ?? null,
-          p2Rank: x.p2Rank ?? null,
-          createdAtMs: x.createdAt?.toMillis ? x.createdAt.toMillis() : 0
-        };
-      });
-
-      rows.sort((a,b) => (a.createdAtMs||0) - (b.createdAtMs||0));
-      liveRows = rows;
-      renderTable(rows, sc);
-    }, (err) => {
+    try{
+      const rows = await fetchMerged(currentScope);
+      render(rows);
+      statusEl.textContent = `✅ OK — ${zoneText(currentScope)}`;
+    }catch(err){
       console.error(err);
-      statusEl.textContent = "🔴 Erreur de connexion";
+      statusEl.textContent = "❌ Erreur (voir console)";
+    }
+  }
+
+  async function patchPublic(sc, id, patch){
+    const pub = colPublic(sc);
+    if(!pub) return;
+    await setDoc(doc(db, pub, id), { ...patch, updatedAt: serverTimestamp() }, { merge:true });
+  }
+
+  async function patchPrivate(sc, id, patch){
+    const priv = colPrivate(sc);
+    if(!priv) return;
+    await updateDoc(doc(db, priv, id), patch);
+  }
+
+  async function editTeam(sc, row){
+    const teamName = prompt("Nom d’équipe :", row.teamName || "");
+    if(teamName === null) return;
+
+    // P1
+    const p1LastName  = prompt("J1 — Nom :", row.p1LastName || "");
+    if(p1LastName === null) return;
+    const p1FirstName = prompt("J1 — Prénom :", row.p1FirstName || "");
+    if(p1FirstName === null) return;
+    const p1Licence   = prompt("J1 — Licence :", row.p1Licence || "");
+    if(p1Licence === null) return;
+    const p1Phone     = prompt("J1 — Téléphone :", row.p1Phone || "");
+    if(p1Phone === null) return;
+
+    // P2
+    const p2LastName  = prompt("J2 — Nom :", row.p2LastName || "");
+    if(p2LastName === null) return;
+    const p2FirstName = prompt("J2 — Prénom :", row.p2FirstName || "");
+    if(p2FirstName === null) return;
+    const p2Licence   = prompt("J2 — Licence :", row.p2Licence || "");
+    if(p2Licence === null) return;
+    const p2Phone     = prompt("J2 — Téléphone :", row.p2Phone || "");
+    if(p2Phone === null) return;
+
+    // ✅ écritures
+    await patchPrivate(sc, row.id, {
+      teamName,
+      p1FirstName, p1LastName, p1Licence, p1Phone,
+      p2FirstName, p2LastName, p2Licence, p2Phone
     });
-  }
 
-  async function setPatch(sc, id, patch){
-    const col = colName(sc);
-    if(!col) return;
-    await updateDoc(doc(db, col, id), patch);
-  }
-
-  async function deleteTeam(sc, id){
-    const ok = confirm("Supprimer cette équipe ?\n\n⚠️ Action irréversible.");
-    if(!ok) return;
-    const col = colName(sc);
-    if(!col) return;
-    await deleteDoc(doc(db, col, id));
+    // ✅ miroir minimal côté public (pour vues publiques)
+    await patchPublic(sc, row.id, {
+      teamName,
+      p1FirstName,
+      p2FirstName
+    });
   }
 
   async function editRanks(sc, row){
@@ -392,64 +554,70 @@
     if(p1t !== "" && p1 === null) return alert("p1Rank invalide.");
     if(p2t !== "" && p2 === null) return alert("p2Rank invalide.");
 
-    await setPatch(sc, row.id, { p1Rank: p1, p2Rank: p2 });
+    await patchPublic(sc, row.id, { p1Rank: p1, p2Rank: p2 });
   }
 
-  bodyEl.addEventListener("click", async (e) => {
+  async function deleteTeam(sc, id){
+    const ok = confirm("Supprimer cette équipe ?\n\n⚠️ Action irréversible.");
+    if(!ok) return;
+
+    const priv = colPrivate(sc);
+    const pub  = colPublic(sc);
+    if(priv) await deleteDoc(doc(db, priv, id));
+    if(pub)  await deleteDoc(doc(db, pub, id));
+  }
+
+  // Actions list
+  listEl.addEventListener("click", async (e) => {
     const btn = e.target.closest("button[data-act]");
     if(!btn) return;
 
-    const sc = scopeEl.value;
-    if(sc === "general"){
-      alert("Choisis DH ou DD.");
-      return;
-    }
+    const sc = currentScope;
+    if(sc === "general") return;
 
     const act = btn.dataset.act;
     const id  = btn.dataset.id;
 
     const row = liveRows.find(r => r.id === id);
-    if(!row) return alert("Équipe introuvable (snapshot).");
+    if(!row) return alert("Équipe introuvable (refresh).");
 
     try{
-      if(act === "main") await setPatch(sc, id, { list: "main" });
-      if(act === "wait") await setPatch(sc, id, { list: "wait" });
-      if(act === "auto") await setPatch(sc, id, { list: null });
+      if(act === "main") await patchPublic(sc, id, { list: "main" });
+      if(act === "wait") await patchPublic(sc, id, { list: "wait" });
+      if(act === "auto") await patchPublic(sc, id, { list: null });
+      if(act === "stby") await patchPublic(sc, id, { stby: !row.stby });
 
-      if(act === "stby"){
-        await setPatch(sc, id, { stby: !row.stby }); // ✅ vrai toggle
-      }
+      if(act === "ranks") await editRanks(sc, row);
+      if(act === "edit")  await editTeam(sc, row);
+      if(act === "del")   await deleteTeam(sc, id);
 
-      if(act === "del") await deleteTeam(sc, id);
-
-      if(act === "ranks"){
-        await editRanks(sc, row); // ✅ ranks actuels préremplis
-      }
+      await refresh();
     }catch(err){
       console.error(err);
       alert("Erreur ❌ (voir console)");
     }
   });
 
+  // Expand/collapse all details
+  btnExpand.onclick = ()=> document.querySelectorAll("details").forEach(d => d.open = true);
+  btnCollapse.onclick = ()=> document.querySelectorAll("details").forEach(d => d.open = false);
+  btnRefresh.onclick = async ()=> { await refresh(); };
+
   function showDenied(){
     accessDenied.style.display = "block";
     adminZone.style.display = "none";
     panelNeedScope.style.display = "none";
     panelSummary.style.display = "none";
-    panelTable.style.display = "none";
-    stopLive();
+    panelList.style.display = "none";
   }
 
-  function showAdmin(currentScope){
+  function showAdmin(sc){
     accessDenied.style.display = "none";
     adminZone.style.display = "block";
 
-    scopeEl.value = currentScope;
-    setTabs(currentScope);
-    showPanels(currentScope);
-
-    if(currentScope !== "general") startLive(currentScope);
-    else statusEl.textContent = "—";
+    scopeEl.value = sc;
+    setTabs(sc);
+    showPanels(sc);
 
     scopeEl.onchange = ()=>{
       const next = scopeEl.value || "general";
@@ -457,31 +625,29 @@
     };
   }
 
-  // ✅ Auth guard Open (comme tes pages Open)
+  // Guard admin (Open)
   onAuthStateChanged(auth, async (user)=>{
-    stopLive();
-
-    if(!user){
-      showDenied();
-      return;
-    }
+    if(!user){ showDenied(); return; }
 
     try{
       const role = await getRoleByEmail(user.email);
-      if(role !== "admin"){
-        showDenied();
-        return;
-      }
+      if(role !== "admin"){ showDenied(); return; }
 
-      const initial = (scopeFromUrl === "dd" || scopeFromUrl === "general") ? scopeFromUrl : "dh";
-      showAdmin(initial);
+      showAdmin(currentScope);
+
+      if(currentScope !== "general"){
+        await refresh();
+      } else {
+        statusEl.textContent = "—";
+        countsEl.textContent = "—";
+      }
     }catch(err){
       console.error(err);
       showDenied();
     }
   });
 
-  // logout
+  // Logout
   document.getElementById("btnLogout").onclick = async (e)=>{
     e.preventDefault();
     await logout();
