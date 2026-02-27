@@ -1,0 +1,780 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin — Tirage — Double Hommes — Open BT Bricorama</title>
+  <link rel="stylesheet" href="../../assets/css/main.css?v=20260227-open-dh-admin-tirage" />
+
+  <style>
+    .roulette-wheel{
+      height:68px;
+      border-radius:14px;
+      border:1px solid #e6e6e6;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:1000;
+      font-size:18px;
+      letter-spacing:.2px;
+      background:linear-gradient(180deg,#fff,#fafafa);
+    }
+    .pill{
+      display:inline-block;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:12px;
+      border:1px solid #eee;
+      background:#fafafa;
+      white-space:nowrap;
+      font-weight:900;
+    }
+    .pill.h1{ border-color:#d9e6ff; background:#f3f7ff; }
+    .pill.h2{ border-color:#d7f5e6; background:#f0fdf4; }
+
+    .grid-2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+    @media (max-width: 720px){
+      .grid-2{ grid-template-columns:1fr; }
+    }
+
+    .pool-card{
+      border-radius:18px;
+      border:2px solid rgba(0,0,0,.06);
+      padding:14px;
+      background:#fff;
+      box-shadow:0 1px 0 rgba(0,0,0,.03);
+    }
+
+    .pool-title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin:0 0 10px;
+      font-weight:1000;
+      font-size:16px;
+    }
+
+    .teamline{
+      border:1px solid rgba(0,0,0,.08);
+      border-radius:14px;
+      padding:10px 12px;
+      background:#fff;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .tmain{ min-width:0; flex:1 1 auto; }
+    .tname{
+      font-weight:1000;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .tsub{
+      margin-top:4px;
+      opacity:.8;
+      font-weight:800;
+      font-size:12px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .tag{
+      flex:0 0 auto;
+      border:1px solid rgba(0,0,0,.12);
+      border-radius:999px;
+      padding:5px 9px;
+      font-size:11px;
+      font-weight:1000;
+      white-space:nowrap;
+      opacity:.9;
+    }
+
+    /* ✅ Bandeau Open DH */
+    .topbar-row-step{
+      grid-template-columns: var(--logo-size) 1fr var(--logo-size);
+    }
+    .step-title-wrap{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height: calc(var(--logo-size) * 0.55);
+    }
+    .step-title-img{
+      width: min(520px, 100%);
+      max-height: 88px;
+      height: auto;
+      object-fit: contain;
+      display:block;
+      filter: drop-shadow(0 1px 0 rgba(0,0,0,.15));
+    }
+
+    .nav-step{
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .nav-step a{
+      padding:8px 12px;
+      flex: 0 0 auto;
+      text-align:center;
+      white-space:nowrap;
+    }
+    @media (max-width: 560px){
+      .nav-step{ justify-content:space-between; }
+      .nav-step a{ width: calc((100% - 16px) / 3); }
+      .nav-step a:nth-child(n+4){ width: calc((100% - 8px) / 2); }
+    }
+    @media (max-width: 420px){
+      .nav-step a{ padding:7px 10px; font-size:13px; }
+      .step-title-img{ max-height: 74px; }
+    }
+    .nav a[aria-current="page"]{
+      background: rgba(255,255,255,.26);
+      border-color: rgba(255,255,255,.45);
+      box-shadow: 0 6px 14px rgba(0,0,0,.10);
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="container">
+
+    <div class="topbar-row topbar-row-step">
+      <div class="brand-logo">
+        <img src="../../assets/img/logo-suzini.png" alt="Logo Suzini">
+      </div>
+
+      <div class="step-title-wrap" aria-label="BT250 — Double Hommes">
+        <img class="step-title-img" src="../../assets/img/bt250-dm.png" alt="BT250 — Double Hommes">
+      </div>
+
+      <div class="brand-logo">
+        <img src="../../assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
+      </div>
+    </div>
+
+    <nav class="nav nav-step">
+      <a href="../../index.html" title="Accueil" aria-label="Accueil">🏠</a>
+      <a href="../dh/inscriptions.html">📝 Inscriptions</a>
+      <a href="../dh/tirage.html">🎲 Tirage (public)</a>
+      <a href="../dh/equipes.html">👥 Équipes</a>
+      <a href="../dh/programmation.html">🗓️ Programme</a>
+    </nav>
+
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="card" id="accessDenied" style="display:none;">
+    <h2 style="margin:0 0 8px;">⛔ Accès refusé</h2>
+    <p class="muted" style="margin:0;">Cette page est réservée aux administrateurs.</p>
+  </section>
+
+  <section class="card" id="adminUI" style="display:none;">
+    <h2 style="margin:0 0 10px;">🎲 Tirage au sort — contrôle admin (DH)</h2>
+
+    <p class="muted" id="status" style="margin:0;">Chargement…</p>
+
+    <div class="grid" style="margin-top:12px;">
+      <button class="btn" id="btnLoad" style="font-weight:900; color:#111;">🔄 Charger équipes (liste principale)</button>
+      <button class="btn" id="btnStart" style="font-weight:900; color:#111;">▶️ Lancer le tirage</button>
+      <button class="btn" id="btnNext" style="font-weight:900; color:#111;">🎰 Tirer la prochaine équipe</button>
+      <button class="btn" id="btnValidate" style="font-weight:900; color:#111;">✅ Valider le tirage</button>
+      <button class="btn" id="btnReset" style="font-weight:900; color:#111; border-color:#f1b2b2;">🧨 Réinitialiser</button>
+      <a class="btn" id="btnPublic" href="#" style="font-weight:900; color:#111; text-align:center;">👀 Vue publique</a>
+    </div>
+
+    <p class="muted" style="margin-top:10px;">
+      Règles (DH Open) :
+      <br>• 2 poules : <b>Montjoly</b> + <b>Kourou</b>
+      <br>• TS1 → Montjoly, TS2 → Kourou
+      <br>• Chapeau 1 = équipes #3 et #4 : tirage → 1ère dans Montjoly, l’autre dans Kourou
+      <br>• Chapeau 2 = le reste : placement alterné Montjoly / Kourou / Montjoly / Kourou…
+    </p>
+  </section>
+
+  <section class="card" id="panel" style="display:none;">
+    <h2 style="margin:0 0 10px;">📌 Aperçu</h2>
+
+    <div class="grid">
+      <div class="card" style="margin:0;">
+        <div style="font-weight:1000;">🏷️ TS1 (→ Montjoly)</div>
+        <div class="muted" id="seed1">—</div>
+      </div>
+      <div class="card" style="margin:0;">
+        <div style="font-weight:1000;">🏷️ TS2 (→ Kourou)</div>
+        <div class="muted" id="seed2">—</div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <div style="font-weight:1000; margin-bottom:8px;">🎰 Roulette (admin)</div>
+      <div class="roulette-wheel" id="wheel">—</div>
+      <div class="muted" id="wheelSub" style="margin-top:8px;">—</div>
+    </div>
+
+    <div class="grid-2" style="margin-top:12px;">
+      <div class="pool-card">
+        <div class="pool-title">🐢 Poule Montjoly <span class="pill" id="montjolyCount">0</span></div>
+        <div id="montjolyList" style="display:grid; gap:8px;"></div>
+      </div>
+
+      <div class="pool-card">
+        <div class="pool-title">🚀 Poule Kourou <span class="pill" id="kourouCount">0</span></div>
+        <div id="kourouList" style="display:grid; gap:8px;"></div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <div style="font-weight:1000; margin-bottom:8px;">📥 Urnes</div>
+      <div class="grid-2">
+        <div class="card" style="margin:0;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+            <b>Chapeau 1</b>
+            <span class="pill h1">#3 & #4</span>
+          </div>
+          <div id="hat1List" style="display:grid; gap:8px; margin-top:10px;"></div>
+        </div>
+        <div class="card" style="margin:0;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+            <b>Chapeau 2</b>
+            <span class="pill h2">#5 → …</span>
+          </div>
+          <div id="hat2List" style="display:grid; gap:8px; margin-top:10px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <div style="font-weight:1000; margin-bottom:8px;">📌 Tirages révélés</div>
+      <div id="revealedList" style="display:grid; gap:8px;"></div>
+    </div>
+
+  </section>
+
+</main>
+
+<script type="module">
+  import { auth, db } from "../../assets/js/firebase.js";
+  import { logout, requireRole } from "../../assets/js/session.js";
+
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+  import {
+    collection, getDocs, query, orderBy,
+    doc, getDoc, setDoc, updateDoc, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+  // ========== CONFIG OPEN DH ==========
+  const COL_PUBLIC = "equipes_dh_public";
+  const DRAW_DOC = doc(db, "tirages_open", "dh"); // ✅ stockage unique Open DH
+
+  // ========== DOM ==========
+  const accessDenied = document.getElementById("accessDenied");
+  const adminUI = document.getElementById("adminUI");
+  const panel = document.getElementById("panel");
+
+  const statusEl = document.getElementById("status");
+  const seed1El = document.getElementById("seed1");
+  const seed2El = document.getElementById("seed2");
+
+  const wheel = document.getElementById("wheel");
+  const wheelSub = document.getElementById("wheelSub");
+
+  const montjolyList = document.getElementById("montjolyList");
+  const kourouList = document.getElementById("kourouList");
+  const montjolyCount = document.getElementById("montjolyCount");
+  const kourouCount = document.getElementById("kourouCount");
+
+  const hat1List = document.getElementById("hat1List");
+  const hat2List = document.getElementById("hat2List");
+  const revealedList = document.getElementById("revealedList");
+
+  const btnLoad = document.getElementById("btnLoad");
+  const btnStart = document.getElementById("btnStart");
+  const btnNext = document.getElementById("btnNext");
+  const btnValidate = document.getElementById("btnValidate");
+  const btnReset = document.getElementById("btnReset");
+  const btnPublic = document.getElementById("btnPublic");
+
+  // ========== STATE ==========
+  let cachedMainTeams = []; // triées par teamRank asc
+  let draw = null;
+
+  function esc(s){
+    return (s ?? "").toString()
+      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+  }
+
+  function uiSet(msg){ statusEl.textContent = msg; }
+
+  function toNum(v){
+    if(v === null || v === undefined || v === "") return null;
+    const n = typeof v === "number" ? v : Number(String(v).replace(",", ".").trim());
+    return Number.isFinite(n) ? n : null;
+  }
+
+  function teamRank(t){
+    const a = toNum(t.p1Rank);
+    const b = toNum(t.p2Rank);
+    if(a === null || b === null) return Number.POSITIVE_INFINITY;
+    return a + b;
+  }
+
+  function teamLabel(t){
+    if(!t) return "—";
+    return `${t.teamName || "Équipe"} (${t.p1FirstName || "?"} / ${t.p2FirstName || "?"})`;
+  }
+
+  function teamLineHtml(t, tagText=null){
+    if(!t) return `<div class="muted">—</div>`;
+    const sub = `${t.p1FirstName || "?"} / ${t.p2FirstName || "?"}`;
+    const tag = tagText ? `<span class="tag">${esc(tagText)}</span>` : "";
+    return `
+      <div class="teamline">
+        <div class="tmain">
+          <div class="tname">${esc(t.teamName || "Équipe")}</div>
+          <div class="tsub">${esc(sub)}</div>
+        </div>
+        ${tag}
+      </div>
+    `;
+  }
+
+  async function readDraw(){
+    const s = await getDoc(DRAW_DOC);
+    draw = s.exists() ? (s.data() || {}) : null;
+    return draw;
+  }
+
+  function drawReady(d){
+    return !!(d && d.seed1 && d.seed2 && Array.isArray(d.hat1) && d.hat1.length === 2 && Array.isArray(d.hat2));
+  }
+
+  function setButtons(){
+    const st = draw?.status || "idle";
+    const okUrn = (cachedMainTeams.length >= 4) || drawReady(draw);
+
+    btnLoad.disabled = false;
+    btnStart.disabled = !okUrn || (st === "running" || st === "pending_validation" || st === "validated");
+    btnNext.disabled = !(st === "running") || ((draw?.revealed || 0) >= ((draw?.order || []).length));
+    btnValidate.disabled = !(st === "pending_validation");
+    btnReset.disabled = false;
+  }
+
+  function randInt(n){
+    const u = new Uint32Array(1);
+    crypto.getRandomValues(u);
+    return u[0] % n;
+  }
+
+  function randomShuffle(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = randInt(i+1);
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function buildOrder(seed1, seed2, hat1, hat2){
+    // ordre de révélations (roulette)
+    // 1) hat1 : tirer 1 équipe (random) => revealed #1
+    // 2) hat1 : l'autre => revealed #2 (automatique)
+    // 3) hat2 : shuffled => revealed #3..n
+    const idsHat1 = hat1.map(x=>x.id);
+    const firstHat1 = idsHat1[randInt(idsHat1.length)];
+    const secondHat1 = idsHat1.find(id => id !== firstHat1);
+
+    const hat2Ids = randomShuffle(hat2.map(x=>x.id));
+    return [firstHat1, secondHat1, ...hat2Ids];
+  }
+
+  function computePoolsFromOrder(d){
+    const poolById = new Map();
+    const all = [
+      d.seed1, d.seed2,
+      ...(d.hat1||[]),
+      ...(d.hat2||[])
+    ].filter(Boolean);
+    for(const t of all) poolById.set(t.id, t);
+
+    const order = d.order || [];
+    const revealed = Number(d.revealed || 0);
+    const revealedIds = order.slice(0, revealed);
+
+    // base placements
+    const montjoly = [];
+    const kourou = [];
+
+    // TS1 -> Montjoly ; TS2 -> Kourou
+    if(d.seed1) montjoly.push({ id:d.seed1.id, t:d.seed1, tag:"TS1" });
+    if(d.seed2) kourou.push({ id:d.seed2.id, t:d.seed2, tag:"TS2" });
+
+    // apply revealed order rules
+    // reveal #1 and #2 are hat1, placed: #1->Montjoly, #2->Kourou
+    // then hat2 placed alternating Montjoly/Kourou starting Montjoly
+    let hat2ToggleIndex = 0; // 0->Montjoly,1->Kourou,0...
+    for(let i=0;i<revealedIds.length;i++){
+      const id = revealedIds[i];
+      const t = poolById.get(id);
+      if(!t) continue;
+
+      if(i === 0){
+        // hat1 first -> Montjoly
+        montjoly.push({ id, t, tag:"Chapeau 1" });
+      }else if(i === 1){
+        // hat1 second -> Kourou
+        kourou.push({ id, t, tag:"Chapeau 1" });
+      }else{
+        // hat2 alternating
+        const target = (hat2ToggleIndex % 2 === 0) ? montjoly : kourou;
+        target.push({ id, t, tag:"Chapeau 2" });
+        hat2ToggleIndex++;
+      }
+    }
+
+    // remaining not revealed (for hats display)
+    const revealedSet = new Set(revealedIds);
+    const hat1Remaining = (d.hat1||[]).filter(x => !revealedSet.has(x.id));
+    const hat2Remaining = (d.hat2||[]).filter(x => !revealedSet.has(x.id));
+
+    const revealedTeams = revealedIds.map((id, idx)=>({ idx: idx+1, t: poolById.get(id) })).filter(x=>x.t);
+
+    return { montjoly, kourou, hat1Remaining, hat2Remaining, revealedTeams };
+  }
+
+  function render(){
+    // seeds
+    seed1El.textContent = draw?.seed1 ? teamLabel(draw.seed1) : "—";
+    seed2El.textContent = draw?.seed2 ? teamLabel(draw.seed2) : "—";
+
+    // pools / hats / revealed
+    if(!drawReady(draw)){
+      montjolyList.innerHTML = `<div class="muted">—</div>`;
+      kourouList.innerHTML = `<div class="muted">—</div>`;
+      montjolyCount.textContent = "0";
+      kourouCount.textContent = "0";
+      hat1List.innerHTML = `<div class="muted">—</div>`;
+      hat2List.innerHTML = `<div class="muted">—</div>`;
+      revealedList.innerHTML = `<div class="muted">—</div>`;
+      return;
+    }
+
+    const { montjoly, kourou, hat1Remaining, hat2Remaining, revealedTeams } = computePoolsFromOrder(draw);
+
+    montjolyCount.textContent = String(montjoly.length);
+    kourouCount.textContent = String(kourou.length);
+
+    montjolyList.innerHTML = montjoly.map(x => teamLineHtml(x.t, x.tag)).join("") || `<div class="muted">—</div>`;
+    kourouList.innerHTML = kourou.map(x => teamLineHtml(x.t, x.tag)).join("") || `<div class="muted">—</div>`;
+
+    hat1List.innerHTML = hat1Remaining.length
+      ? hat1Remaining.map(t => teamLineHtml(t, "à tirer")).join("")
+      : `<div class="muted">Vide</div>`;
+
+    hat2List.innerHTML = hat2Remaining.length
+      ? hat2Remaining.map(t => teamLineHtml(t, "à tirer")).join("")
+      : `<div class="muted">Vide</div>`;
+
+    revealedList.innerHTML = revealedTeams.length
+      ? revealedTeams.map(x => `
+          <div class="card" style="margin:0;">
+            <div style="display:flex;justify-content:space-between;gap:10px;">
+              <div><b>#${x.idx}</b> — ${esc(teamLabel(x.t))}</div>
+              <span class="pill">tirée</span>
+            </div>
+          </div>
+        `).join("")
+      : `<div class="muted">En attente…</div>`;
+  }
+
+  async function rouletteSpin(finalText, durationMs = 1200){
+    const start = Date.now();
+    wheelSub.textContent = "La roulette tourne…";
+    const fake = ["🎾","🔥","⚡️","🍀","🎲","🏖️","💥"];
+
+    return new Promise((resolve) => {
+      const tick = () => {
+        const t = Date.now() - start;
+        if(t >= durationMs){
+          wheel.textContent = finalText;
+          wheelSub.textContent = "✅ Révélé";
+          resolve("done");
+          return;
+        }
+        wheel.textContent = fake[Math.floor(Math.random()*fake.length)] + " " + fake[Math.floor(Math.random()*fake.length)];
+        requestAnimationFrame(tick);
+      };
+      tick();
+    });
+  }
+
+  async function loadMainTeams(){
+    uiSet("Chargement équipes…");
+
+    await readDraw();
+    if(draw && (draw.status === "running" || draw.status === "pending_validation" || draw.status === "validated")){
+      const ok = confirm("Un tirage existe déjà (statut: " + draw.status + ").\n\nRecharger remet le tirage à zéro.\nContinuer ?");
+      if(!ok){ uiSet("Annulé."); return; }
+    }
+
+    const snap = await getDocs(query(collection(db, COL_PUBLIC), orderBy("createdAt","asc")));
+
+    const rows = [];
+    snap.forEach(d=>{
+      const x = d.data() || {};
+      const isMain = (x.list === "main") && (x.stby !== true);
+      if(!isMain) return;
+
+      const t = {
+        id: d.id,
+        teamName: x.teamName || "",
+        p1FirstName: x.p1FirstName || "",
+        p2FirstName: x.p2FirstName || "",
+        p1Rank: x.p1Rank ?? null,
+        p2Rank: x.p2Rank ?? null
+      };
+      t.teamRank = teamRank(t);
+      rows.push(t);
+    });
+
+    // tri par rank asc
+    cachedMainTeams = rows.sort((a,b)=> a.teamRank - b.teamRank);
+
+    if(cachedMainTeams.length < 4){
+      uiSet(`⚠️ Liste principale détectée = ${cachedMainTeams.length} équipe(s). Il en faut au moins 4 (TS1, TS2, #3, #4).`);
+      draw = {
+        status:"idle",
+        seed1: cachedMainTeams[0] || null,
+        seed2: cachedMainTeams[1] || null,
+        hat1: cachedMainTeams.slice(2,4),
+        hat2: cachedMainTeams.slice(4)
+      };
+      render();
+      setButtons();
+      return;
+    }
+
+    const seed1 = cachedMainTeams[0];
+    const seed2 = cachedMainTeams[1];
+    const hat1  = cachedMainTeams.slice(2,4);     // #3 #4
+    const hat2  = cachedMainTeams.slice(4);       // #5...
+
+    await setDoc(DRAW_DOC, {
+      game: "openbt",
+      category: "dh",
+      status: "idle",
+
+      pools: ["Montjoly","Kourou"],
+      seed1,
+      seed2,
+      hat1,
+      hat2,
+
+      order: [],
+      revealed: 0,
+      revealedAtMs: [],
+
+      createdAt: serverTimestamp(),
+      validatedAt: null,
+      validatedBy: null
+    }, { merge:true });
+
+    await readDraw();
+    uiSet("✅ Urnes chargées. Tu peux lancer le tirage.");
+    wheel.textContent = "—";
+    wheelSub.textContent = "—";
+    render();
+    setButtons();
+  }
+
+  async function startDraw(){
+    await readDraw();
+
+    const seed1 = cachedMainTeams[0] || draw?.seed1;
+    const seed2 = cachedMainTeams[1] || draw?.seed2;
+
+    const hat1 = (cachedMainTeams.length >= 4) ? cachedMainTeams.slice(2,4) : (draw?.hat1 || []);
+    const hat2 = (cachedMainTeams.length >= 4) ? cachedMainTeams.slice(4) : (draw?.hat2 || []);
+
+    if(!seed1 || !seed2 || !Array.isArray(hat1) || hat1.length !== 2){
+      alert("Urnes non prêtes. Clique d’abord “Charger équipes”.");
+      return;
+    }
+
+    const order = buildOrder(seed1, seed2, hat1, hat2);
+
+    await setDoc(DRAW_DOC, {
+      status: "running",
+      seed1, seed2, hat1, hat2,
+      order,
+      revealed: 0,
+      revealedAtMs: [],
+      createdAt: serverTimestamp(),
+      validatedAt: null,
+      validatedBy: null
+    }, { merge:true });
+
+    await readDraw();
+    uiSet("▶️ Tirage lancé. Clique “Tirer la prochaine équipe”.");
+    wheel.textContent = "—";
+    wheelSub.textContent = "—";
+    render();
+    setButtons();
+  }
+
+  async function nextPick(){
+    await readDraw();
+    if(!draw || draw.status !== "running"){
+      alert("Le tirage n’est pas en cours.");
+      return;
+    }
+
+    const order = draw.order || [];
+    const revealed = Number(draw.revealed || 0);
+    if(revealed >= order.length){
+      alert("Toutes les équipes ont déjà été tirées.");
+      return;
+    }
+
+    // resolve team by id
+    const poolById = new Map();
+    const all = [draw.seed1, draw.seed2, ...(draw.hat1||[]), ...(draw.hat2||[])].filter(Boolean);
+    for(const t of all) poolById.set(t.id, t);
+
+    const id = order[revealed];
+    const t = poolById.get(id);
+
+    await rouletteSpin(teamLabel(t), 1200);
+
+    const newRevealed = revealed + 1;
+    const arr = Array.isArray(draw.revealedAtMs) ? draw.revealedAtMs.slice() : [];
+    arr.push(Date.now());
+
+    await updateDoc(DRAW_DOC, { revealed: newRevealed, revealedAtMs: arr });
+
+    await readDraw();
+    render();
+
+    if(newRevealed >= order.length){
+      await updateDoc(DRAW_DOC, { status: "pending_validation" });
+      await readDraw();
+      uiSet("🏁 Tirage fini — en attente de validation.");
+    }else{
+      uiSet(`🎰 Tirage #${newRevealed} effectué.`);
+    }
+    setButtons();
+  }
+
+  async function validateDraw(){
+    const ok = confirm("Valider le tirage ?\n\nLe public verra le tirage VALIDÉ + date/heure.");
+    if(!ok) return;
+
+    await updateDoc(DRAW_DOC, {
+      status: "validated",
+      validatedAt: serverTimestamp(),
+      validatedBy: auth.currentUser?.email || null
+    });
+
+    await readDraw();
+    uiSet("✅ Tirage validé.");
+    render();
+    setButtons();
+  }
+
+  async function resetDraw(){
+    const ok1 = confirm("⚠️ Réinitialiser le tirage ?\n\nCela efface l’état du tirage Open DH.");
+    if(!ok1) return;
+
+    const typed = prompt('Tape exactement : RESET');
+    if(typed !== "RESET"){ alert("Annulé."); return; }
+
+    await setDoc(DRAW_DOC, {
+      status: "idle",
+      seed1: null,
+      seed2: null,
+      hat1: [],
+      hat2: [],
+      order: [],
+      revealed: 0,
+      revealedAtMs: [],
+      createdAt: serverTimestamp(),
+      validatedAt: null,
+      validatedBy: null
+    }, { merge:true });
+
+    cachedMainTeams = [];
+    await readDraw();
+    uiSet("🧼 Tirage réinitialisé.");
+    wheel.textContent = "—";
+    wheelSub.textContent = "—";
+    render();
+    setButtons();
+  }
+
+  // Buttons
+  btnLoad.onclick = async (e)=>{ e.preventDefault(); await loadMainTeams(); };
+  btnStart.onclick = async (e)=>{ e.preventDefault(); await startDraw(); };
+  btnNext.onclick = async (e)=>{ e.preventDefault(); await nextPick(); };
+  btnValidate.onclick = async (e)=>{ e.preventDefault(); await validateDraw(); };
+  btnReset.onclick = async (e)=>{ e.preventDefault(); await resetDraw(); };
+
+  btnPublic.onclick = (e)=>{
+    e.preventDefault();
+    window.location.href = "../dh/tirage.html";
+  };
+
+  // logout
+  // (si tu n'as pas de bouton logout dans ce layout, tu peux enlever ceci)
+  // document.getElementById("btnLogout")?.addEventListener("click", async (e)=>{
+  //   e.preventDefault(); await logout(); window.location.href = "../../index.html";
+  // });
+
+  function showDenied(){
+    accessDenied.style.display = "block";
+    adminUI.style.display = "none";
+    panel.style.display = "none";
+  }
+
+  function showAdmin(){
+    accessDenied.style.display = "none";
+    adminUI.style.display = "block";
+    panel.style.display = "block";
+  }
+
+  // Guard admin
+  const g = await requireRole(["admin"]);
+  if(!g.ok){ showDenied(); }
+  else { showAdmin(); }
+
+  onAuthStateChanged(auth, async (user)=>{
+    if(!user){ showDenied(); return; }
+    const g2 = await requireRole(["admin"]);
+    if(!g2.ok){ showDenied(); return; }
+
+    await readDraw();
+    setButtons();
+
+    if(!drawReady(draw)){
+      uiSet("✅ Admin prêt. 1) Charger équipes, 2) Lancer, 3) Tirer, 4) Valider.");
+    }else{
+      if(draw.status === "pending_validation") uiSet("🏁 Tirage fini — en attente de validation.");
+      else if(draw.status === "validated") uiSet("✅ Tirage validé.");
+      else if(draw.status === "running") uiSet("▶️ Tirage en cours. Clique “Tirer la prochaine équipe”.");
+      else uiSet("✅ Urnes prêtes. Clique “Lancer le tirage”.");
+    }
+    render();
+  });
+</script>
+
+</body>
+</html>
