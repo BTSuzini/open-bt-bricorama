@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin — Équipes — Open BT Bricorama</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260227-open-admin-equipes" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260227-open-admin-equipes-fix" />
 </head>
 
 <body>
@@ -16,7 +16,6 @@
         <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
       </div>
 
-      <!-- ✅ style "challenge" : centre peut être texte ou image -->
       <div class="brand-title" style="display:flex;align-items:center;justify-content:center;">
         <div style="font-weight:1000; letter-spacing:.2px;">
           🛠️ Admin — Open BT Bricorama
@@ -42,7 +41,6 @@
     <p class="muted" style="margin:0;">Cette page est réservée aux administrateurs.</p>
   </section>
 
-  <!-- ✅ Zone (style challenge) -->
   <section class="card" id="adminZone" style="display:none;">
     <h2 style="margin:0 0 10px;">🧭 Zone</h2>
 
@@ -59,7 +57,6 @@
     <p class="muted" id="hint" style="margin-top:10px;"></p>
   </section>
 
-  <!-- Si scope = general -->
   <section class="card" id="panelNeedScope" style="display:none;">
     <h2 style="margin:0 0 8px;">ℹ️ Choisir DH ou DD</h2>
     <p class="muted" style="margin:0;">
@@ -68,7 +65,6 @@
     </p>
   </section>
 
-  <!-- Résumé -->
   <section class="card" id="panelSummary" style="display:none;">
     <h2>📌 Résumé</h2>
     <p class="muted" style="margin:0;">
@@ -81,7 +77,6 @@
     <p class="muted" id="status" style="margin-top:8px;">Connexion…</p>
   </section>
 
-  <!-- Table admin (look challenge) -->
   <section class="card" id="panelTable" style="display:none;">
     <h2>🗂️ Liste admin</h2>
 
@@ -148,7 +143,7 @@
 
 <script type="module">
   import { auth, db } from "../assets/js/firebase.js";
-  import { logout, requireRole } from "../assets/js/session.js";
+  import { logout, getRoleByEmail } from "../assets/js/session.js";
   import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
   import {
     collection, query, orderBy, onSnapshot,
@@ -178,11 +173,13 @@
   const statusEl= document.getElementById("status");
   const bodyEl  = document.getElementById("body");
 
-  // ---- live unsub
+  // ---- live state
   let unsub = null;
+  let liveRows = []; // ✅ garde le snapshot en mémoire => actions fiables
 
   function stopLive(){
     if(unsub){ unsub(); unsub = null; }
+    liveRows = [];
   }
 
   function esc(s){
@@ -325,7 +322,7 @@
     statusEl.textContent = `🟢 En direct — ${zoneText(sc)}`;
   }
 
-  async function startLive(sc){
+  function startLive(sc){
     stopLive();
     bodyEl.innerHTML = "";
     statusEl.textContent = "Connexion…";
@@ -353,9 +350,8 @@
         };
       });
 
-      // stable order: createdAt
       rows.sort((a,b) => (a.createdAtMs||0) - (b.createdAtMs||0));
-
+      liveRows = rows;
       renderTable(rows, sc);
     }, (err) => {
       console.error(err);
@@ -363,7 +359,6 @@
     });
   }
 
-  // ---- actions
   async function setPatch(sc, id, patch){
     const col = colName(sc);
     if(!col) return;
@@ -413,46 +408,28 @@
     const act = btn.dataset.act;
     const id  = btn.dataset.id;
 
-    // on récupère la ligne dans le DOM en “source” live : re-scan rapide
-    // (simple et fiable)
-    const col = colName(sc);
-    if(!col) return;
+    const row = liveRows.find(r => r.id === id);
+    if(!row) return alert("Équipe introuvable (snapshot).");
 
-    // mini row object from current table (enough for ranks)
-    const tr = btn.closest("tr");
-    const teamName = tr?.querySelector("td:nth-child(2) div")?.textContent || "";
-    const p1Name   = tr?.querySelector("td:nth-child(3)")?.textContent || "";
-    const p2Name   = tr?.querySelector("td:nth-child(4)")?.textContent || "";
-
-    // better: read from current snapshot? on n’a pas accès ici.
-    // On fait ranks via prompts puis patch, sans relire.
     try{
       if(act === "main") await setPatch(sc, id, { list: "main" });
       if(act === "wait") await setPatch(sc, id, { list: "wait" });
       if(act === "auto") await setPatch(sc, id, { list: null });
 
       if(act === "stby"){
-        // toggle basé sur texte bouton
-        const goingStby = btn.textContent.includes("STBY");
-        // si bouton affiche "⏸️ STBY" => on met stby=true ; sinon => false
-        const next = btn.textContent.includes("⏸️") ? true : false;
-        await setPatch(sc, id, { stby: next });
+        await setPatch(sc, id, { stby: !row.stby }); // ✅ vrai toggle
       }
 
       if(act === "del") await deleteTeam(sc, id);
 
       if(act === "ranks"){
-        // on ne connait pas les ranks actuels ici : on laisse vide -> admin saisit
-        await editRanks(sc, { id, teamName, p1FirstName: p1Name, p2FirstName: p2Name, p1Rank: "", p2Rank: "" });
+        await editRanks(sc, row); // ✅ ranks actuels préremplis
       }
     }catch(err){
       console.error(err);
       alert("Erreur ❌ (voir console)");
     }
   });
-
-  // ---- init + guard
-  let currentScope = (scopeFromUrl === "dd" || scopeFromUrl === "general") ? scopeFromUrl : "dh";
 
   function showDenied(){
     accessDenied.style.display = "block";
@@ -463,7 +440,7 @@
     stopLive();
   }
 
-  function showAdmin(){
+  function showAdmin(currentScope){
     accessDenied.style.display = "none";
     adminZone.style.display = "block";
 
@@ -480,16 +457,28 @@
     };
   }
 
-  // Guard immediate
-  const g = await requireRole(["admin"]);
-  if(!g.ok){ showDenied(); }
-  else { showAdmin(); }
-
-  // robust auth changes
+  // ✅ Auth guard Open (comme tes pages Open)
   onAuthStateChanged(auth, async (user)=>{
-    if(!user){ showDenied(); return; }
-    const g2 = await requireRole(["admin"]);
-    if(!g2.ok){ showDenied(); return; }
+    stopLive();
+
+    if(!user){
+      showDenied();
+      return;
+    }
+
+    try{
+      const role = await getRoleByEmail(user.email);
+      if(role !== "admin"){
+        showDenied();
+        return;
+      }
+
+      const initial = (scopeFromUrl === "dd" || scopeFromUrl === "general") ? scopeFromUrl : "dh";
+      showAdmin(initial);
+    }catch(err){
+      console.error(err);
+      showDenied();
+    }
   });
 
   // logout
