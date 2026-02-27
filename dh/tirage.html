@@ -4,19 +4,17 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Tirage — Double Hommes — Open BT Bricorama</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260224" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260227-open-dh-tirage" />
 </head>
 <body>
 
 <header class="topbar">
   <div class="container">
-    <!-- ✅ Bandeau harmonisé (logo / image / logo) -->
     <div class="topbar-row topbar-row-step">
       <div class="brand-logo">
         <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
       </div>
 
-      <!-- ✅ Image au centre -->
       <div class="step-title-wrap" aria-label="BT250 — Double Hommes">
         <img class="step-title-img" src="../assets/img/bt250-dm.png" alt="BT250 — Double Hommes">
       </div>
@@ -26,7 +24,6 @@
       </div>
     </div>
 
-    <!-- ✅ Nav Open BT : 2 lignes fixes sur téléphone (3 + 2), justifiée -->
     <nav class="nav nav-step">
       <a href="../index.html" title="Accueil" aria-label="Accueil">🏠</a>
       <a href="inscriptions.html">📝 Inscriptions</a>
@@ -40,27 +37,111 @@
 <main class="container">
 
   <section class="card">
-    <h2>🎲 Tirage</h2>
-    <p class="muted" style="margin-top:0;">
-      Le tirage au sort (tableau / poules) sera publié ici.
-    </p>
+    <h2 style="margin:0 0 6px;">🎲 Tirage — Poules</h2>
+    <p class="muted" id="statusText" style="margin:0;">Chargement…</p>
 
-    <div class="note" style="border:1px solid #eee;border-radius:14px;padding:14px;background:#fff;line-height:1.55;">
-      <b>À venir</b> : affichage du tableau (PDF / image / liste), et éventuels liens utiles.
+    <div id="validatedBox" class="muted" style="margin-top:10px; display:none;"></div>
+
+    <hr class="sep" style="margin-top:14px;" />
+
+    <div class="grid-2" style="margin-top:12px;">
+      <div class="pool-card">
+        <div class="pool-title">🐢 Poule Montjoly <span class="pill" id="montjolyCount">0</span></div>
+        <div id="montjolyList" style="display:grid; gap:8px;"></div>
+      </div>
+
+      <div class="pool-card">
+        <div class="pool-title">🚀 Poule Kourou <span class="pill" id="kourouCount">0</span></div>
+        <div id="kourouList" style="display:grid; gap:8px;"></div>
+      </div>
     </div>
+
+    <p class="muted" style="margin-top:12px;">
+      Règles : TS1 → Montjoly, TS2 → Kourou, puis tirage chapeau 1 (#3/#4) et chapeau 2 (reste) en alternance.
+    </p>
   </section>
 
 </main>
 
 <style>
-  /* ✅ Bandeau "image au centre" */
-  .topbar-row-step{
-    grid-template-columns: var(--logo-size) 1fr var(--logo-size);
+  .grid-2{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
   }
-  .step-title-wrap{
+  @media (max-width: 720px){
+    .grid-2{ grid-template-columns:1fr; }
+  }
+
+  .pool-card{
+    border-radius:18px;
+    border:2px solid rgba(0,0,0,.06);
+    padding:14px;
+    background:#fff;
+    box-shadow:0 1px 0 rgba(0,0,0,.03);
+  }
+
+  .pool-title{
     display:flex;
     align-items:center;
-    justify-content:center;
+    justify-content:space-between;
+    gap:10px;
+    margin:0 0 10px;
+    font-weight:1000;
+    font-size:16px;
+  }
+
+  .teamline{
+    border:1px solid rgba(0,0,0,.08);
+    border-radius:14px;
+    padding:10px 12px;
+    background:#fff;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .tmain{ min-width:0; flex:1 1 auto; }
+  .tname{
+    font-weight:1000;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .tsub{
+    margin-top:4px;
+    opacity:.8;
+    font-weight:800;
+    font-size:12px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .tag{
+    flex:0 0 auto;
+    border:1px solid rgba(0,0,0,.12);
+    border-radius:999px;
+    padding:5px 9px;
+    font-size:11px;
+    font-weight:1000;
+    white-space:nowrap;
+    opacity:.9;
+  }
+  .pill{
+    display:inline-block;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:12px;
+    border:1px solid #eee;
+    background:#fafafa;
+    white-space:nowrap;
+    font-weight:900;
+  }
+
+  /* ✅ Bandeau "image au centre" */
+  .topbar-row-step{ grid-template-columns: var(--logo-size) 1fr var(--logo-size); }
+  .step-title-wrap{
+    display:flex; align-items:center; justify-content:center;
     min-height: calc(var(--logo-size) * 0.55);
   }
   .step-title-img{
@@ -72,45 +153,153 @@
     filter: drop-shadow(0 1px 0 rgba(0,0,0,.15));
   }
 
-  /* ✅ NAV: desktop = 1 ligne; téléphone = 2 lignes fixes (3 + 2) */
-  .nav-step{
-    gap:8px;
-    flex-wrap:wrap;
-  }
-  .nav-step a{
-    padding:8px 12px;
-    flex: 0 0 auto;
-    text-align:center;
-    white-space:nowrap;
-  }
+  .nav-step{ gap:8px; flex-wrap:wrap; }
+  .nav-step a{ padding:8px 12px; flex: 0 0 auto; text-align:center; white-space:nowrap; }
 
   @media (max-width: 560px){
-    .nav-step{
-      justify-content:space-between;
-    }
-    .nav-step a{
-      width: calc((100% - 16px) / 3); /* 3 items ligne 1 */
-    }
-    .nav-step a:nth-child(n+4){
-      width: calc((100% - 8px) / 2);  /* 2 items ligne 2 */
-    }
+    .nav-step{ justify-content:space-between; }
+    .nav-step a{ width: calc((100% - 16px) / 3); }
+    .nav-step a:nth-child(n+4){ width: calc((100% - 8px) / 2); }
   }
-
   @media (max-width: 420px){
-    .nav-step a{
-      padding:7px 10px;
-      font-size: 13px;
-    }
+    .nav-step a{ padding:7px 10px; font-size: 13px; }
     .step-title-img{ max-height: 74px; }
   }
-
-  /* ✅ Lien actif plus visible */
   .nav a[aria-current="page"]{
     background: rgba(255,255,255,.26);
     border-color: rgba(255,255,255,.45);
     box-shadow: 0 6px 14px rgba(0,0,0,.10);
   }
 </style>
+
+<script type="module">
+  import { db } from "../assets/js/firebase.js";
+  import { onSnapshot, doc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+  const DRAW_DOC = doc(db, "tirages_open", "dh");
+
+  const statusText = document.getElementById("statusText");
+  const validatedBox = document.getElementById("validatedBox");
+
+  const montjolyList = document.getElementById("montjolyList");
+  const kourouList = document.getElementById("kourouList");
+  const montjolyCount = document.getElementById("montjolyCount");
+  const kourouCount = document.getElementById("kourouCount");
+
+  function esc(s){
+    return (s ?? "").toString()
+      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+  }
+
+  function teamLabel(t){
+    if(!t) return "—";
+    return `${t.teamName || "Équipe"} (${t.p1FirstName || "?"} / ${t.p2FirstName || "?"})`;
+  }
+
+  function teamLineHtml(t, tagText=null){
+    if(!t) return `<div class="muted">—</div>`;
+    const sub = `${t.p1FirstName || "?"} / ${t.p2FirstName || "?"}`;
+    const tag = tagText ? `<span class="tag">${esc(tagText)}</span>` : "";
+    return `
+      <div class="teamline">
+        <div class="tmain">
+          <div class="tname">${esc(t.teamName || "Équipe")}</div>
+          <div class="tsub">${esc(sub)}</div>
+        </div>
+        ${tag}
+      </div>
+    `;
+  }
+
+  function fmtDate(ts){
+    try{
+      const d = ts?.toDate ? ts.toDate() : null;
+      if(!d) return "—";
+      return d.toLocaleString("fr-FR", { year:"numeric", month:"long", day:"numeric", hour:"2-digit", minute:"2-digit" });
+    }catch{ return "—"; }
+  }
+
+  function computePoolsFromDraw(d){
+    if(!d || !d.seed1 || !d.seed2 || !Array.isArray(d.hat1) || d.hat1.length !== 2 || !Array.isArray(d.hat2)) return null;
+
+    const poolById = new Map();
+    const all = [d.seed1, d.seed2, ...(d.hat1||[]), ...(d.hat2||[])].filter(Boolean);
+    for(const t of all) poolById.set(t.id, t);
+
+    const order = d.order || [];
+    const revealed = Number(d.revealed || 0);
+    const revealedIds = order.slice(0, revealed);
+
+    const montjoly = [];
+    const kourou = [];
+
+    montjoly.push({ t:d.seed1, tag:"TS1" });
+    kourou.push({ t:d.seed2, tag:"TS2" });
+
+    let hat2ToggleIndex = 0;
+    for(let i=0;i<revealedIds.length;i++){
+      const t = poolById.get(revealedIds[i]);
+      if(!t) continue;
+      if(i === 0) montjoly.push({ t, tag:"Chapeau 1" });
+      else if(i === 1) kourou.push({ t, tag:"Chapeau 1" });
+      else{
+        const target = (hat2ToggleIndex % 2 === 0) ? montjoly : kourou;
+        target.push({ t, tag:"Chapeau 2" });
+        hat2ToggleIndex++;
+      }
+    }
+
+    return { montjoly, kourou, revealed, totalToReveal: order.length };
+  }
+
+  function render(d){
+    const pools = computePoolsFromDraw(d);
+
+    if(!d || !pools){
+      statusText.textContent = "⏳ Tirage pas encore publié.";
+      validatedBox.style.display = "none";
+      montjolyList.innerHTML = `<div class="muted">—</div>`;
+      kourouList.innerHTML = `<div class="muted">—</div>`;
+      montjolyCount.textContent = "0";
+      kourouCount.textContent = "0";
+      return;
+    }
+
+    // status
+    if(d.status === "validated"){
+      statusText.textContent = "✅ Tirage validé.";
+    }else if(d.status === "pending_validation"){
+      statusText.textContent = "🏁 Tirage terminé (en attente de validation).";
+    }else if(d.status === "running"){
+      statusText.textContent = `🎰 Tirage en cours : ${pools.revealed}/${pools.totalToReveal} révélée(s).`;
+    }else{
+      statusText.textContent = "ℹ️ Urnes prêtes, tirage pas encore lancé.";
+    }
+
+    // validated banner
+    if(d.validatedAt){
+      validatedBox.style.display = "block";
+      validatedBox.innerHTML = `✅ Validé le <b>${esc(fmtDate(d.validatedAt))}</b>${d.validatedBy ? ` par <b>${esc(d.validatedBy)}</b>` : ""}.`;
+    }else{
+      validatedBox.style.display = "none";
+      validatedBox.innerHTML = "";
+    }
+
+    montjolyCount.textContent = String(pools.montjoly.length);
+    kourouCount.textContent = String(pools.kourou.length);
+
+    montjolyList.innerHTML = pools.montjoly.map(x => teamLineHtml(x.t, x.tag)).join("");
+    kourouList.innerHTML = pools.kourou.map(x => teamLineHtml(x.t, x.tag)).join("");
+  }
+
+  onSnapshot(DRAW_DOC, (snap)=>{
+    const d = snap.exists() ? (snap.data() || {}) : null;
+    render(d);
+  }, (err)=>{
+    console.error(err);
+    statusText.textContent = "🔴 Erreur de connexion (tirage).";
+  });
+</script>
 
 </body>
 </html>
