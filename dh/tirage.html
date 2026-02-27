@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Tirage — Double Hommes — Open BT Bricorama</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260227-open-dh-tirage" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260227-open-public-tirage" />
 </head>
 <body>
 
@@ -37,111 +37,80 @@
 <main class="container">
 
   <section class="card">
-    <h2 style="margin:0 0 6px;">🎲 Tirage — Poules</h2>
-    <p class="muted" id="statusText" style="margin:0;">Chargement…</p>
+    <h2 style="margin:0 0 8px;">🎲 Tirage (poules)</h2>
 
-    <div id="validatedBox" class="muted" style="margin-top:10px; display:none;"></div>
+    <p class="muted" id="statusText" style="margin:0;">
+      Connexion…
+    </p>
 
-    <hr class="sep" style="margin-top:14px;" />
-
-    <div class="grid-2" style="margin-top:12px;">
-      <div class="pool-card">
-        <div class="pool-title">🐢 Poule Montjoly <span class="pill" id="montjolyCount">0</span></div>
-        <div id="montjolyList" style="display:grid; gap:8px;"></div>
-      </div>
-
-      <div class="pool-card">
-        <div class="pool-title">🚀 Poule Kourou <span class="pill" id="kourouCount">0</span></div>
-        <div id="kourouList" style="display:grid; gap:8px;"></div>
+    <div class="grid" style="margin-top:10px;">
+      <div class="note" id="stateNote" style="border:1px solid #eee;border-radius:14px;padding:14px;background:#fff;line-height:1.55;">
+        <b>État</b> : —
       </div>
     </div>
 
+    <hr class="sep" style="margin-top:14px;" />
+
+    <div class="grid" style="gap:12px;">
+      <div class="card" style="margin:0;">
+        <div style="font-weight:1000; margin-bottom:8px;">🎰 Roulette</div>
+        <div class="roulette-wheel" id="wheel">—</div>
+        <div class="muted" id="wheelSub" style="margin-top:8px;">—</div>
+      </div>
+    </div>
+
+    <hr class="sep" style="margin-top:14px;" />
+
+    <div class="two-col">
+      <section class="card" style="margin:0;">
+        <h3 style="margin:0 0 8px;">🏷️ Têtes de série</h3>
+        <div class="list" id="seedsBox"></div>
+      </section>
+
+      <section class="card" style="margin:0;">
+        <h3 style="margin:0 0 8px;">🎩 Chapeaux</h3>
+        <div class="list" id="hatsBox"></div>
+      </section>
+    </div>
+
+    <div class="two-col" style="margin-top:12px;">
+      <section class="card" style="margin:0;">
+        <h3 style="margin:0 0 8px;">📌 Équipes tirées</h3>
+        <div class="list" id="revealedBox"></div>
+      </section>
+
+      <section class="card" style="margin:0;">
+        <h3 style="margin:0 0 8px;">🏖️ Poules</h3>
+        <div class="two-col" style="margin-top:10px;">
+          <div>
+            <div style="font-weight:1000; margin-bottom:8px;">🏖️ Montjoly</div>
+            <div class="list" id="montjolyBox"></div>
+          </div>
+          <div>
+            <div style="font-weight:1000; margin-bottom:8px;">🚀 Kourou</div>
+            <div class="list" id="kourouBox"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
     <p class="muted" style="margin-top:12px;">
-      Règles : TS1 → Montjoly, TS2 → Kourou, puis tirage chapeau 1 (#3/#4) et chapeau 2 (reste) en alternance.
+      Règles : <b>TS1 → Montjoly</b>, <b>TS2 → Kourou</b> •
+      chapeau 1 (classés #3/#4) : 1ère tirée → Montjoly, l’autre → Kourou •
+      chapeau 2 : alternance Montjoly/Kourou.
     </p>
   </section>
 
 </main>
 
 <style>
-  .grid-2{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:12px;
+  .topbar-row-step{
+    grid-template-columns: var(--logo-size) 1fr var(--logo-size);
   }
-  @media (max-width: 720px){
-    .grid-2{ grid-template-columns:1fr; }
-  }
-
-  .pool-card{
-    border-radius:18px;
-    border:2px solid rgba(0,0,0,.06);
-    padding:14px;
-    background:#fff;
-    box-shadow:0 1px 0 rgba(0,0,0,.03);
-  }
-
-  .pool-title{
+  .step-title-wrap{
     display:flex;
     align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    margin:0 0 10px;
-    font-weight:1000;
-    font-size:16px;
-  }
-
-  .teamline{
-    border:1px solid rgba(0,0,0,.08);
-    border-radius:14px;
-    padding:10px 12px;
-    background:#fff;
-    display:flex;
-    align-items:flex-start;
-    justify-content:space-between;
-    gap:10px;
-  }
-  .tmain{ min-width:0; flex:1 1 auto; }
-  .tname{
-    font-weight:1000;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-  .tsub{
-    margin-top:4px;
-    opacity:.8;
-    font-weight:800;
-    font-size:12px;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-  .tag{
-    flex:0 0 auto;
-    border:1px solid rgba(0,0,0,.12);
-    border-radius:999px;
-    padding:5px 9px;
-    font-size:11px;
-    font-weight:1000;
-    white-space:nowrap;
-    opacity:.9;
-  }
-  .pill{
-    display:inline-block;
-    padding:4px 10px;
-    border-radius:999px;
-    font-size:12px;
-    border:1px solid #eee;
-    background:#fafafa;
-    white-space:nowrap;
-    font-weight:900;
-  }
-
-  /* ✅ Bandeau "image au centre" */
-  .topbar-row-step{ grid-template-columns: var(--logo-size) 1fr var(--logo-size); }
-  .step-title-wrap{
-    display:flex; align-items:center; justify-content:center;
+    justify-content:center;
     min-height: calc(var(--logo-size) * 0.55);
   }
   .step-title-img{
@@ -154,8 +123,12 @@
   }
 
   .nav-step{ gap:8px; flex-wrap:wrap; }
-  .nav-step a{ padding:8px 12px; flex: 0 0 auto; text-align:center; white-space:nowrap; }
-
+  .nav-step a{
+    padding:8px 12px;
+    flex: 0 0 auto;
+    text-align:center;
+    white-space:nowrap;
+  }
   @media (max-width: 560px){
     .nav-step{ justify-content:space-between; }
     .nav-step a{ width: calc((100% - 16px) / 3); }
@@ -170,21 +143,105 @@
     border-color: rgba(255,255,255,.45);
     box-shadow: 0 6px 14px rgba(0,0,0,.10);
   }
+
+  .roulette-wheel{
+    height:68px;
+    border-radius:14px;
+    border:1px solid #e6e6e6;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:1000;
+    font-size:18px;
+    letter-spacing:.2px;
+    background:linear-gradient(180deg,#fff,#fafafa);
+  }
+
+  .pill{
+    display:inline-block;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:12px;
+    border:1px solid #eee;
+    background:#fafafa;
+    white-space:nowrap;
+    font-weight:900;
+  }
+  .pill.ok{ border-color:#d9e6ff; background:#f3f7ff; }
+  .pill.warn{ border-color:#ffd37a; background:#fff7e6; }
+
+  .two-col{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:12px;
+  }
+  @media (max-width: 720px){
+    .two-col{ grid-template-columns: 1fr; }
+  }
+
+  .list{
+    display:grid;
+    gap:8px;
+    margin-top:10px;
+  }
+  .rowcard{
+    border:1px solid #eee;
+    border-radius:14px;
+    background:#fff;
+    padding:12px;
+    box-shadow:0 6px 16px rgba(0,0,0,.04);
+  }
+  .rowline{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    align-items:flex-start;
+  }
+  .rmain{ min-width:0; }
+  .rtitle{
+    font-weight:1000;
+    line-height:1.2;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .rsub{
+    margin-top:6px;
+    font-size:12px;
+    opacity:.8;
+    line-height:1.35;
+  }
+  .tag{
+    border:1px solid rgba(0,0,0,.12);
+    border-radius:999px;
+    padding:5px 9px;
+    font-size:11px;
+    font-weight:1000;
+    white-space:nowrap;
+    opacity:.9;
+    flex:0 0 auto;
+  }
 </style>
 
 <script type="module">
   import { db } from "../assets/js/firebase.js";
   import { onSnapshot, doc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-  const DRAW_DOC = doc(db, "tirages_open", "dh");
+  const scope = "dh";
 
   const statusText = document.getElementById("statusText");
-  const validatedBox = document.getElementById("validatedBox");
+  const stateNote  = document.getElementById("stateNote");
 
-  const montjolyList = document.getElementById("montjolyList");
-  const kourouList = document.getElementById("kourouList");
-  const montjolyCount = document.getElementById("montjolyCount");
-  const kourouCount = document.getElementById("kourouCount");
+  const seedsBox    = document.getElementById("seedsBox");
+  const hatsBox     = document.getElementById("hatsBox");
+  const revealedBox = document.getElementById("revealedBox");
+  const montjolyBox = document.getElementById("montjolyBox");
+  const kourouBox   = document.getElementById("kourouBox");
+
+  const wheel    = document.getElementById("wheel");
+  const wheelSub = document.getElementById("wheelSub");
+
+  let lastRevealedSeen = 0;
 
   function esc(s){
     return (s ?? "").toString()
@@ -193,111 +250,172 @@
 
   function teamLabel(t){
     if(!t) return "—";
-    return `${t.teamName || "Équipe"} (${t.p1FirstName || "?"} / ${t.p2FirstName || "?"})`;
+    const tn = t.teamName || "Équipe";
+    const p1 = t.p1FirstName || "?";
+    const p2 = t.p2FirstName || "?";
+    return `${tn} (${p1} / ${p2})`;
   }
 
-  function teamLineHtml(t, tagText=null){
-    if(!t) return `<div class="muted">—</div>`;
-    const sub = `${t.p1FirstName || "?"} / ${t.p2FirstName || "?"}`;
-    const tag = tagText ? `<span class="tag">${esc(tagText)}</span>` : "";
+  function rowHtml(title, sub, tag){
     return `
-      <div class="teamline">
-        <div class="tmain">
-          <div class="tname">${esc(t.teamName || "Équipe")}</div>
-          <div class="tsub">${esc(sub)}</div>
+      <div class="rowcard">
+        <div class="rowline">
+          <div class="rmain">
+            <div class="rtitle">${esc(title)}</div>
+            <div class="rsub muted">${sub ? esc(sub) : ""}</div>
+          </div>
+          ${tag ? `<div class="tag">${esc(tag)}</div>` : ``}
         </div>
-        ${tag}
       </div>
     `;
   }
 
-  function fmtDate(ts){
-    try{
-      const d = ts?.toDate ? ts.toDate() : null;
-      if(!d) return "—";
-      return d.toLocaleString("fr-FR", { year:"numeric", month:"long", day:"numeric", hour:"2-digit", minute:"2-digit" });
-    }catch{ return "—"; }
+  function stateTextOf(st){
+    if(st === "idle") return "Prêt (urne)";
+    if(st === "running") return "En cours";
+    if(st === "pending_validation") return "Fini (à publier)";
+    if(st === "published") return "Publié";
+    return "Non initialisé";
   }
 
-  function computePoolsFromDraw(d){
-    if(!d || !d.seed1 || !d.seed2 || !Array.isArray(d.hat1) || d.hat1.length !== 2 || !Array.isArray(d.hat2)) return null;
+  async function rouletteSpin(finalText, durationMs = 1300){
+    const start = Date.now();
+    wheelSub.textContent = "La roulette tourne…";
+    const fake = ["🌪️","🎾","🔥","🍀","⚡️","🎲","🏖️"];
 
-    const poolById = new Map();
-    const all = [d.seed1, d.seed2, ...(d.hat1||[]), ...(d.hat2||[])].filter(Boolean);
-    for(const t of all) poolById.set(t.id, t);
+    return new Promise((resolve) => {
+      const tick = () => {
+        const t = Date.now() - start;
+        if(t >= durationMs){
+          wheel.textContent = finalText;
+          wheelSub.textContent = "✅ Révélé";
+          resolve("done");
+          return;
+        }
+        wheel.textContent = fake[Math.floor(Math.random()*fake.length)] + " " + fake[Math.floor(Math.random()*fake.length)];
+        requestAnimationFrame(tick);
+      };
+      tick();
+    });
+  }
 
-    const order = d.order || [];
-    const revealed = Number(d.revealed || 0);
+  function computeFromDraw(draw){
+    const teams = Array.isArray(draw?.teams) ? draw.teams : [];
+    const byId = new Map(teams.map(t => [t.id, t]));
+    const seed1 = draw?.seed1 || null;
+    const seed2 = draw?.seed2 || null;
+    const order = Array.isArray(draw?.order) ? draw.order : [];
+    const revealed = Number(draw?.revealed || 0);
+
     const revealedIds = order.slice(0, revealed);
+    const revealedTeams = revealedIds.map(id => byId.get(id)).filter(Boolean);
 
     const montjoly = [];
-    const kourou = [];
+    const kourou   = [];
+    if(seed1) montjoly.push(seed1);
+    if(seed2) kourou.push(seed2);
 
-    montjoly.push({ t:d.seed1, tag:"TS1" });
-    kourou.push({ t:d.seed2, tag:"TS2" });
-
-    let hat2ToggleIndex = 0;
-    for(let i=0;i<revealedIds.length;i++){
-      const t = poolById.get(revealedIds[i]);
-      if(!t) continue;
-      if(i === 0) montjoly.push({ t, tag:"Chapeau 1" });
-      else if(i === 1) kourou.push({ t, tag:"Chapeau 1" });
-      else{
-        const target = (hat2ToggleIndex % 2 === 0) ? montjoly : kourou;
-        target.push({ t, tag:"Chapeau 2" });
-        hat2ToggleIndex++;
+    for(let i=0;i<revealedTeams.length;i++){
+      const t = revealedTeams[i];
+      if(i === 0) montjoly.push(t);
+      else if(i === 1) kourou.push(t);
+      else {
+        const j = i - 2;
+        (j % 2 === 0 ? montjoly : kourou).push(t);
       }
     }
 
-    return { montjoly, kourou, revealed, totalToReveal: order.length };
+    return { seed1, seed2, revealedTeams, montjoly, kourou, order, revealed };
   }
 
-  function render(d){
-    const pools = computePoolsFromDraw(d);
+  function render(draw){
+    const st = draw?.status || "none";
+    const published = draw?.published === true || st === "published";
+    const totalTeams = Array.isArray(draw?.teams) ? draw.teams.length : 0;
 
-    if(!d || !pools){
-      statusText.textContent = "⏳ Tirage pas encore publié.";
-      validatedBox.style.display = "none";
-      montjolyList.innerHTML = `<div class="muted">—</div>`;
-      kourouList.innerHTML = `<div class="muted">—</div>`;
-      montjolyCount.textContent = "0";
-      kourouCount.textContent = "0";
+    statusText.textContent = "🟢 En direct";
+    stateNote.innerHTML = `
+      <b>État</b> : ${esc(stateTextOf(st))}
+      ${published ? `<span class="pill ok" style="margin-left:8px;">🌍 Publié</span>` : ``}
+      <span class="pill" style="margin-left:8px;">Équipes: ${esc(String(totalTeams || "—"))}</span>
+    `;
+
+    // seeds / hats
+    const seed1 = draw?.seed1 || null;
+    const seed2 = draw?.seed2 || null;
+
+    seedsBox.innerHTML = [
+      rowHtml(seed1 ? teamLabel(seed1) : "—", seed1 ? `TS1 • Rang équipe: ${seed1.teamRank ?? "—"}` : "", "TS1"),
+      rowHtml(seed2 ? teamLabel(seed2) : "—", seed2 ? `TS2 • Rang équipe: ${seed2.teamRank ?? "—"}` : "", "TS2"),
+    ].join("");
+
+    const hat1 = Array.isArray(draw?.hat1) ? draw.hat1 : [];
+    const hat2 = Array.isArray(draw?.hat2) ? draw.hat2 : [];
+
+    hatsBox.innerHTML = `
+      ${rowHtml("🎩 Chapeau 1 (classés #3 et #4)", hat1.length ? hat1.map(t => teamLabel(t)).join(" • ") : "—", hat1.length ? `${hat1.length} équipe(s)` : "")}
+      ${rowHtml("🎩 Chapeau 2 (le reste)", hat2.length ? hat2.map(t => teamLabel(t)).join(" • ") : "—", hat2.length ? `${hat2.length} équipe(s)` : "")}
+    `;
+
+    const { revealedTeams, montjoly, kourou, revealed, order } = computeFromDraw(draw);
+
+    revealedBox.innerHTML = revealedTeams.length
+      ? revealedTeams.map((t,i)=>rowHtml(`#${i+1} — ${teamLabel(t)}`, "tirée", "révélée")).join("")
+      : `<p class="muted" style="margin:0;">En attente…</p>`;
+
+    montjolyBox.innerHTML = montjoly.length
+      ? montjoly.map((t,i)=>rowHtml(`#${i+1} — ${teamLabel(t)}`, "", (i===0 ? "TS1" : "Montjoly"))).join("")
+      : `<p class="muted" style="margin:0;">—</p>`;
+
+    kourouBox.innerHTML = kourou.length
+      ? kourou.map((t,i)=>rowHtml(`#${i+1} — ${teamLabel(t)}`, "", (i===0 ? "TS2" : "Kourou"))).join("")
+      : `<p class="muted" style="margin:0;">—</p>`;
+
+    // wheel behavior
+    if(st === "none" || st === "idle"){
+      wheel.textContent = "—";
+      wheelSub.textContent = "⏳ Tirage pas encore lancé.";
+    } else if(st === "running"){
+      wheelSub.textContent = "🎰 Tirage en cours…";
+    } else if(st === "pending_validation"){
+      wheelSub.textContent = "🏁 Tirage terminé (publication imminente).";
+    } else if(st === "published"){
+      wheelSub.textContent = "✅ Tirage publié.";
+    }
+
+    // Trigger roulette animation when revealed increases
+    if(revealed > lastRevealedSeen){
+      // animate only the LAST revealed team
+      const lastId = Array.isArray(order) ? order[revealed - 1] : null;
+      const byId = new Map((draw?.teams || []).map(t => [t.id, t]));
+      const t = lastId ? byId.get(lastId) : null;
+
+      lastRevealedSeen = revealed;
+      if(t){
+        rouletteSpin(teamLabel(t), 1300);
+      }
+    }
+  }
+
+  // live
+  const ref = doc(db, "tirages_open", scope);
+  onSnapshot(ref, (snap)=>{
+    if(!snap.exists()){
+      statusText.textContent = "ℹ️ Tirage non initialisé.";
+      stateNote.innerHTML = `<b>État</b> : Non initialisé`;
+      wheel.textContent = "—";
+      wheelSub.textContent = "⏳ En attente de l’admin.";
+      seedsBox.innerHTML = `<p class="muted" style="margin:0;">—</p>`;
+      hatsBox.innerHTML = `<p class="muted" style="margin:0;">—</p>`;
+      revealedBox.innerHTML = `<p class="muted" style="margin:0;">—</p>`;
+      montjolyBox.innerHTML = `<p class="muted" style="margin:0;">—</p>`;
+      kourouBox.innerHTML = `<p class="muted" style="margin:0;">—</p>`;
       return;
     }
-
-    // status
-    if(d.status === "validated"){
-      statusText.textContent = "✅ Tirage validé.";
-    }else if(d.status === "pending_validation"){
-      statusText.textContent = "🏁 Tirage terminé (en attente de validation).";
-    }else if(d.status === "running"){
-      statusText.textContent = `🎰 Tirage en cours : ${pools.revealed}/${pools.totalToReveal} révélée(s).`;
-    }else{
-      statusText.textContent = "ℹ️ Urnes prêtes, tirage pas encore lancé.";
-    }
-
-    // validated banner
-    if(d.validatedAt){
-      validatedBox.style.display = "block";
-      validatedBox.innerHTML = `✅ Validé le <b>${esc(fmtDate(d.validatedAt))}</b>${d.validatedBy ? ` par <b>${esc(d.validatedBy)}</b>` : ""}.`;
-    }else{
-      validatedBox.style.display = "none";
-      validatedBox.innerHTML = "";
-    }
-
-    montjolyCount.textContent = String(pools.montjoly.length);
-    kourouCount.textContent = String(pools.kourou.length);
-
-    montjolyList.innerHTML = pools.montjoly.map(x => teamLineHtml(x.t, x.tag)).join("");
-    kourouList.innerHTML = pools.kourou.map(x => teamLineHtml(x.t, x.tag)).join("");
-  }
-
-  onSnapshot(DRAW_DOC, (snap)=>{
-    const d = snap.exists() ? (snap.data() || {}) : null;
-    render(d);
+    render(snap.data() || {});
   }, (err)=>{
     console.error(err);
-    statusText.textContent = "🔴 Erreur de connexion (tirage).";
+    statusText.textContent = "🔴 Erreur de connexion";
   });
 </script>
 
