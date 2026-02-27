@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Tirage — Double Hommes — Open BT Bricorama</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260227-open-public-tirage" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260227-open-public-tirage-v2" />
 </head>
 <body>
 
@@ -51,11 +51,36 @@
 
     <hr class="sep" style="margin-top:14px;" />
 
+    <!-- Roulette + actions -->
     <div class="grid" style="gap:12px;">
       <div class="card" style="margin:0;">
-        <div style="font-weight:1000; margin-bottom:8px;">🎰 Roulette</div>
-        <div class="roulette-wheel" id="wheel">—</div>
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+          <div style="font-weight:1000;">🎰 Roulette</div>
+
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button class="btn" id="btnReplay" type="button" style="font-weight:900;color:#111;">
+              ▶️ Rejouer
+            </button>
+            <button class="btn" id="btnReplayFast" type="button" style="font-weight:900;color:#111;">
+              ⚡️ Replay rapide
+            </button>
+          </div>
+        </div>
+
+        <div class="roulette-wheel" id="wheel" style="margin-top:10px;">—</div>
         <div class="muted" id="wheelSub" style="margin-top:8px;">—</div>
+
+        <!-- ✅ Poules juste sous la roulette -->
+        <div class="poules-wrap" style="margin-top:12px;">
+          <div class="poule">
+            <div class="poule-title">🏖️ Montjoly</div>
+            <div class="list" id="montjolyBox" style="margin-top:10px;"></div>
+          </div>
+          <div class="poule">
+            <div class="poule-title">🚀 Kourou</div>
+            <div class="list" id="kourouBox" style="margin-top:10px;"></div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -73,24 +98,10 @@
       </section>
     </div>
 
-    <div class="two-col" style="margin-top:12px;">
+    <div style="margin-top:12px;">
       <section class="card" style="margin:0;">
         <h3 style="margin:0 0 8px;">📌 Équipes tirées</h3>
         <div class="list" id="revealedBox"></div>
-      </section>
-
-      <section class="card" style="margin:0;">
-        <h3 style="margin:0 0 8px;">🏖️ Poules</h3>
-        <div class="two-col" style="margin-top:10px;">
-          <div>
-            <div style="font-weight:1000; margin-bottom:8px;">🏖️ Montjoly</div>
-            <div class="list" id="montjolyBox"></div>
-          </div>
-          <div>
-            <div style="font-weight:1000; margin-bottom:8px;">🚀 Kourou</div>
-            <div class="list" id="kourouBox"></div>
-          </div>
-        </div>
       </section>
     </div>
 
@@ -155,6 +166,8 @@
     font-size:18px;
     letter-spacing:.2px;
     background:linear-gradient(180deg,#fff,#fafafa);
+    text-align:center;
+    padding:0 10px;
   }
 
   .pill{
@@ -179,11 +192,30 @@
     .two-col{ grid-template-columns: 1fr; }
   }
 
+  /* ✅ Poules sous roulette, responsive */
+  .poules-wrap{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:12px;
+  }
+  @media (max-width: 720px){
+    .poules-wrap{ grid-template-columns: 1fr; }
+  }
+  .poule{
+    border:1px solid #eee;
+    border-radius:14px;
+    padding:12px;
+    background:#fff;
+  }
+  .poule-title{ font-weight:1000; }
+
   .list{
     display:grid;
     gap:8px;
     margin-top:10px;
   }
+
+  /* ✅ Row cards mobile-first, no horizontal scroll */
   .rowcard{
     border:1px solid #eee;
     border-radius:14px;
@@ -201,14 +233,14 @@
   .rtitle{
     font-weight:1000;
     line-height:1.2;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
+    /* ✅ plus de nowrap => wrap naturel sur mobile */
+    white-space:normal;
+    overflow-wrap:anywhere;
   }
   .rsub{
     margin-top:6px;
     font-size:12px;
-    opacity:.8;
+    opacity:.85;
     line-height:1.35;
   }
   .tag{
@@ -241,22 +273,58 @@
   const wheel    = document.getElementById("wheel");
   const wheelSub = document.getElementById("wheelSub");
 
+  const btnReplay     = document.getElementById("btnReplay");
+  const btnReplayFast = document.getElementById("btnReplayFast");
+
   let lastRevealedSeen = 0;
+  let lastDraw = null;
+
+  let replaying = false;
+  let replayCancelToken = 0;
 
   function esc(s){
     return (s ?? "").toString()
       .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
   }
 
-  function teamLabel(t){
-    if(!t) return "—";
-    const tn = t.teamName || "Équipe";
-    const p1 = t.p1FirstName || "?";
-    const p2 = t.p2FirstName || "?";
-    return `${tn} (${p1} / ${p2})`;
+  // ✅ Friendster mobile: nom équipe (ligne 1) puis joueurs en dessous (ligne 2)
+  function teamTitle(t){
+    return (t?.teamName || "Équipe").toString();
+  }
+  function teamSub(t){
+    const p1 = (t?.p1FirstName || "").toString().trim();
+    const p2 = (t?.p2FirstName || "").toString().trim();
+    if(!p1 && !p2) return "";
+    return `${p1}${p1 && p2 ? " • " : ""}${p2}`;
   }
 
-  function rowHtml(title, sub, tag){
+  function rowHtmlTeam(t, tag){
+    if(!t){
+      return `
+        <div class="rowcard">
+          <div class="rowline">
+            <div class="rmain">
+              <div class="rtitle">—</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    return `
+      <div class="rowcard">
+        <div class="rowline">
+          <div class="rmain">
+            <div class="rtitle">${esc(teamTitle(t))}</div>
+            <div class="rsub muted">${esc(teamSub(t))}</div>
+          </div>
+          ${tag ? `<div class="tag">${esc(tag)}</div>` : ``}
+        </div>
+      </div>
+    `;
+  }
+
+  function rowHtmlText(title, sub, tag){
     return `
       <div class="rowcard">
         <div class="rowline">
@@ -278,13 +346,15 @@
     return "Non initialisé";
   }
 
-  async function rouletteSpin(finalText, durationMs = 1300){
+  async function rouletteSpin(finalText, durationMs = 1300, token = 0){
     const start = Date.now();
     wheelSub.textContent = "La roulette tourne…";
     const fake = ["🌪️","🎾","🔥","🍀","⚡️","🎲","🏖️"];
 
     return new Promise((resolve) => {
       const tick = () => {
+        if(token !== replayCancelToken){ resolve("cancel"); return; }
+
         const t = Date.now() - start;
         if(t >= durationMs){
           wheel.textContent = finalText;
@@ -292,7 +362,9 @@
           resolve("done");
           return;
         }
-        wheel.textContent = fake[Math.floor(Math.random()*fake.length)] + " " + fake[Math.floor(Math.random()*fake.length)];
+        wheel.textContent =
+          fake[Math.floor(Math.random()*fake.length)] + " " +
+          fake[Math.floor(Math.random()*fake.length)];
         requestAnimationFrame(tick);
       };
       tick();
@@ -302,8 +374,10 @@
   function computeFromDraw(draw){
     const teams = Array.isArray(draw?.teams) ? draw.teams : [];
     const byId = new Map(teams.map(t => [t.id, t]));
+
     const seed1 = draw?.seed1 || null;
     const seed2 = draw?.seed2 || null;
+
     const order = Array.isArray(draw?.order) ? draw.order : [];
     const revealed = Number(draw?.revealed || 0);
 
@@ -325,10 +399,12 @@
       }
     }
 
-    return { seed1, seed2, revealedTeams, montjoly, kourou, order, revealed };
+    return { seed1, seed2, revealedTeams, montjoly, kourou, order, revealed, byId };
   }
 
   function render(draw){
+    lastDraw = draw;
+
     const st = draw?.status || "none";
     const published = draw?.published === true || st === "published";
     const totalTeams = Array.isArray(draw?.teams) ? draw.teams.length : 0;
@@ -338,66 +414,156 @@
       <b>État</b> : ${esc(stateTextOf(st))}
       ${published ? `<span class="pill ok" style="margin-left:8px;">🌍 Publié</span>` : ``}
       <span class="pill" style="margin-left:8px;">Équipes: ${esc(String(totalTeams || "—"))}</span>
+      ${Number(draw?.revealed||0) ? `<span class="pill" style="margin-left:8px;">Révélées: ${esc(String(draw.revealed))}</span>` : ``}
     `;
 
-    // seeds / hats
     const seed1 = draw?.seed1 || null;
     const seed2 = draw?.seed2 || null;
 
     seedsBox.innerHTML = [
-      rowHtml(seed1 ? teamLabel(seed1) : "—", seed1 ? `TS1 • Rang équipe: ${seed1.teamRank ?? "—"}` : "", "TS1"),
-      rowHtml(seed2 ? teamLabel(seed2) : "—", seed2 ? `TS2 • Rang équipe: ${seed2.teamRank ?? "—"}` : "", "TS2"),
-    ].join("");
+      rowHtmlTeam(seed1, "TS1"),
+      seed1 ? rowHtmlText("Rang équipe", `TS1 • ${seed1.teamRank ?? "—"}`, null) : "",
+      rowHtmlTeam(seed2, "TS2"),
+      seed2 ? rowHtmlText("Rang équipe", `TS2 • ${seed2.teamRank ?? "—"}`, null) : "",
+    ].filter(Boolean).join("");
 
     const hat1 = Array.isArray(draw?.hat1) ? draw.hat1 : [];
     const hat2 = Array.isArray(draw?.hat2) ? draw.hat2 : [];
 
     hatsBox.innerHTML = `
-      ${rowHtml("🎩 Chapeau 1 (classés #3 et #4)", hat1.length ? hat1.map(t => teamLabel(t)).join(" • ") : "—", hat1.length ? `${hat1.length} équipe(s)` : "")}
-      ${rowHtml("🎩 Chapeau 2 (le reste)", hat2.length ? hat2.map(t => teamLabel(t)).join(" • ") : "—", hat2.length ? `${hat2.length} équipe(s)` : "")}
+      ${rowHtmlText("🎩 Chapeau 1 (classés #3 et #4)",
+        hat1.length ? hat1.map(t => `${teamTitle(t)} — ${teamSub(t)}`.trim()).join(" • ") : "—",
+        hat1.length ? `${hat1.length}` : "")}
+      ${rowHtmlText("🎩 Chapeau 2 (le reste)",
+        hat2.length ? hat2.map(t => `${teamTitle(t)} — ${teamSub(t)}`.trim()).join(" • ") : "—",
+        hat2.length ? `${hat2.length}` : "")}
     `;
 
-    const { revealedTeams, montjoly, kourou, revealed, order } = computeFromDraw(draw);
+    const { revealedTeams, montjoly, kourou, revealed, order, byId } = computeFromDraw(draw);
 
     revealedBox.innerHTML = revealedTeams.length
-      ? revealedTeams.map((t,i)=>rowHtml(`#${i+1} — ${teamLabel(t)}`, "tirée", "révélée")).join("")
+      ? revealedTeams.map((t,i)=> rowHtmlTeam(t, `#${i+1}`)).join("")
       : `<p class="muted" style="margin:0;">En attente…</p>`;
 
     montjolyBox.innerHTML = montjoly.length
-      ? montjoly.map((t,i)=>rowHtml(`#${i+1} — ${teamLabel(t)}`, "", (i===0 ? "TS1" : "Montjoly"))).join("")
+      ? montjoly.map((t,i)=> rowHtmlTeam(t, (i===0 ? "TS1" : `#${i+1}`))).join("")
       : `<p class="muted" style="margin:0;">—</p>`;
 
     kourouBox.innerHTML = kourou.length
-      ? kourou.map((t,i)=>rowHtml(`#${i+1} — ${teamLabel(t)}`, "", (i===0 ? "TS2" : "Kourou"))).join("")
+      ? kourou.map((t,i)=> rowHtmlTeam(t, (i===0 ? "TS2" : `#${i+1}`))).join("")
       : `<p class="muted" style="margin:0;">—</p>`;
 
-    // wheel behavior
-    if(st === "none" || st === "idle"){
-      wheel.textContent = "—";
-      wheelSub.textContent = "⏳ Tirage pas encore lancé.";
-    } else if(st === "running"){
-      wheelSub.textContent = "🎰 Tirage en cours…";
-    } else if(st === "pending_validation"){
-      wheelSub.textContent = "🏁 Tirage terminé (publication imminente).";
-    } else if(st === "published"){
-      wheelSub.textContent = "✅ Tirage publié.";
+    // Wheel base text
+    if(!replaying){
+      if(st === "none" || st === "idle"){
+        wheel.textContent = "—";
+        wheelSub.textContent = "⏳ Tirage pas encore lancé.";
+      } else if(st === "running"){
+        wheelSub.textContent = "🎰 Tirage en cours…";
+      } else if(st === "pending_validation"){
+        wheelSub.textContent = "🏁 Tirage terminé (publication imminente).";
+      } else if(st === "published"){
+        wheelSub.textContent = "✅ Tirage publié.";
+      }
     }
 
-    // Trigger roulette animation when revealed increases
-    if(revealed > lastRevealedSeen){
-      // animate only the LAST revealed team
+    // Live animation when revealed increases (only when not replaying)
+    if(!replaying && revealed > lastRevealedSeen){
       const lastId = Array.isArray(order) ? order[revealed - 1] : null;
-      const byId = new Map((draw?.teams || []).map(t => [t.id, t]));
       const t = lastId ? byId.get(lastId) : null;
 
       lastRevealedSeen = revealed;
       if(t){
-        rouletteSpin(teamLabel(t), 1300);
+        rouletteSpin(teamTitle(t), 1300, replayCancelToken);
       }
+    } else if(!replaying) {
+      lastRevealedSeen = Math.max(lastRevealedSeen, revealed);
     }
   }
 
-  // live
+  function sleep(ms, token){
+    return new Promise((res)=>{
+      const start = Date.now();
+      const tick = ()=>{
+        if(token !== replayCancelToken){ res(false); return; }
+        if(Date.now() - start >= ms){ res(true); return; }
+        requestAnimationFrame(tick);
+      };
+      tick();
+    });
+  }
+
+  async function runReplay(fast=false){
+    if(!lastDraw){
+      alert("Tirage non disponible pour le moment.");
+      return;
+    }
+    const st = lastDraw?.status || "none";
+    if(st === "none" || st === "idle"){
+      alert("Le tirage n’a pas encore commencé.");
+      return;
+    }
+
+    const { seed1, seed2, order, byId } = computeFromDraw(lastDraw);
+
+    // cancel previous replay
+    replayCancelToken++;
+    const token = replayCancelToken;
+
+    replaying = true;
+    wheel.textContent = "—";
+    wheelSub.textContent = "▶️ Replay en cours…";
+
+    // on repart de 0 : montjoly/kourou = TS only
+    const montjoly = [];
+    const kourou = [];
+    if(seed1) montjoly.push(seed1);
+    if(seed2) kourou.push(seed2);
+
+    // render initial poules
+    montjolyBox.innerHTML = montjoly.length
+      ? montjoly.map((t,i)=> rowHtmlTeam(t, (i===0 ? "TS1" : `#${i+1}`))).join("")
+      : `<p class="muted" style="margin:0;">—</p>`;
+    kourouBox.innerHTML = kourou.length
+      ? kourou.map((t,i)=> rowHtmlTeam(t, (i===0 ? "TS2" : `#${i+1}`))).join("")
+      : `<p class="muted" style="margin:0;">—</p>`;
+
+    // replay each draw in order
+    const delay = fast ? 350 : 950;
+    for(let i=0;i<order.length;i++){
+      if(token !== replayCancelToken) return;
+
+      const t = byId.get(order[i]);
+      if(!t) continue;
+
+      await rouletteSpin(teamTitle(t), fast ? 520 : 1100, token);
+      const ok = await sleep(fast ? 80 : 160, token);
+      if(!ok) return;
+
+      // placement rules
+      if(i === 0) montjoly.push(t);
+      else if(i === 1) kourou.push(t);
+      else {
+        const j = i - 2;
+        (j % 2 === 0 ? montjoly : kourou).push(t);
+      }
+
+      // update poules under wheel
+      montjolyBox.innerHTML = montjoly.map((x, idx)=> rowHtmlTeam(x, (idx===0 ? "TS1" : `#${idx+1}`))).join("");
+      kourouBox.innerHTML   = kourou.map((x, idx)=> rowHtmlTeam(x, (idx===0 ? "TS2" : `#${idx+1}`))).join("");
+
+      const ok2 = await sleep(delay, token);
+      if(!ok2) return;
+    }
+
+    wheelSub.textContent = "✅ Replay terminé";
+    replaying = false;
+  }
+
+  btnReplay.onclick = ()=> runReplay(false);
+  btnReplayFast.onclick = ()=> runReplay(true);
+
+  // live firestore
   const ref = doc(db, "tirages_open", scope);
   onSnapshot(ref, (snap)=>{
     if(!snap.exists()){
