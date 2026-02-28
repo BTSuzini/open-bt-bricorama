@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JAT — Open BT Bricorama</title>
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260228-jat-index-v1" />
+</head>
+<body>
+
+<div id="jatHeader"></div>
+
+<main class="container">
+
+  <section class="card" id="accessDenied" style="display:none;">
+    <h2 style="margin:0 0 8px;">⛔ Accès refusé</h2>
+    <p class="muted" style="margin:0;">Cette page est réservée au JAT / arbitre.</p>
+  </section>
+
+  <section class="card" id="pageContent" style="display:none;">
+
+    <h2 style="margin:0 0 10px;">🎛️ JAT — Open BT Bricorama</h2>
+    <p class="muted" id="scopeHint" style="margin:0;">
+      Choisis DH ou DD dans le menu déroulant “Zone”.
+    </p>
+
+    <!-- Zone -->
+    <div class="field" style="margin-top:12px;">
+      <label for="scope">Zone</label>
+      <select id="scope">
+        <option value="dh">🎾 DH (Double Hommes)</option>
+        <option value="dd">🎾 DD (Double Dames)</option>
+      </select>
+    </div>
+
+    <!-- NAV JAT (les 4 pages demandées) -->
+    <div class="grid" style="margin-top:12px;">
+      <a class="btn" id="goEquipes" href="#" style="font-weight:900; color:#111;">👥 Équipes</a>
+      <a class="btn" id="goClassement" href="#" style="font-weight:900; color:#111;">🏆 Classement</a>
+      <a class="btn" id="goResultats" href="#" style="font-weight:900; color:#111;">✅ Résultats</a>
+      <a class="btn" id="goProgrammation" href="#" style="font-weight:900; color:#111;">🗓️ Programmation</a>
+    </div>
+
+    <p class="muted" style="margin-top:10px;">
+      (On crée les pages ensuite : équipes / classement / résultats / programmation.)
+    </p>
+
+  </section>
+
+</main>
+
+<script type="module">
+  // ✅ même logique que admin/index : shell + guard
+  import { renderAdminShell } from "../assets/js/admin-shell.js";
+  import { auth } from "../assets/js/firebase.js";
+  import { getRoleByEmail } from "../assets/js/session.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+
+  // =========================
+  // Header / shell
+  // =========================
+  // On réutilise le shell existant pour garder la même UI.
+  // Si tu veux un shell dédié "jat-shell.js" plus tard, on le fera.
+  renderAdminShell({ active: "jat", basePath: "..", mountId: "jatHeader" });
+
+  // =========================
+  // DOM
+  // =========================
+  const accessDenied = document.getElementById("accessDenied");
+  const pageContent  = document.getElementById("pageContent");
+
+  const scopeEl = document.getElementById("scope");
+  const scopeHint = document.getElementById("scopeHint");
+
+  const goEquipes = document.getElementById("goEquipes");
+  const goClassement = document.getElementById("goClassement");
+  const goResultats = document.getElementById("goResultats");
+  const goProgrammation = document.getElementById("goProgrammation");
+
+  // =========================
+  // Scope (URL + select)
+  // =========================
+  const params = new URLSearchParams(location.search);
+  const scopeFromUrl = (params.get("scope") || "dh").toLowerCase();
+  let currentScope = (scopeFromUrl === "dd") ? "dd" : "dh";
+
+  function applyScope(s){
+    currentScope = (s === "dd") ? "dd" : "dh";
+    scopeEl.value = currentScope;
+
+    scopeHint.textContent = currentScope === "dh"
+      ? "Zone DH : gestion JAT du Double Hommes."
+      : "Zone DD : gestion JAT du Double Dames.";
+
+    // ✅ liens (pages à créer ensuite)
+    goEquipes.href = `equipes.html?scope=${encodeURIComponent(currentScope)}`;
+    goClassement.href = `classement.html?scope=${encodeURIComponent(currentScope)}`;
+    goResultats.href = `resultats.html?scope=${encodeURIComponent(currentScope)}`;
+    goProgrammation.href = `programmation.html?scope=${encodeURIComponent(currentScope)}`;
+  }
+
+  scopeEl.addEventListener("change", ()=>{
+    const next = (scopeEl.value || "dh").toLowerCase();
+    // conserve le scope dans l’URL
+    window.location.href = `index.html?scope=${encodeURIComponent(next)}`;
+  });
+
+  applyScope(currentScope);
+
+  // =========================
+  // Guard (role)
+  // =========================
+  function showDenied(){
+    accessDenied.style.display = "block";
+    pageContent.style.display = "none";
+  }
+
+  function showOk(){
+    accessDenied.style.display = "none";
+    pageContent.style.display = "block";
+  }
+
+  onAuthStateChanged(auth, async (user)=>{
+    if(!user){ showDenied(); return; }
+
+    try{
+      const role = await getRoleByEmail(user.email);
+
+      // ✅ À ADAPTER : si tu veux un rôle "jat" distinct, on bascule ici.
+      // Pour l’instant on autorise admin (et tu me diras si tu ajoutes roles: "jat")
+      const allowed = (role === "admin" || role === "jat");
+      if(!allowed){ showDenied(); return; }
+
+      showOk();
+    }catch(e){
+      showDenied();
+    }
+  });
+</script>
+
+</body>
+</html>
