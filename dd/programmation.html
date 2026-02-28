@@ -1,25 +1,20 @@
-<!-- =========================
-     DD / PROGRAMMATION
-========================= -->
 <!doctype html>
 <html lang="fr">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Programmation — Double Dames — Open BT Bricorama</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260224" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260228-dd-prog-v1" />
 </head>
 <body>
 
 <header class="topbar">
   <div class="container">
-    <!-- ✅ Bandeau harmonisé (logo / image / logo) -->
     <div class="topbar-row topbar-row-step">
       <div class="brand-logo">
         <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
       </div>
 
-      <!-- ✅ Image au centre -->
       <div class="step-title-wrap" aria-label="BT250 — Double Dames">
         <img class="step-title-img" src="../assets/img/bt250-dd.png" alt="BT250 — Double Dames">
       </div>
@@ -29,7 +24,6 @@
       </div>
     </div>
 
-    <!-- ✅ Nav Open BT : 2 lignes fixes sur téléphone (3 + 2), justifiée -->
     <nav class="nav nav-step">
       <a href="../index.html" title="Accueil" aria-label="Accueil">🏠</a>
       <a href="inscriptions.html">📝 Inscriptions</a>
@@ -43,19 +37,18 @@
 <main class="container">
 
   <section class="card">
-    <h2>🗓️ Programmation</h2>
-    <p class="muted" style="margin-top:0;">
-      La programmation (convocations / ordre des matchs) sera publiée ici par l’organisation.
-    </p>
+    <h2 style="margin:0 0 10px;">🗓️ Programmation — Double Dames</h2>
+    <p class="muted" id="statusText" style="margin:0;">Chargement…</p>
+    <p class="muted" id="subtitle" style="margin-top:10px;"></p>
+  </section>
 
-    <div class="note" style="border:1px solid #eee;border-radius:14px;padding:14px;background:#fff;line-height:1.55;">
-      <b>À venir</b> : dès que les inscriptions sont stabilisées, tu retrouveras ici :
-      <ul style="margin:10px 0 0 18px;">
-        <li>les horaires de convocation</li>
-        <li>le planning des matchs</li>
-        <li>les éventuels ajustements</li>
-      </ul>
-    </div>
+  <section class="card" id="panelChrono" style="display:block;">
+    <h2 style="margin:0 0 10px;">🕒 Planning des matchs</h2>
+    <div id="chronoList"></div>
+
+    <p class="muted" style="margin-top:10px;">
+      ⏱️ Affichage basé sur la programmation publiée par l’organisation (Firestore).
+    </p>
   </section>
 
 </main>
@@ -72,47 +65,279 @@
     min-height: calc(var(--logo-size) * 0.55);
   }
   .step-title-img{
-    width: min(520px, 100%);
-    max-height: 88px;
-    height: auto;
-    object-fit: contain;
+    width:min(520px,100%);
+    max-height:88px;
+    height:auto;
+    object-fit:contain;
     display:block;
     filter: drop-shadow(0 1px 0 rgba(0,0,0,.15));
   }
 
-  /* ✅ NAV: desktop = 1 ligne; téléphone = 2 lignes fixes (3 + 2) */
-  .nav-step{
-    gap:8px;
-    flex-wrap:wrap;
-  }
+  /* ✅ NAV: téléphone = 2 lignes fixes (3 + 2) */
+  .nav-step{ gap:8px; flex-wrap:wrap; }
   .nav-step a{
     padding:8px 12px;
-    flex: 0 0 auto;
+    flex:0 0 auto;
     text-align:center;
     white-space:nowrap;
   }
-
   @media (max-width: 560px){
     .nav-step{ justify-content:space-between; }
-    .nav-step a{ width: calc((100% - 16px) / 3); }                /* 3 items ligne 1 */
-    .nav-step a:nth-child(n+4){ width: calc((100% - 8px) / 2); }  /* 2 items ligne 2 */
+    .nav-step a{ width: calc((100% - 16px) / 3); }
+    .nav-step a:nth-child(n+4){ width: calc((100% - 8px) / 2); }
   }
-
   @media (max-width: 420px){
-    .nav-step a{
-      padding:7px 10px;
-      font-size: 13px;
-    }
-    .step-title-img{ max-height: 74px; }
+    .nav-step a{ padding:7px 10px; font-size:13px; }
+    .step-title-img{ max-height:74px; }
   }
-
-  /* ✅ Lien actif plus visible */
   .nav a[aria-current="page"]{
     background: rgba(255,255,255,.26);
     border-color: rgba(255,255,255,.45);
     box-shadow: 0 6px 14px rgba(0,0,0,.10);
   }
+
+  /* ===== style prog (cards) */
+  .match-list{ display:flex; flex-direction:column; gap:14px; }
+
+  .match-card{
+    border-radius:18px;
+    border:2px solid rgba(0,0,0,.06);
+    padding:14px;
+    background:#fff;
+    box-shadow:0 1px 0 rgba(0,0,0,.03);
+  }
+  .match-card.courtA{ background:#FFF6D6; border-color:rgba(255, 196, 0, .35); }
+  .match-card.courtB{ background:#FFE6EA; border-color:rgba(255, 0, 60, .25); }
+  .match-card.block{ background:#F3F6FF; border-color:rgba(60, 110, 255, .20); }
+
+  .match-head{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width:0;
+  }
+  .m-time{
+    font-size:13px;
+    font-weight:900;
+    white-space:nowrap;
+    letter-spacing:.2px;
+  }
+  .m-court{
+    font-size:13px;
+    font-weight:400;
+    font-style:italic;
+    opacity:.95;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    min-width:0;
+    flex:1;
+  }
+  .m-tag{
+    font-size:11px;
+    font-weight:1000;
+    white-space:nowrap;
+    border:1px solid rgba(0,0,0,.12);
+    border-radius:999px;
+    padding:6px 10px;
+    opacity:.95;
+    flex:0 0 auto;
+  }
+
+  .team-row{
+    margin-top:10px;
+    display:grid;
+    grid-template-columns: 1fr;
+    gap:6px;
+  }
+  .team-title{
+    font-size:15px;
+    font-weight:950;
+    line-height:1.15;
+    white-space:normal;
+    overflow-wrap:anywhere;
+  }
+  .team-sub{
+    font-size:13px;
+    font-weight:700;
+    opacity:.85;
+    white-space:normal;
+    overflow-wrap:anywhere;
+    line-height:1.25;
+  }
+  .vs-line{
+    margin:10px 0 6px;
+    text-align:center;
+    font-weight:900;
+    letter-spacing:2px;
+    opacity:.55;
+    font-size:12px;
+  }
 </style>
+
+<script type="module">
+  import { db } from "../assets/js/firebase.js";
+  import { doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+  const statusText = document.getElementById("statusText");
+  const subtitle   = document.getElementById("subtitle");
+  const chronoList = document.getElementById("chronoList");
+
+  const COURTS_FALLBACK = {
+    A: "court Manon Queen Bee",
+    B: "court Lisa de Los Pimentos"
+  };
+
+  function esc(s){
+    return (s ?? "").toString()
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;");
+  }
+
+  function teamTitle(t){ return (t?.teamName || "Équipe").toString(); }
+  function teamSub(t){
+    const p1 = (t?.p1FirstName || "").toString().trim();
+    const p2 = (t?.p2FirstName || "").toString().trim();
+    if(!p1 && !p2) return "";
+    return `${p1}${p1 && p2 ? " • " : ""}${p2}`;
+  }
+
+  function normalizeEntry(entry, slotObj){
+    // accepte: number | {slot, court} | undefined
+    if(typeof entry === "number"){
+      const slot = Number(entry);
+      const court = slotObj?.court || "A";
+      return { slot, court };
+    }
+    if(entry && typeof entry === "object"){
+      const slot = Number(entry.slot);
+      const court = entry.court || slotObj?.court || "A";
+      return { slot, court };
+    }
+    return { slot: Number(slotObj?.slot || 1), court: slotObj?.court || "A" };
+  }
+
+  function courtLabel(courts, key){
+    const name = (courts?.[key] || COURTS_FALLBACK[key] || key || "—");
+    const emo = (key === "A") ? "🐝" : (key === "B" ? "🌶️" : "🎾");
+    return `${emo} ${name} ${emo}`;
+  }
+  function courtClass(key){
+    return (key === "A") ? "courtA" : (key === "B" ? "courtB" : "");
+  }
+
+  function matchCard({ time, courtKey, courts, cat, stage, A, B }){
+    return `
+      <div class="match-card ${esc(courtClass(courtKey))}">
+        <div class="match-head">
+          <div class="m-time">${esc(time)}</div>
+          <div class="m-court">${esc(courtLabel(courts, courtKey))}</div>
+          <div class="m-tag">${esc(cat)} · ${esc(stage)}</div>
+        </div>
+
+        <div class="team-row">
+          <div class="team-title">${esc(teamTitle(A))}</div>
+          <div class="team-sub muted">${esc(teamSub(A))}</div>
+        </div>
+
+        <div class="vs-line">VS</div>
+
+        <div class="team-row">
+          <div class="team-title">${esc(teamTitle(B))}</div>
+          <div class="team-sub muted">${esc(teamSub(B))}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  function blockCard({ time, courtKey, courts, title, note }){
+    return `
+      <div class="match-card block">
+        <div class="match-head">
+          <div class="m-time">${esc(time)}</div>
+          <div class="m-court">${esc(courtLabel(courts, courtKey))}</div>
+          <div class="m-tag">⏳ Bloc</div>
+        </div>
+        <div class="team-row">
+          <div class="team-title">${esc(title || "Bloc")}</div>
+          ${note ? `<div class="team-sub muted">${esc(note)}</div>` : ``}
+        </div>
+      </div>
+    `;
+  }
+
+  function render(prog){
+    if(!prog || !Array.isArray(prog.slots) || !prog.slots.length){
+      statusText.textContent = "ℹ️ Programmation DD non publiée.";
+      subtitle.textContent = "";
+      chronoList.innerHTML = `<p class="muted" style="margin:0;">Aucun match pour le moment.</p>`;
+      return;
+    }
+
+    const courts = prog.courts || COURTS_FALLBACK;
+    const slots = prog.slots || [];
+    const matches = prog.matches || {};
+    const schedule = prog.schedule || {};
+
+    // map slot -> mid
+    const slotToMid = new Map();
+    for(const [mid, entry] of Object.entries(schedule)){
+      const slotNum = (typeof entry === "number") ? Number(entry) : Number(entry?.slot);
+      if(!Number.isFinite(slotNum)) continue;
+      if(!matches[mid]) continue;
+      if(!slotToMid.has(slotNum)) slotToMid.set(slotNum, mid);
+    }
+
+    const cards = [];
+    for(const s of slots){
+      const mid = slotToMid.get(Number(s.slot));
+      if(!mid) continue;
+      const m = matches[mid];
+      if(!m) continue;
+
+      const norm = normalizeEntry(schedule[mid], s);
+      const courtKey = norm.court || s.court || "A";
+
+      if(m.kind === "block"){
+        cards.push(blockCard({
+          time: s.time || "—",
+          courtKey,
+          courts,
+          title: m.title || m.stage || "Bloc",
+          note: m.note || ""
+        }));
+      }else{
+        cards.push(matchCard({
+          time: s.time || "—",
+          courtKey,
+          courts,
+          cat: m.cat || "DD",
+          stage: m.stage || "",
+          A: m.A,
+          B: m.B
+        }));
+      }
+    }
+
+    statusText.textContent = "🟢 En direct";
+    subtitle.textContent = "Programmation officielle (mise à jour en direct).";
+    chronoList.innerHTML = cards.length
+      ? `<div class="match-list">${cards.join("")}</div>`
+      : `<p class="muted" style="margin:0;">Aucun match.</p>`;
+  }
+
+  onSnapshot(
+    doc(db, "programmations_open", "dd"),
+    (snap)=> render(snap.exists() ? (snap.data() || null) : null),
+    (err)=>{
+      console.error(err);
+      statusText.textContent = "🔴 Erreur Firestore (DD)";
+      chronoList.innerHTML = `<p class="muted" style="margin:0;">Impossible de charger la programmation.</p>`;
+    }
+  );
+</script>
 
 </body>
 </html>
