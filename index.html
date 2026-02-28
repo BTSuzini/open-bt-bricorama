@@ -3,182 +3,178 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Open BT Bricorama — Infos & Inscriptions</title>
-  <link rel="stylesheet" href="assets/css/main.css?v=20260224" />
+
+  <title>Open BT Bricorama</title>
+
+  <link rel="stylesheet" href="assets/css/main.css?v=20260228-home" />
 </head>
+
 <body>
 
 <header class="topbar">
   <div class="container">
-    <!-- ✅ Bandeau harmonisé (logo / image / logo) -->
-    <div class="topbar-row topbar-row-step">
+
+    <div class="topbar-row">
       <div class="brand-logo">
-        <img src="assets/img/logo-suzini.png" alt="Logo Suzini">
+        <img src="assets/img/logo-suzini.png" alt="TC Suzini">
       </div>
 
-      <!-- ✅ Image au centre -->
-      <div class="step-title-wrap" aria-label="BT250 — Open BT Bricorama">
-        <img class="step-title-img" src="assets/img/bt250.png" alt="BT250 — Open BT Bricorama">
+      <div class="brand-title">
+        <strong>🏖️ Open BT Bricorama</strong>
       </div>
 
       <div class="brand-logo">
-        <img src="assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
+        <img src="assets/img/logo-openbt.png" alt="Open BT">
       </div>
     </div>
 
-    <!-- ✅ Nav générale (2 lignes sur téléphone, ordre demandé) -->
-    <nav class="nav nav-step">
-      <a href="index.html" aria-current="page">🏠 Accueil</a>
-      <a href="pages/reglement.html">📘 Règlement</a>
-      <a href="pages/infos.html">ℹ️ Infos</a>
-      <a href="pages/programmation.html">🗓️ Programme</a>
-      <a href="pages/repas.html">🍽️ Repas</a>
-      <a href="pages/boutique.html">🛍️ Boutique</a>
-      <a href="pages/contact.html">📩 Contact</a>
-    </nav>
   </div>
 </header>
 
 <main class="container">
 
+  <!-- ========================= -->
+  <!-- ACCÈS TOURNOI -->
+  <!-- ========================= -->
   <section class="card">
-    <h2>Les tournois</h2>
+    <h2>🎾 Accès tournoi</h2>
 
     <div class="grid">
-      <a class="btn" href="dd/equipes.html">👩‍🦱 Tournoi Double Dames</a>
-      <a class="btn" href="dh/equipes.html">👨‍🦱 Tournoi Double Messieurs</a>
-    </div>
-
-    <p class="muted" style="margin-top:10px;">
-      Mini-site dédié au tournoi <b>Open BT Bricorama</b> (indépendant du challenge).
-    </p>
-  </section>
-
-  <section class="card">
-    <h2>Accès rapide</h2>
-    <div class="grid">
-      <a class="btn" href="pages/infos.html">ℹ️ Infos</a>
-      <a class="btn" href="pages/programmation.html">🗓️ Programme</a>
-      <a class="btn" href="pages/reglement.html">📘 Règlement</a>
-      <a class="btn" href="pages/repas.html">🍽️ Repas</a>
-      <a class="btn" href="pages/contact.html">📩 Contact</a>
+      <a class="btn" href="dh/index.html">🎾 Double Hommes</a>
+      <a class="btn" href="dd/index.html">🎾 Double Dames</a>
     </div>
   </section>
 
+  <!-- ========================= -->
+  <!-- ACCÈS ORGANISATEURS -->
+  <!-- ========================= -->
   <section class="card">
     <h2>🔐 Accès organisateurs</h2>
 
     <div class="grid">
-      <a class="btn" href="#" id="btnAdmin">🛠️ Mode Admin</a>
-      <a class="btn" href="#" id="btnLogout">🚪 Déconnexion</a>
+
+      <a class="btn" href="#" id="btnAdmin">
+        🛠️ Mode Admin
+      </a>
+
+      <a class="btn" href="#" id="btnJAT">
+        🎾 Espace JAT
+      </a>
+
+      <a class="btn" href="#" id="btnLogout">
+        🚪 Déconnexion
+      </a>
+
     </div>
 
-    <p class="muted">Accès sécurisé (email / mot de passe).</p>
-    <p class="muted" id="authHint" style="margin-top:8px;"></p>
+    <p class="muted" id="authHint" style="margin-top:10px;">
+      Accès sécurisé organisateurs.
+    </p>
   </section>
 
 </main>
 
-<footer class="footer">
-  <div class="container">
-    <span>© TCS — Open BT Bricorama</span>
-  </div>
-</footer>
-
-<style>
-  /* ✅ Bandeau "image au centre" */
-  .topbar-row-step{
-    grid-template-columns: var(--logo-size) 1fr var(--logo-size);
-  }
-  .step-title-wrap{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    min-height: calc(var(--logo-size) * 0.55);
-  }
-  .step-title-img{
-    width: min(520px, 100%);
-    max-height: 88px;
-    height: auto;
-    object-fit: contain;
-    display:block;
-    filter: drop-shadow(0 1px 0 rgba(0,0,0,.15));
-  }
-
-  /* ✅ NAV: desktop = 1 ligne ; téléphone = 2 lignes fixes (3 + 3) */
-  .nav-step{
-    gap:8px;
-    flex-wrap:wrap;
-  }
-  .nav-step a{
-    padding:8px 12px;
-    flex: 0 0 auto;
-    text-align:center;
-    white-space:nowrap;
-  }
-
-  @media (max-width: 560px){
-    .nav-step{ justify-content:space-between; }
-    .nav-step a{ width: calc((100% - 16px) / 3); } /* 3 items par ligne */
-  }
-
-  @media (max-width: 420px){
-    .nav-step a{
-      padding:7px 10px;
-      font-size: 13px;
-    }
-    .step-title-img{ max-height: 74px; }
-  }
-
-  /* ✅ Lien actif plus visible */
-  .nav a[aria-current="page"]{
-    background: rgba(255,255,255,.26);
-    border-color: rgba(255,255,255,.45);
-    box-shadow: 0 6px 14px rgba(0,0,0,.10);
-  }
-</style>
-
+<!-- ================================================= -->
+<!-- FIREBASE -->
+<!-- ================================================= -->
 <script type="module">
-  import { auth } from "./assets/js/firebase.js";
-  import { loginAndRedirect, logout, getRoleByEmail } from "./assets/js/session.js";
-  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
-  const hint = document.getElementById("authHint");
+import { auth } from "./assets/js/firebase.js";
+import { loginAndRedirect, logout, getRoleByEmail }
+  from "./assets/js/session.js";
 
-  async function guardAdminAndGo(url){
-    if(!auth.currentUser){
-      await loginAndRedirect();
-    }
+import {
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
-    const u = auth.currentUser;
-    if(!u){
-      alert("Connexion annulée.");
-      return;
-    }
 
-    const role = await getRoleByEmail(u.email);
-    if(role !== "admin"){
-      alert("Accès refusé : rôle requis = admin");
-      return;
-    }
+const btnAdmin = document.getElementById("btnAdmin");
+const btnJAT   = document.getElementById("btnJAT");
+const btnLogout = document.getElementById("btnLogout");
+const hint = document.getElementById("authHint");
 
-    window.location.href = url;
+
+/* =====================================================
+   ADMIN
+===================================================== */
+btnAdmin.onclick = async (e)=>{
+  e.preventDefault();
+
+  if(!auth.currentUser){
+    await loginAndRedirect();
   }
 
-  document.getElementById("btnAdmin").onclick = async (e)=>{
-    e.preventDefault();
-    await guardAdminAndGo("admin/index.html?scope=general");
-  };
+  const u = auth.currentUser;
+  if(!u){
+    alert("Connexion annulée.");
+    return;
+  }
 
-  document.getElementById("btnLogout").onclick = async (e)=>{
-    e.preventDefault();
-    await logout();
-    alert("Déconnecté ✅");
-  };
+  const role = await getRoleByEmail(u.email);
 
-  onAuthStateChanged(auth, (user)=>{
-    hint.textContent = user ? ("Connecté : " + user.email) : "Non connecté.";
-  });
+  if(role !== "admin"){
+    alert("Accès réservé aux administrateurs.");
+    return;
+  }
+
+  window.location.href = "admin/index.html?scope=general";
+};
+
+
+/* =====================================================
+   JAT
+===================================================== */
+btnJAT.onclick = async (e)=>{
+  e.preventDefault();
+
+  if(!auth.currentUser){
+    await loginAndRedirect();
+  }
+
+  const u = auth.currentUser;
+  if(!u){
+    alert("Connexion annulée.");
+    return;
+  }
+
+  const role = await getRoleByEmail(u.email);
+
+  if(role !== "admin" && role !== "jat"){
+    alert("Accès réservé JAT.");
+    return;
+  }
+
+  window.location.href = "jat/index.html";
+};
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+btnLogout.onclick = async (e)=>{
+  e.preventDefault();
+  await logout();
+};
+
+
+/* =====================================================
+   STATUS USER
+===================================================== */
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){
+    hint.textContent = "Non connecté.";
+    return;
+  }
+
+  try{
+    const role = await getRoleByEmail(user.email);
+    hint.textContent =
+      `Connecté : ${user.email} — rôle : ${role || "aucun"}`;
+  }catch{
+    hint.textContent = "Utilisateur connecté.";
+  }
+});
+
 </script>
 
 </body>
