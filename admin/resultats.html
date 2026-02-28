@@ -1,0 +1,1063 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin — Résultats — Open BT Bricorama</title>
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260228-open-admin-resultats-v1" />
+
+  <style>
+    html, body{ max-width:100%; overflow-x:hidden; }
+
+    /* ✅ Onglet actif */
+    .nav a[aria-current="page"],
+    .btn.is-active{
+      background: rgba(17,17,17,.10) !important;
+      border-color: rgba(17,17,17,.25) !important;
+      box-shadow: 0 10px 22px rgba(0,0,0,.10);
+      font-weight: 1000 !important;
+    }
+
+    .match-list{ display:flex; flex-direction:column; gap:14px; }
+
+    .match-card{
+      border-radius:18px;
+      border:2px solid rgba(0,0,0,.06);
+      padding:14px;
+      background:#fff;
+      box-shadow:0 1px 0 rgba(0,0,0,.03);
+    }
+    .match-card.courtA{ background:#FFF6D6; border-color:rgba(255, 196, 0, .35); }
+    .match-card.courtB{ background:#FFE6EA; border-color:rgba(255, 0, 60, .25); }
+    .match-card.block{ background:#F3F6FF; border-color:rgba(60, 110, 255, .20); }
+
+    .match-head{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+      flex-wrap:wrap;
+    }
+    .m-slot{
+      font-size:12px;
+      font-weight:900;
+      opacity:.7;
+      white-space:nowrap;
+    }
+    .m-time{
+      font-size:13px;
+      font-weight:900;
+      white-space:nowrap;
+      letter-spacing:.2px;
+    }
+    .m-court{
+      font-size:13px;
+      font-weight:400;
+      font-style:italic;
+      opacity:.95;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      min-width:0;
+      flex:1;
+    }
+    .m-tag{
+      font-size:11px;
+      font-weight:1000;
+      white-space:nowrap;
+      border:1px solid rgba(0,0,0,.12);
+      border-radius:999px;
+      padding:6px 10px;
+      opacity:.95;
+      flex:0 0 auto;
+    }
+
+    /* ✅ score grid */
+    .score-grid{
+      margin-top:10px;
+      display:grid;
+      grid-template-columns: minmax(0,1fr) 48px 48px 48px;
+      gap:8px 8px;
+      align-items:center;
+      max-width:100%;
+    }
+
+    .team{ min-width:0; }
+    .team-title{
+      font-size:15px;
+      font-weight:1000;
+      line-height:1.15;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .team-sub{
+      margin-top:2px;
+      font-size:13px;
+      font-weight:800;
+      opacity:.85;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .sc{
+      width:48px;
+      height:38px;
+      border-radius:12px;
+      border:1px solid #ddd;
+      background:#fff;
+      font-weight:1000;
+      text-align:center;
+      outline:none;
+      font-variant-numeric: tabular-nums;
+      padding:0;
+    }
+
+    .hdr{
+      font-size:11px;
+      font-weight:1000;
+      opacity:.6;
+      text-align:center;
+      white-space:nowrap;
+    }
+
+    .actions{
+      margin-top:12px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .mini{ font-size:12px; font-weight:900; opacity:.75; }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid #eee;
+      background:#fafafa;
+      font-weight:1000;
+      white-space:nowrap;
+    }
+    .dot{
+      width:10px; height:10px;
+      border-radius:999px;
+      display:inline-block;
+      background:#bbb;
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,.12);
+    }
+    .dot.red{ background:#e74c3c; }
+    .dot.orange{ background:#f39c12; }
+    .dot.green{ background:#2ecc71; }
+
+    @media (max-width: 380px){
+      .team-title{ font-size:14px; }
+      .team-sub{ font-size:12px; }
+      .score-grid{ grid-template-columns: minmax(0,1fr) 42px 42px 42px; }
+      .sc{ width:42px; height:36px; }
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="container">
+    <div class="topbar-row">
+      <div class="brand-logo">
+        <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
+      </div>
+
+      <div class="brand-title" style="display:flex;align-items:center;justify-content:center;">
+        <div style="font-weight:1000; letter-spacing:.2px;">
+          🛠️ Admin — Open BT Bricorama
+        </div>
+      </div>
+
+      <div class="brand-logo">
+        <img src="../assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
+      </div>
+    </div>
+
+    <nav class="nav">
+      <a href="../index.html">🏠 Accueil public</a>
+      <a href="#" id="btnLogout">🚪 Déconnexion</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+
+  <section class="card" id="accessDenied" style="display:none;">
+    <h2 style="margin:0 0 8px;">⛔ Accès refusé</h2>
+    <p class="muted" style="margin:0;">Cette page est réservée aux administrateurs.</p>
+  </section>
+
+  <section class="card" id="adminZone" style="display:none;">
+    <h2 style="margin:0 0 10px;">🧭 Zone</h2>
+
+    <div class="field">
+      <label for="scope">Choisir</label>
+      <select id="scope">
+        <option value="general">🌐 Général</option>
+        <option value="dh">🎾 DH (Double Hommes)</option>
+        <option value="dd">🎾 DD (Double Dames)</option>
+      </select>
+    </div>
+
+    <div class="grid" style="margin-top:10px;" id="tabs"></div>
+    <p class="muted" id="hint" style="margin-top:10px;"></p>
+  </section>
+
+  <section class="card" id="panelNeedScope" style="display:none;">
+    <h2 style="margin:0 0 8px;">ℹ️ Choisir DH ou DD</h2>
+    <p class="muted" style="margin:0;">
+      Sélectionne <b>DH</b> ou <b>DD</b> dans “Zone” pour saisir les résultats.
+    </p>
+  </section>
+
+  <section class="card" id="panelResults" style="display:none;">
+    <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end; justify-content:space-between;">
+      <div>
+        <h2 style="margin:0 0 6px;">🏁 Résultats</h2>
+        <p class="muted" id="statusText" style="margin:0;">Chargement…</p>
+      </div>
+
+      <a class="btn" id="btnOpenPublic" href="#" style="font-weight:900; color:#111; text-align:center;">
+        👀 Ouvrir la page Résultats (public)
+      </a>
+    </div>
+
+    <p class="muted" style="margin-top:10px;">
+      ✅ Liaison : à chaque score enregistré, on recalcule le <b>classement des poules</b> et on met à jour la <b>programmation</b>
+      (équipes des 1/2 et du match 5e dès que possible).
+    </p>
+
+    <div id="adminList" style="margin-top:12px;"></div>
+  </section>
+
+</main>
+
+<script type="module">
+  import { auth, db } from "../assets/js/firebase.js";
+  import { logout, getRoleByEmail } from "../assets/js/session.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+  import {
+    doc, getDoc, setDoc, updateDoc, onSnapshot, serverTimestamp,
+    collection
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+  // =========================
+  // URL scope
+  // =========================
+  const params = new URLSearchParams(location.search);
+  const scopeFromUrl = (params.get("scope") || "dh").toLowerCase();
+
+  const currentPage = (location.pathname.split("/").pop() || "").toLowerCase(); // "resultats.html"
+
+  // =========================
+  // DOM
+  // =========================
+  const accessDenied = document.getElementById("accessDenied");
+  const adminZone = document.getElementById("adminZone");
+  const scopeEl = document.getElementById("scope");
+  const tabsEl  = document.getElementById("tabs");
+  const hintEl  = document.getElementById("hint");
+
+  const panelNeedScope = document.getElementById("panelNeedScope");
+  const panelResults   = document.getElementById("panelResults");
+
+  const statusText = document.getElementById("statusText");
+  const adminList  = document.getElementById("adminList");
+  const btnOpenPublic = document.getElementById("btnOpenPublic");
+
+  // =========================
+  // STATE
+  // =========================
+  let currentScope = (scopeFromUrl === "dd" || scopeFromUrl === "general") ? scopeFromUrl : "dh";
+
+  let unsubProg = null;
+  let unsubRes  = null;
+
+  let currentProg = null;         // programmations_open/{scope}
+  let resultsByMatch = new Map(); // matchId -> result doc
+
+  // =========================
+  // FIRESTORE REFS
+  // =========================
+  const progRef = (scope)=> doc(db, "programmations_open", scope);
+  const classementRef = (scope)=> doc(db, "classements_open", scope);
+
+  function resultsCol(scope){
+    // collections: resultats_open_dh / resultats_open_dd
+    return collection(db, `resultats_open_${scope}`);
+  }
+
+  // =========================
+  // UTILS
+  // =========================
+  function esc(s){
+    return (s ?? "").toString()
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  function toNum(v){
+    if(v === null || v === undefined || v === "") return null;
+    const n = typeof v === "number" ? v : Number(String(v).replace(",", ".").trim());
+    return Number.isFinite(n) ? n : null;
+  }
+
+  function teamIdOf(t){
+    if(!t) return "—";
+    return (t.id || t.teamId || t.teamName || (t.p1FirstName + "_" + t.p2FirstName) || "team").toString();
+  }
+
+  function teamTitle(t){
+    return (t?.teamName || "Équipe").toString();
+  }
+  function teamSub(t){
+    const p1 = (t?.p1FirstName || "").toString().trim();
+    const p2 = (t?.p2FirstName || "").toString().trim();
+    if(!p1 && !p2) return "";
+    return `${p1}${p1 && p2 ? " • " : ""}${p2}`;
+  }
+
+  function courtLabel(prog, courtKey){
+    const courts = prog?.courts || {};
+    const name = courts?.[courtKey] || courtKey || "—";
+    const emo = (courtKey === "A") ? "🐝" : (courtKey === "B" ? "🌶️" : "🎾");
+    return `${emo} ${name} ${emo}`;
+  }
+  function courtClass(courtKey){
+    return (courtKey === "A") ? "courtA" : (courtKey === "B" ? "courtB" : "");
+  }
+
+  function normalizeScheduleEntry(entry, slotObj){
+    if(typeof entry === "number"){
+      const slot = Number(entry);
+      const court = slotObj?.court || (slot % 2 === 1 ? "A" : "B");
+      return { slot, court };
+    }
+    if(entry && typeof entry === "object"){
+      const slot = Number(entry.slot);
+      const court = entry.court || slotObj?.court || (slot % 2 === 1 ? "A" : "B");
+      return { slot, court };
+    }
+    const fallbackSlot = Number(slotObj?.slot || 1);
+    return { slot: fallbackSlot, court: slotObj?.court || "A" };
+  }
+
+  function sanitize(v){
+    const s = String(v ?? "").trim();
+    return s === "" ? null : s;
+  }
+
+  function winnerFromScores(x){
+    const sets = [
+      [x.s1A, x.s1B],
+      [x.s2A, x.s2B],
+      [x.s3A, x.s3B],
+    ];
+
+    let a=0,b=0;
+    for(const [A,B] of sets){
+      const nA = (A === null) ? null : Number(A);
+      const nB = (B === null) ? null : Number(B);
+      if(!Number.isFinite(nA) || !Number.isFinite(nB)) continue;
+      if(nA === nB) continue;
+      if(nA > nB) a++; else b++;
+    }
+    if(a >= 2 && a > b) return "A";
+    if(b >= 2 && b > a) return "B";
+    return null;
+  }
+
+  function statusBadge(stored){
+    const w = stored?.winnerSide;
+    const any = ["s1A","s1B","s2A","s2B","s3A","s3B"].some(k => stored?.[k] !== null && stored?.[k] !== undefined && String(stored?.[k]).trim() !== "");
+    if(w === "A" || w === "B") return { label:"Validé", dot:"green" };
+    if(any) return { label:"En cours", dot:"orange" };
+    return { label:"Non saisi", dot:"red" };
+  }
+
+  function readCardScores(card){
+    const get = (k)=>{
+      const el = card.querySelector(`input[data-k="${k}"]`);
+      return el ? (el.value || "").trim() : "";
+    };
+    return {
+      s1A: get("s1A"), s2A: get("s2A"), s3A: get("s3A"),
+      s1B: get("s1B"), s2B: get("s2B"), s3B: get("s3B"),
+    };
+  }
+
+  function updateWinnerPreview(card){
+    const raw = readCardScores(card);
+    const data = {
+      s1A: sanitize(raw.s1A), s2A: sanitize(raw.s2A), s3A: sanitize(raw.s3A),
+      s1B: sanitize(raw.s1B), s2B: sanitize(raw.s2B), s3B: sanitize(raw.s3B),
+    };
+    const w = winnerFromScores(data);
+    const el = card.querySelector("[data-winner]");
+    if(el) el.textContent = w || "—";
+  }
+
+  // =========================
+  // RENDER
+  // =========================
+  function setTabs(sc){
+    tabsEl.innerHTML = "";
+
+    const isActive = (href) => {
+      try{
+        const u = new URL(href, location.href);
+        const page = (u.pathname.split("/").pop() || "").toLowerCase();
+        return page === currentPage;
+      }catch(e){
+        return false;
+      }
+    };
+
+    const make = (label, href) => {
+      const a = document.createElement("a");
+      a.className = "btn";
+      a.href = href;
+      a.textContent = label;
+
+      if(isActive(href)){
+        a.classList.add("is-active");
+        a.setAttribute("aria-current","page");
+      }
+      tabsEl.appendChild(a);
+    };
+
+    const zoneText = (s)=> (s==="dd"?"DD":(s==="dh"?"DH":"Général"));
+
+    if(sc === "general"){
+      hintEl.textContent = "🌐 Zone Général : accès aux pages générales.";
+      make("📰 Infos",          "index.html?scope=general");
+      make("👥 Équipes",        "equipes.html?scope=dh");
+      make("📝 Inscriptions",   "inscriptions.html?scope=dh");
+      make("🎲 Tirage",         "tirage.html?scope=dh");
+      make("✅ Résultats",      "resultats.html?scope=dh");
+      make("🗓️ Programmation",  "programmation.html?scope=dh");
+      make("🏆 Classement",      "classement.html?scope=dh");
+      return;
+    }
+
+    hintEl.textContent = `🎾 Zone ${zoneText(sc)} : gestion équipes / inscriptions / tirage / résultats / programmation / classement.`;
+    make("👥 Équipes",        `equipes.html?scope=${encodeURIComponent(sc)}`);
+    make("📝 Inscriptions",   `inscriptions.html?scope=${encodeURIComponent(sc)}`);
+    make("🎲 Tirage",         `tirage.html?scope=${encodeURIComponent(sc)}`);
+    make("✅ Résultats",      `resultats.html?scope=${encodeURIComponent(sc)}`);
+    make("🗓️ Programmation",  `programmation.html?scope=${encodeURIComponent(sc)}`);
+    make("🏆 Classement",      `classement.html?scope=${encodeURIComponent(sc)}`);
+    make("📰 Infos",          "index.html?scope=general");
+  }
+
+  function showPanels(sc){
+    if(sc === "general"){
+      panelNeedScope.style.display = "block";
+      panelResults.style.display = "none";
+      return;
+    }
+    panelNeedScope.style.display = "none";
+    panelResults.style.display = "block";
+  }
+
+  function matchCardHtml({ prog, slotObj, mid, entry }){
+    const m = prog?.matches?.[mid];
+    if(!m) return "";
+
+    // blocks are not scored
+    if(m.kind === "block"){
+      return `
+        <div class="match-card block">
+          <div class="match-head">
+            <div class="m-slot">#${esc(slotObj.slot)} · ${esc(mid)}</div>
+            <div class="m-time">${esc(slotObj.time || "—")}</div>
+            <div class="m-court">⏳ Bloc</div>
+            <div class="m-tag">${esc(m.stage || m.title || "")}</div>
+          </div>
+          <p class="muted" style="margin:10px 0 0;">${esc(m.note || "")}</p>
+        </div>
+      `;
+    }
+
+    const norm = normalizeScheduleEntry(entry, slotObj);
+    const courtKey = norm.court;
+
+    const A = m.A || null;
+    const B = m.B || null;
+
+    const stored = resultsByMatch.get(mid) || {};
+    const badge = statusBadge(stored);
+
+    return `
+      <div class="match-card ${esc(courtClass(courtKey))}" data-mid="${esc(mid)}">
+        <div class="match-head">
+          <div class="m-slot">#${esc(slotObj.slot)} · ${esc(mid)}</div>
+          <div class="m-time">${esc(slotObj.time || "—")}</div>
+          <div class="m-court">${esc(courtLabel(prog, courtKey))}</div>
+          <div class="m-tag">${esc(m.cat || "")} · ${esc(m.stage || "")}</div>
+          <div class="pill"><span class="dot ${esc(badge.dot)}"></span>${esc(badge.label)}</div>
+        </div>
+
+        <div class="score-grid" aria-label="Saisie scores">
+          <div class="hdr"></div>
+          <div class="hdr">S1</div>
+          <div class="hdr">S2</div>
+          <div class="hdr">S3</div>
+
+          <div class="team">
+            <div class="team-title">${esc(teamTitle(A))}</div>
+            ${teamSub(A) ? `<div class="team-sub">${esc(teamSub(A))}</div>` : ``}
+          </div>
+          <input class="sc" inputmode="numeric" pattern="[0-9]*" maxlength="2" data-k="s1A" value="${esc(stored.s1A ?? "")}">
+          <input class="sc" inputmode="numeric" pattern="[0-9]*" maxlength="2" data-k="s2A" value="${esc(stored.s2A ?? "")}">
+          <input class="sc" inputmode="numeric" pattern="[0-9]*" maxlength="2" data-k="s3A" value="${esc(stored.s3A ?? "")}">
+
+          <div class="team">
+            <div class="team-title">${esc(teamTitle(B))}</div>
+            ${teamSub(B) ? `<div class="team-sub">${esc(teamSub(B))}</div>` : ``}
+          </div>
+          <input class="sc" inputmode="numeric" pattern="[0-9]*" maxlength="2" data-k="s1B" value="${esc(stored.s1B ?? "")}">
+          <input class="sc" inputmode="numeric" pattern="[0-9]*" maxlength="2" data-k="s2B" value="${esc(stored.s2B ?? "")}">
+          <input class="sc" inputmode="numeric" pattern="[0-9]*" maxlength="2" data-k="s3B" value="${esc(stored.s3B ?? "")}">
+        </div>
+
+        <div class="actions">
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn" data-act="save" style="font-weight:900; color:#111;">💾 Enregistrer</button>
+            <button class="btn" data-act="clear" style="font-weight:900; color:#111; border-color:#f1b2b2;">🧽 Effacer</button>
+          </div>
+          <div class="mini muted">winnerSide: <b data-winner>${esc(stored.winnerSide || "—")}</b></div>
+        </div>
+      </div>
+    `;
+  }
+
+  function render(){
+    if(currentScope === "general"){
+      statusText.textContent = "Choisis DH ou DD.";
+      adminList.innerHTML = "";
+      return;
+    }
+
+    btnOpenPublic.href = `../${currentScope}/resultats.html`;
+
+    if(!currentProg){
+      statusText.textContent = "ℹ️ Programmation introuvable. Génère-la d’abord dans “Programmation”.";
+      adminList.innerHTML = "";
+      return;
+    }
+
+    const matches = currentProg.matches || {};
+    const slots = Array.isArray(currentProg.slots) ? currentProg.slots : [];
+    const schedule = currentProg.schedule || {};
+
+    // slot -> matchId (1 match par slot)
+    const slotToMatch = new Map();
+    for(const [mid, entry] of Object.entries(schedule)){
+      const slotNum = (typeof entry === "number") ? Number(entry) : Number(entry?.slot);
+      const sObj = slots.find(x => Number(x.slot) === slotNum) || null;
+      const norm = normalizeScheduleEntry(entry, sObj);
+      if(!matches[mid]) continue;
+      if(!slotToMatch.has(norm.slot)) slotToMatch.set(norm.slot, mid);
+    }
+
+    let done = 0, total = 0;
+    const cards = [];
+
+    for(const s of slots){
+      const mid = slotToMatch.get(Number(s.slot));
+      const m = mid ? matches[mid] : null;
+      if(!m) continue;
+
+      total++;
+      const stored = resultsByMatch.get(mid) || {};
+      const badge = statusBadge(stored);
+      if(badge.dot === "green") done++;
+
+      const entry = schedule[mid];
+      cards.push(matchCardHtml({ prog: currentProg, slotObj:s, mid, entry }));
+    }
+
+    statusText.textContent = `🟢 En direct — ${done}/${total} match(s) validé(s)`;
+    adminList.innerHTML = cards.length
+      ? `<div class="match-list">${cards.join("")}</div>`
+      : `<p class="muted">Aucun match.</p>`;
+  }
+
+  // =========================
+  // CLASSEMENT (poules) + SYNC PROG
+  // =========================
+  function parseSet(a, b){
+    const A = toNum(a), B = toNum(b);
+    if(A === null || B === null) return null;
+    return { A, B };
+  }
+
+  function matchStatsFromResult(res){
+    // retourne { setsA, setsB, gamesA, gamesB } ou null si incomplet
+    const s = [
+      parseSet(res?.s1A, res?.s1B),
+      parseSet(res?.s2A, res?.s2B),
+      parseSet(res?.s3A, res?.s3B),
+    ].filter(Boolean);
+
+    if(!s.length) return null;
+
+    let setsA=0, setsB=0, gamesA=0, gamesB=0;
+    for(const x of s){
+      gamesA += x.A; gamesB += x.B;
+      if(x.A > x.B) setsA++;
+      else if(x.B > x.A) setsB++;
+    }
+    return { setsA, setsB, gamesA, gamesB };
+  }
+
+  function ensureTeamSlot(map, team){
+    const id = teamIdOf(team);
+    if(!map.has(id)){
+      map.set(id, {
+        id,
+        team: {
+          id: team.id || id,
+          teamName: team.teamName || id,
+          p1FirstName: team.p1FirstName || "",
+          p2FirstName: team.p2FirstName || ""
+        },
+        played:0,
+        points:0, // 2 win, 1 loss
+        wins:0, losses:0,
+        setsWon:0, setsLost:0,
+        gamesWon:0, gamesLost:0
+      });
+    }
+    return map.get(id);
+  }
+
+  function applyMatchToTable(table, teamA, teamB, res){
+    const A = ensureTeamSlot(table, teamA);
+    const B = ensureTeamSlot(table, teamB);
+
+    const w = res?.winnerSide;
+    const st = matchStatsFromResult(res);
+
+    // si pas validé, on ignore le match
+    if(w !== "A" && w !== "B") return;
+
+    A.played++; B.played++;
+
+    if(w === "A"){
+      A.wins++; A.points += 2;
+      B.losses++; B.points += 1;
+    }else{
+      B.wins++; B.points += 2;
+      A.losses++; A.points += 1;
+    }
+
+    if(st){
+      A.setsWon += st.setsA; A.setsLost += st.setsB;
+      B.setsWon += st.setsB; B.setsLost += st.setsA;
+
+      A.gamesWon += st.gamesA; A.gamesLost += st.gamesB;
+      B.gamesWon += st.gamesB; B.gamesLost += st.gamesA;
+    }
+  }
+
+  function sortStandings(rows, headToHeadMap){
+    // rows = array of entries with points, set diff, game diff
+    // headToHeadMap key = "id1|id2" -> winnerId
+    const diffSets = (r)=> (r.setsWon - r.setsLost);
+    const diffGames = (r)=> (r.gamesWon - r.gamesLost);
+
+    const sorted = [...rows].sort((a,b)=>{
+      if(b.points !== a.points) return b.points - a.points;
+      if(diffSets(b) !== diffSets(a)) return diffSets(b) - diffSets(a);
+      if(diffGames(b) !== diffGames(a)) return diffGames(b) - diffGames(a);
+
+      // head-to-head si égalité entre 2
+      const k1 = `${a.id}|${b.id}`;
+      const k2 = `${b.id}|${a.id}`;
+      const w = headToHeadMap.get(k1) || headToHeadMap.get(k2) || null;
+      if(w){
+        if(w === a.id) return -1;
+        if(w === b.id) return 1;
+      }
+
+      // stable fallback
+      return (a.team?.teamName || a.id).localeCompare(b.team?.teamName || b.id);
+    });
+
+    return sorted.map((r,i)=>({
+      ...r,
+      rank: i+1,
+      setDiff: (r.setsWon - r.setsLost),
+      gameDiff: (r.gamesWon - r.gamesLost)
+    }));
+  }
+
+  function extractDhPoolsFromProg(prog){
+    const matches = prog?.matches || {};
+    const out = { Montjoly: [], Kourou: [] };
+
+    for(const m of Object.values(matches)){
+      if(m?.kind !== "match") continue;
+      if(m?.cat !== "DH") continue;
+      const st = (m?.stage || "");
+      if(st.startsWith("Poule Montjoly")) out.Montjoly.push(m);
+      if(st.startsWith("Poule Kourou"))   out.Kourou.push(m);
+    }
+    return out;
+  }
+
+  function extractDdPoolMatchesFromProg(prog){
+    const matches = prog?.matches || {};
+    return Object.values(matches).filter(m => m?.kind==="match" && m?.cat==="DD" && (m?.stage||"").startsWith("Poule DD"));
+  }
+
+  function buildHeadToHeadMap(matches, resultsByMatch){
+    // key "idA|idB" -> winnerId
+    const map = new Map();
+    for(const m of matches){
+      const res = resultsByMatch.get(m.id) || null;
+      const w = res?.winnerSide;
+      if(w !== "A" && w !== "B") continue;
+      const aId = teamIdOf(m.A);
+      const bId = teamIdOf(m.B);
+      const winnerId = (w === "A") ? aId : bId;
+      map.set(`${aId}|${bId}`, winnerId);
+    }
+    return map;
+  }
+
+  async function computeAndWriteClassement(scope){
+    if(!currentProg) return null;
+
+    if(scope === "dh"){
+      const pools = extractDhPoolsFromProg(currentProg);
+      const allPoolMatches = [...pools.Montjoly, ...pools.Kourou];
+      const h2h = buildHeadToHeadMap(allPoolMatches, resultsByMatch);
+
+      const tabM = new Map();
+      const tabK = new Map();
+
+      for(const m of pools.Montjoly){
+        const res = resultsByMatch.get(m.id) || null;
+        applyMatchToTable(tabM, m.A, m.B, res);
+      }
+      for(const m of pools.Kourou){
+        const res = resultsByMatch.get(m.id) || null;
+        applyMatchToTable(tabK, m.A, m.B, res);
+      }
+
+      const mont = sortStandings([...tabM.values()], h2h);
+      const kou  = sortStandings([...tabK.values()], h2h);
+
+      const payload = {
+        formatVersion: 1,
+        cat: "DH",
+        updatedAt: serverTimestamp(),
+        pools: {
+          montjoly: mont,
+          kourou: kou
+        }
+      };
+
+      await setDoc(classementRef("dh"), payload, { merge:true });
+      return payload;
+    }
+
+    if(scope === "dd"){
+      const ms = extractDdPoolMatchesFromProg(currentProg);
+      const h2h = buildHeadToHeadMap(ms, resultsByMatch);
+
+      const tab = new Map();
+      for(const m of ms){
+        const res = resultsByMatch.get(m.id) || null;
+        applyMatchToTable(tab, m.A, m.B, res);
+      }
+
+      const ranked = sortStandings([...tab.values()], h2h);
+
+      const payload = {
+        formatVersion: 1,
+        cat: "DD",
+        updatedAt: serverTimestamp(),
+        pool: ranked
+      };
+
+      await setDoc(classementRef("dd"), payload, { merge:true });
+      return payload;
+    }
+
+    return null;
+  }
+
+  function findMatchIdByStage(prog, stageText){
+    const matches = prog?.matches || {};
+    for(const [id, m] of Object.entries(matches)){
+      if((m?.stage || "") === stageText) return id;
+    }
+    return null;
+  }
+
+  function winnerLoserTeamOfMatch(prog, mid, resultsByMatch){
+    const m = prog?.matches?.[mid];
+    if(!m || m.kind !== "match") return { winner:null, loser:null };
+    const res = resultsByMatch.get(mid) || null;
+    const w = res?.winnerSide;
+    if(w !== "A" && w !== "B") return { winner:null, loser:null };
+    const winner = (w === "A") ? (m.A || null) : (m.B || null);
+    const loser  = (w === "A") ? (m.B || null) : (m.A || null);
+    return { winner, loser };
+  }
+
+  function isPlaceholderTeam(t){
+    if(!t) return false;
+    const id = String(t.id || "");
+    const name = String(t.teamName || "");
+    // placeholders dans ton builder : P("1er Montjoly") => id == teamName == text
+    return id.includes("1er ") || id.includes("2e ") || id.includes("3e ") ||
+           name.includes("1er ") || name.includes("2e ") || name.includes("3e ") ||
+           id.includes("Gagnant") || id.includes("Perdant") || name.includes("Gagnant") || name.includes("Perdant");
+  }
+
+  async function syncDhFinalsIntoProgrammation(classement){
+    if(!currentProg || currentScope !== "dh" || !classement) return;
+
+    const mont = classement?.pools?.montjoly || [];
+    const kou  = classement?.pools?.kourou || [];
+
+    const m1 = mont.find(x=>x.rank===1)?.team || null;
+    const m2 = mont.find(x=>x.rank===2)?.team || null;
+    const m3 = mont.find(x=>x.rank===3)?.team || null;
+
+    const k1 = kou.find(x=>x.rank===1)?.team || null;
+    const k2 = kou.find(x=>x.rank===2)?.team || null;
+    const k3 = kou.find(x=>x.rank===3)?.team || null;
+
+    const patchMatches = { ...(currentProg.matches || {}) };
+
+    // 1/2 et match 5e place : si les 3 rangs existent, on remplit
+    const sf1Id = findMatchIdByStage(currentProg, "Demi-finale 1");
+    const sf2Id = findMatchIdByStage(currentProg, "Demi-finale 2");
+    const m5Id  = findMatchIdByStage(currentProg, "Match 5e place");
+
+    if(sf1Id && m1 && k2){
+      if(isPlaceholderTeam(patchMatches[sf1Id]?.A) || isPlaceholderTeam(patchMatches[sf1Id]?.B)){
+        patchMatches[sf1Id] = { ...patchMatches[sf1Id], A: m1, B: k2 };
+      }
+    }
+    if(sf2Id && k1 && m2){
+      if(isPlaceholderTeam(patchMatches[sf2Id]?.A) || isPlaceholderTeam(patchMatches[sf2Id]?.B)){
+        patchMatches[sf2Id] = { ...patchMatches[sf2Id], A: k1, B: m2 };
+      }
+    }
+    if(m5Id && m3 && k3){
+      if(isPlaceholderTeam(patchMatches[m5Id]?.A) || isPlaceholderTeam(patchMatches[m5Id]?.B)){
+        patchMatches[m5Id] = { ...patchMatches[m5Id], A: m3, B: k3 };
+      }
+    }
+
+    // Petite finale + Finale : on peut les remplir si SF1 et SF2 ont un résultat
+    const pfId = findMatchIdByStage(currentProg, "Petite finale (3e place)");
+    const finId = findMatchIdByStage(currentProg, "Finale");
+
+    if(sf1Id && sf2Id){
+      const sf1 = winnerLoserTeamOfMatch(currentProg, sf1Id, resultsByMatch);
+      const sf2 = winnerLoserTeamOfMatch(currentProg, sf2Id, resultsByMatch);
+
+      if(pfId && sf1.loser && sf2.loser){
+        if(isPlaceholderTeam(patchMatches[pfId]?.A) || isPlaceholderTeam(patchMatches[pfId]?.B)){
+          patchMatches[pfId] = { ...patchMatches[pfId], A: sf1.loser, B: sf2.loser };
+        }
+      }
+      if(finId && sf1.winner && sf2.winner){
+        if(isPlaceholderTeam(patchMatches[finId]?.A) || isPlaceholderTeam(patchMatches[finId]?.B)){
+          patchMatches[finId] = { ...patchMatches[finId], A: sf1.winner, B: sf2.winner };
+        }
+      }
+    }
+
+    await updateDoc(progRef("dh"), {
+      matches: patchMatches,
+      updatedAt: serverTimestamp()
+    });
+  }
+
+  async function recomputeClassementsAndSync(){
+    try{
+      const classement = await computeAndWriteClassement(currentScope);
+      if(currentScope === "dh"){
+        await syncDhFinalsIntoProgrammation(classement);
+      }
+    }catch(err){
+      console.error(err);
+      // on ne bloque pas la saisie de score si classement/sync échoue
+    }
+  }
+
+  // =========================
+  // SAVE/CLEAR
+  // =========================
+  async function saveMatch(mid, card){
+    const raw = readCardScores(card);
+    const data = {
+      s1A: sanitize(raw.s1A), s2A: sanitize(raw.s2A), s3A: sanitize(raw.s3A),
+      s1B: sanitize(raw.s1B), s2B: sanitize(raw.s2B), s3B: sanitize(raw.s3B),
+    };
+    data.winnerSide = winnerFromScores(data);
+
+    await setDoc(doc(resultsCol(currentScope), mid), {
+      ...data,
+      updatedAt: serverTimestamp(),
+      updatedBy: auth.currentUser?.email || null
+    }, { merge:true });
+
+    await recomputeClassementsAndSync();
+  }
+
+  async function clearMatch(mid){
+    await setDoc(doc(resultsCol(currentScope), mid), {
+      s1A:null,s2A:null,s3A:null,
+      s1B:null,s2B:null,s3B:null,
+      winnerSide:null,
+      updatedAt: serverTimestamp(),
+      updatedBy: auth.currentUser?.email || null
+    }, { merge:true });
+
+    await recomputeClassementsAndSync();
+  }
+
+  // =========================
+  // EVENTS
+  // =========================
+  adminList.addEventListener("input", (e)=>{
+    const card = e.target.closest(".match-card");
+    if(card) updateWinnerPreview(card);
+  });
+
+  adminList.addEventListener("click", async (e)=>{
+    const btn = e.target.closest("button[data-act]");
+    if(!btn) return;
+
+    const card = btn.closest(".match-card");
+    const mid = card?.dataset?.mid;
+    if(!mid) return;
+
+    const act = btn.dataset.act;
+
+    btn.disabled = true;
+    try{
+      if(act === "save"){
+        await saveMatch(mid, card);
+      }
+      if(act === "clear"){
+        const ok = confirm("Effacer ce résultat ?\n\n⚠️ Les scores seront remis à vide.");
+        if(!ok) return;
+        await clearMatch(mid);
+      }
+    }catch(err){
+      console.error(err);
+      alert("❌ Erreur Firestore (droits / rules ?).");
+    }finally{
+      btn.disabled = false;
+    }
+  });
+
+  // =========================
+  // LISTENERS
+  // =========================
+  function stopListeners(){
+    if(unsubProg){ unsubProg(); unsubProg = null; }
+    if(unsubRes){ unsubRes(); unsubRes = null; }
+    currentProg = null;
+    resultsByMatch = new Map();
+  }
+
+  function startProgListener(scope){
+    if(unsubProg){ unsubProg(); unsubProg = null; }
+    unsubProg = onSnapshot(progRef(scope), (snap)=>{
+      currentProg = snap.exists() ? (snap.data() || {}) : null;
+      render();
+    }, (err)=>{
+      console.error(err);
+      currentProg = null;
+      render();
+    });
+  }
+
+  function startResultsListener(scope){
+    if(unsubRes){ unsubRes(); unsubRes = null; }
+    unsubRes = onSnapshot(resultsCol(scope), (snap)=>{
+      resultsByMatch = new Map();
+      snap.forEach(d => resultsByMatch.set(d.id, d.data() || {}));
+      render();
+    }, (err)=> console.error(err));
+  }
+
+  function showDenied(){
+    accessDenied.style.display = "block";
+    adminZone.style.display = "none";
+    panelNeedScope.style.display = "none";
+    panelResults.style.display = "none";
+    stopListeners();
+  }
+
+  function showAdmin(){
+    accessDenied.style.display = "none";
+    adminZone.style.display = "block";
+
+    scopeEl.value = currentScope;
+    setTabs(currentScope);
+    showPanels(currentScope);
+
+    if(currentScope !== "general"){
+      startProgListener(currentScope);
+      startResultsListener(currentScope);
+    }else{
+      stopListeners();
+      render();
+    }
+
+    scopeEl.onchange = ()=>{
+      const next = (scopeEl.value || "general").toLowerCase();
+      window.location.href = `resultats.html?scope=${encodeURIComponent(next)}`;
+    };
+  }
+
+  // logout
+  document.getElementById("btnLogout").onclick = async (e)=>{
+    e.preventDefault();
+    await logout();
+    window.location.href = "../index.html";
+  };
+
+  // guard admin (Open BT)
+  onAuthStateChanged(auth, async (user)=>{
+    if(!user){ showDenied(); return; }
+    try{
+      const role = await getRoleByEmail(user.email);
+      if(role !== "admin"){ showDenied(); return; }
+      showAdmin();
+    }catch(err){
+      console.error(err);
+      showDenied();
+    }
+  });
+</script>
+
+</body>
+</html>
