@@ -3,139 +3,178 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>JAT — Open BT Bricorama</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260228-jat-index-v1" />
+
+  <title>Open BT Bricorama</title>
+
+  <link rel="stylesheet" href="assets/css/main.css?v=20260228-home" />
 </head>
+
 <body>
 
-<div id="jatHeader"></div>
+<header class="topbar">
+  <div class="container">
+
+    <div class="topbar-row">
+      <div class="brand-logo">
+        <img src="assets/img/logo-suzini.png" alt="TC Suzini">
+      </div>
+
+      <div class="brand-title">
+        <strong>🏖️ Open BT Bricorama</strong>
+      </div>
+
+      <div class="brand-logo">
+        <img src="assets/img/logo-openbt.png" alt="Open BT">
+      </div>
+    </div>
+
+  </div>
+</header>
 
 <main class="container">
 
-  <section class="card" id="accessDenied" style="display:none;">
-    <h2 style="margin:0 0 8px;">⛔ Accès refusé</h2>
-    <p class="muted" style="margin:0;">Cette page est réservée au JAT / arbitre.</p>
+  <!-- ========================= -->
+  <!-- ACCÈS TOURNOI -->
+  <!-- ========================= -->
+  <section class="card">
+    <h2>🎾 Accès tournoi</h2>
+
+    <div class="grid">
+      <a class="btn" href="dh/index.html">🎾 Double Hommes</a>
+      <a class="btn" href="dd/index.html">🎾 Double Dames</a>
+    </div>
   </section>
 
-  <section class="card" id="pageContent" style="display:none;">
+  <!-- ========================= -->
+  <!-- ACCÈS ORGANISATEURS -->
+  <!-- ========================= -->
+  <section class="card">
+    <h2>🔐 Accès organisateurs</h2>
 
-    <h2 style="margin:0 0 10px;">🎛️ JAT — Open BT Bricorama</h2>
-    <p class="muted" id="scopeHint" style="margin:0;">
-      Choisis DH ou DD dans le menu déroulant “Zone”.
-    </p>
+    <div class="grid">
 
-    <!-- Zone -->
-    <div class="field" style="margin-top:12px;">
-      <label for="scope">Zone</label>
-      <select id="scope">
-        <option value="dh">🎾 DH (Double Hommes)</option>
-        <option value="dd">🎾 DD (Double Dames)</option>
-      </select>
+      <a class="btn" href="#" id="btnAdmin">
+        🛠️ Mode Admin
+      </a>
+
+      <a class="btn" href="#" id="btnJAT">
+        🎾 Espace JAT
+      </a>
+
+      <a class="btn" href="#" id="btnLogout">
+        🚪 Déconnexion
+      </a>
+
     </div>
 
-    <!-- NAV JAT (les 4 pages demandées) -->
-    <div class="grid" style="margin-top:12px;">
-      <a class="btn" id="goEquipes" href="#" style="font-weight:900; color:#111;">👥 Équipes</a>
-      <a class="btn" id="goClassement" href="#" style="font-weight:900; color:#111;">🏆 Classement</a>
-      <a class="btn" id="goResultats" href="#" style="font-weight:900; color:#111;">✅ Résultats</a>
-      <a class="btn" id="goProgrammation" href="#" style="font-weight:900; color:#111;">🗓️ Programmation</a>
-    </div>
-
-    <p class="muted" style="margin-top:10px;">
-      (On crée les pages ensuite : équipes / classement / résultats / programmation.)
+    <p class="muted" id="authHint" style="margin-top:10px;">
+      Accès sécurisé organisateurs.
     </p>
-
   </section>
 
 </main>
 
+<!-- ================================================= -->
+<!-- FIREBASE -->
+<!-- ================================================= -->
 <script type="module">
-  // ✅ même logique que admin/index : shell + guard
-  import { renderAdminShell } from "../assets/js/admin-shell.js";
-  import { auth } from "../assets/js/firebase.js";
-  import { getRoleByEmail } from "../assets/js/session.js";
-  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
-  // =========================
-  // Header / shell
-  // =========================
-  // On réutilise le shell existant pour garder la même UI.
-  // Si tu veux un shell dédié "jat-shell.js" plus tard, on le fera.
-  renderAdminShell({ active: "jat", basePath: "..", mountId: "jatHeader" });
+import { auth } from "./assets/js/firebase.js";
+import { loginAndRedirect, logout, getRoleByEmail }
+  from "./assets/js/session.js";
 
-  // =========================
-  // DOM
-  // =========================
-  const accessDenied = document.getElementById("accessDenied");
-  const pageContent  = document.getElementById("pageContent");
+import {
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
-  const scopeEl = document.getElementById("scope");
-  const scopeHint = document.getElementById("scopeHint");
 
-  const goEquipes = document.getElementById("goEquipes");
-  const goClassement = document.getElementById("goClassement");
-  const goResultats = document.getElementById("goResultats");
-  const goProgrammation = document.getElementById("goProgrammation");
+const btnAdmin = document.getElementById("btnAdmin");
+const btnJAT   = document.getElementById("btnJAT");
+const btnLogout = document.getElementById("btnLogout");
+const hint = document.getElementById("authHint");
 
-  // =========================
-  // Scope (URL + select)
-  // =========================
-  const params = new URLSearchParams(location.search);
-  const scopeFromUrl = (params.get("scope") || "dh").toLowerCase();
-  let currentScope = (scopeFromUrl === "dd") ? "dd" : "dh";
 
-  function applyScope(s){
-    currentScope = (s === "dd") ? "dd" : "dh";
-    scopeEl.value = currentScope;
+/* =====================================================
+   ADMIN
+===================================================== */
+btnAdmin.onclick = async (e)=>{
+  e.preventDefault();
 
-    scopeHint.textContent = currentScope === "dh"
-      ? "Zone DH : gestion JAT du Double Hommes."
-      : "Zone DD : gestion JAT du Double Dames.";
-
-    // ✅ liens (pages à créer ensuite)
-    goEquipes.href = `equipes.html?scope=${encodeURIComponent(currentScope)}`;
-    goClassement.href = `classement.html?scope=${encodeURIComponent(currentScope)}`;
-    goResultats.href = `resultats.html?scope=${encodeURIComponent(currentScope)}`;
-    goProgrammation.href = `programmation.html?scope=${encodeURIComponent(currentScope)}`;
+  if(!auth.currentUser){
+    await loginAndRedirect();
   }
 
-  scopeEl.addEventListener("change", ()=>{
-    const next = (scopeEl.value || "dh").toLowerCase();
-    // conserve le scope dans l’URL
-    window.location.href = `index.html?scope=${encodeURIComponent(next)}`;
-  });
-
-  applyScope(currentScope);
-
-  // =========================
-  // Guard (role)
-  // =========================
-  function showDenied(){
-    accessDenied.style.display = "block";
-    pageContent.style.display = "none";
+  const u = auth.currentUser;
+  if(!u){
+    alert("Connexion annulée.");
+    return;
   }
 
-  function showOk(){
-    accessDenied.style.display = "none";
-    pageContent.style.display = "block";
+  const role = await getRoleByEmail(u.email);
+
+  if(role !== "admin"){
+    alert("Accès réservé aux administrateurs.");
+    return;
   }
 
-  onAuthStateChanged(auth, async (user)=>{
-    if(!user){ showDenied(); return; }
+  window.location.href = "admin/index.html?scope=general";
+};
 
-    try{
-      const role = await getRoleByEmail(user.email);
 
-      // ✅ À ADAPTER : si tu veux un rôle "jat" distinct, on bascule ici.
-      // Pour l’instant on autorise admin (et tu me diras si tu ajoutes roles: "jat")
-      const allowed = (role === "admin" || role === "jat");
-      if(!allowed){ showDenied(); return; }
+/* =====================================================
+   JAT
+===================================================== */
+btnJAT.onclick = async (e)=>{
+  e.preventDefault();
 
-      showOk();
-    }catch(e){
-      showDenied();
-    }
-  });
+  if(!auth.currentUser){
+    await loginAndRedirect();
+  }
+
+  const u = auth.currentUser;
+  if(!u){
+    alert("Connexion annulée.");
+    return;
+  }
+
+  const role = await getRoleByEmail(u.email);
+
+  if(role !== "admin" && role !== "jat"){
+    alert("Accès réservé JAT.");
+    return;
+  }
+
+  window.location.href = "jat/index.html";
+};
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+btnLogout.onclick = async (e)=>{
+  e.preventDefault();
+  await logout();
+};
+
+
+/* =====================================================
+   STATUS USER
+===================================================== */
+onAuthStateChanged(auth, async (user)=>{
+  if(!user){
+    hint.textContent = "Non connecté.";
+    return;
+  }
+
+  try{
+    const role = await getRoleByEmail(user.email);
+    hint.textContent =
+      `Connecté : ${user.email} — rôle : ${role || "aucun"}`;
+  }catch{
+    hint.textContent = "Utilisateur connecté.";
+  }
+});
+
 </script>
 
 </body>
