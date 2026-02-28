@@ -3,20 +3,150 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Programmation — Double Dames — Open BT Bricorama</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260228-dd-prog-v1" />
+  <title>Admin — Programmation (Open BT)</title>
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260228-admin-open-prog-v4" />
+
+  <style>
+    .nav a[aria-current="page"],
+    .btn.is-active{
+      background: rgba(17,17,17,.10) !important;
+      border-color: rgba(17,17,17,.25) !important;
+      box-shadow: 0 10px 22px rgba(0,0,0,.10);
+      font-weight: 1000 !important;
+    }
+
+    .match-list{ display:flex; flex-direction:column; gap:14px; }
+
+    .match-card{
+      border-radius:18px;
+      border:2px solid rgba(0,0,0,.06);
+      padding:14px;
+      background:#fff;
+      box-shadow:0 1px 0 rgba(0,0,0,.03);
+    }
+    .match-card.courtA{ background:#FFF6D6; border-color:rgba(255, 196, 0, .35); }
+    .match-card.courtB{ background:#FFE6EA; border-color:rgba(255, 0, 60, .25); }
+    .match-card.block{ background:#F3F6FF; border-color:rgba(60, 110, 255, .20); }
+
+    .match-head{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+    .m-slot{
+      font-size:12px;
+      font-weight:900;
+      opacity:.75;
+      white-space:nowrap;
+    }
+    .m-time{
+      font-size:13px;
+      font-weight:950;
+      white-space:nowrap;
+      letter-spacing:.2px;
+    }
+    .m-court{
+      font-size:13px;
+      font-weight:400;
+      font-style:italic;
+      opacity:.95;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      min-width:0;
+      flex:1;
+    }
+    .m-tag{
+      font-size:11px;
+      font-weight:1000;
+      white-space:nowrap;
+      border:1px solid rgba(0,0,0,.12);
+      border-radius:999px;
+      padding:6px 10px;
+      opacity:.95;
+      flex:0 0 auto;
+    }
+
+    .actions{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      white-space:nowrap;
+    }
+    .btnx{
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid #ddd;
+      background:#fff;
+      cursor:pointer;
+      font-weight:950;
+    }
+    .btnx:hover{ background:#f5f5f5; }
+    .btnx:disabled{ opacity:.5; cursor:not-allowed; }
+
+    .team-row{
+      margin-top:10px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:6px;
+    }
+    .team-title{
+      font-size:15px;
+      font-weight:950;
+      line-height:1.15;
+      white-space:normal;
+      overflow-wrap:anywhere;
+    }
+    .team-sub{
+      font-size:13px;
+      font-weight:800;
+      opacity:.85;
+      white-space:normal;
+      overflow-wrap:anywhere;
+      line-height:1.25;
+    }
+    .vs-line{
+      margin:10px 0 6px;
+      text-align:center;
+      font-weight:950;
+      letter-spacing:2px;
+      opacity:.55;
+      font-size:12px;
+    }
+
+    .toolbar{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+    @media (min-width: 860px){
+      .toolbar{ grid-template-columns: 1fr 1fr; }
+    }
+
+    .hint{
+      margin-top:10px;
+      font-size:12px;
+      opacity:.85;
+      line-height:1.35;
+    }
+  </style>
 </head>
+
 <body>
 
 <header class="topbar">
   <div class="container">
-    <div class="topbar-row topbar-row-step">
+    <div class="topbar-row">
       <div class="brand-logo">
         <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
       </div>
 
-      <div class="step-title-wrap" aria-label="BT250 — Double Dames">
-        <img class="step-title-img" src="../assets/img/bt250-dd.png" alt="BT250 — Double Dames">
+      <div class="brand-title" style="display:flex;align-items:center;justify-content:center;">
+        <div style="font-weight:1000; letter-spacing:.2px;">
+          🛠️ Admin — Open BT Bricorama
+        </div>
       </div>
 
       <div class="brand-logo">
@@ -24,176 +154,186 @@
       </div>
     </div>
 
-    <nav class="nav nav-step">
-      <a href="../index.html" title="Accueil" aria-label="Accueil">🏠</a>
-      <a href="inscriptions.html">📝 Inscriptions</a>
-      <a href="tirage.html" title="Tirage" aria-label="Tirage">🎲</a>
-      <a href="equipes.html">👥 Équipes</a>
-      <a href="programmation.html" aria-current="page">🗓️ Programme</a>
+    <nav class="nav">
+      <a href="../index.html">🏠 Accueil public</a>
+
+      <a href="equipes.html?scope=dh">👥 Équipes</a>
+      <a href="inscriptions.html?scope=dh">📝 Inscriptions</a>
+      <a href="tirage.html?scope=dh">🎲 Tirage</a>
+      <a href="resultats.html?scope=dh">✅ Résultats</a>
+      <a href="programmation.html?scope=dh" aria-current="page">🗓️ Programmation</a>
+
+      <a href="#" id="btnLogout">🚪 Déconnexion</a>
     </nav>
   </div>
 </header>
 
 <main class="container">
 
-  <section class="card">
-    <h2 style="margin:0 0 10px;">🗓️ Programmation — Double Dames</h2>
-    <p class="muted" id="statusText" style="margin:0;">Chargement…</p>
-    <p class="muted" id="subtitle" style="margin-top:10px;"></p>
+  <section class="card" id="accessDenied" style="display:none;">
+    <h2 style="margin:0 0 8px;">⛔ Accès refusé</h2>
+    <p class="muted" style="margin:0;">Cette page est réservée aux administrateurs.</p>
   </section>
 
-  <section class="card" id="panelChrono" style="display:block;">
-    <h2 style="margin:0 0 10px;">🕒 Planning des matchs</h2>
-    <div id="chronoList"></div>
+  <section class="card" id="adminZone" style="display:none;">
+    <h2 style="margin:0 0 10px;">🧭 Administration — Programmation</h2>
+    <p class="muted" id="liveStatus" style="margin:0;">Chargement…</p>
 
-    <p class="muted" style="margin-top:10px;">
-      ⏱️ Affichage basé sur la programmation publiée par l’organisation (Firestore).
+    <div class="toolbar">
+      <div class="card" style="margin:0;">
+        <h3 style="margin:0 0 8px;">🎾 Doubles Hommes (DH)</h3>
+        <div class="grid" style="margin-top:10px;">
+          <button class="btn" id="btnGenDH" style="font-weight:950; color:#111;">🧩 Générer DH</button>
+          <button class="btn" id="btnResetDH" style="font-weight:950; color:#111;">🧨 Réinitialiser DH</button>
+        </div>
+        <p class="hint muted">
+          Génère la programmation DH depuis le tirage (<b>tirages_open/dh</b>) à <b>partir de 15h15</b>, sur <b>1 terrain (A)</b>.<br>
+          Réinitialiser = vide totalement la programmation DH (ordre + terrain).
+        </p>
+      </div>
+
+      <div class="card" style="margin:0;">
+        <h3 style="margin:0 0 8px;">🎾 Doubles Dames (DD)</h3>
+        <div class="grid" style="margin-top:10px;">
+          <button class="btn" id="btnGenDD" style="font-weight:950; color:#111;">🧩 Générer DD</button>
+          <button class="btn" id="btnResetDD" style="font-weight:950; color:#111;">🧨 Réinitialiser DD</button>
+        </div>
+        <p class="hint muted">
+          Génère la poule DD avec <b>toutes les équipes classées</b> (ex: 5 équipes = 10 matchs), avec <b>#1 vs #2 en dernier</b>, à <b>partir de 15h15</b>, sur <b>1 terrain (B)</b>.<br>
+          Réinitialiser = vide totalement la programmation DD.
+        </p>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-top:12px;" id="tabs">
+      <button class="btn is-active" id="tabDH" style="font-weight:950;">🕒 Chrono DH</button>
+      <button class="btn" id="tabDD" style="font-weight:950;">🕒 Chrono DD</button>
+    </div>
+
+    <p class="muted" id="editHint" style="margin-top:10px;">
+      💡 ↑ ↓ échangent les <b>créneaux</b> (heure). 🐝/🌶️ change le <b>terrain</b> sans changer l’heure.
     </p>
+  </section>
+
+  <section class="card" id="panelDH" style="display:none;">
+    <h2 style="margin:0 0 10px;">🗓️ Ordre chronologique — DH</h2>
+    <p class="muted" id="dhStatus" style="margin:0;">—</p>
+    <div id="dhList" style="margin-top:12px;"></div>
+  </section>
+
+  <section class="card" id="panelDD" style="display:none;">
+    <h2 style="margin:0 0 10px;">🗓️ Ordre chronologique — DD</h2>
+    <p class="muted" id="ddStatus" style="margin:0;">—</p>
+    <div id="ddList" style="margin-top:12px;"></div>
   </section>
 
 </main>
 
-<style>
-  /* ✅ Bandeau "image au centre" */
-  .topbar-row-step{
-    grid-template-columns: var(--logo-size) 1fr var(--logo-size);
-  }
-  .step-title-wrap{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    min-height: calc(var(--logo-size) * 0.55);
-  }
-  .step-title-img{
-    width:min(520px,100%);
-    max-height:88px;
-    height:auto;
-    object-fit:contain;
-    display:block;
-    filter: drop-shadow(0 1px 0 rgba(0,0,0,.15));
-  }
-
-  /* ✅ NAV: téléphone = 2 lignes fixes (3 + 2) */
-  .nav-step{ gap:8px; flex-wrap:wrap; }
-  .nav-step a{
-    padding:8px 12px;
-    flex:0 0 auto;
-    text-align:center;
-    white-space:nowrap;
-  }
-  @media (max-width: 560px){
-    .nav-step{ justify-content:space-between; }
-    .nav-step a{ width: calc((100% - 16px) / 3); }
-    .nav-step a:nth-child(n+4){ width: calc((100% - 8px) / 2); }
-  }
-  @media (max-width: 420px){
-    .nav-step a{ padding:7px 10px; font-size:13px; }
-    .step-title-img{ max-height:74px; }
-  }
-  .nav a[aria-current="page"]{
-    background: rgba(255,255,255,.26);
-    border-color: rgba(255,255,255,.45);
-    box-shadow: 0 6px 14px rgba(0,0,0,.10);
-  }
-
-  /* ===== style prog (cards) */
-  .match-list{ display:flex; flex-direction:column; gap:14px; }
-
-  .match-card{
-    border-radius:18px;
-    border:2px solid rgba(0,0,0,.06);
-    padding:14px;
-    background:#fff;
-    box-shadow:0 1px 0 rgba(0,0,0,.03);
-  }
-  .match-card.courtA{ background:#FFF6D6; border-color:rgba(255, 196, 0, .35); }
-  .match-card.courtB{ background:#FFE6EA; border-color:rgba(255, 0, 60, .25); }
-  .match-card.block{ background:#F3F6FF; border-color:rgba(60, 110, 255, .20); }
-
-  .match-head{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    min-width:0;
-  }
-  .m-time{
-    font-size:13px;
-    font-weight:900;
-    white-space:nowrap;
-    letter-spacing:.2px;
-  }
-  .m-court{
-    font-size:13px;
-    font-weight:400;
-    font-style:italic;
-    opacity:.95;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    min-width:0;
-    flex:1;
-  }
-  .m-tag{
-    font-size:11px;
-    font-weight:1000;
-    white-space:nowrap;
-    border:1px solid rgba(0,0,0,.12);
-    border-radius:999px;
-    padding:6px 10px;
-    opacity:.95;
-    flex:0 0 auto;
-  }
-
-  .team-row{
-    margin-top:10px;
-    display:grid;
-    grid-template-columns: 1fr;
-    gap:6px;
-  }
-  .team-title{
-    font-size:15px;
-    font-weight:950;
-    line-height:1.15;
-    white-space:normal;
-    overflow-wrap:anywhere;
-  }
-  .team-sub{
-    font-size:13px;
-    font-weight:700;
-    opacity:.85;
-    white-space:normal;
-    overflow-wrap:anywhere;
-    line-height:1.25;
-  }
-  .vs-line{
-    margin:10px 0 6px;
-    text-align:center;
-    font-weight:900;
-    letter-spacing:2px;
-    opacity:.55;
-    font-size:12px;
-  }
-</style>
-
 <script type="module">
-  import { db } from "../assets/js/firebase.js";
-  import { doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+  import { auth, db } from "../assets/js/firebase.js";
+  import { logout, getRoleByEmail } from "../assets/js/session.js";
+  import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+  import {
+    doc, getDoc, setDoc, updateDoc, onSnapshot, serverTimestamp,
+    collection, query, orderBy
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-  const statusText = document.getElementById("statusText");
-  const subtitle   = document.getElementById("subtitle");
-  const chronoList = document.getElementById("chronoList");
+  // ============================================================
+  // CONFIG
+  // ============================================================
+  const START_TIME = "15:15";
 
-  const COURTS_FALLBACK = {
+  const MATCH_MIN = 50;          // 5 warmup + 45 match
+  const ROTATION_MIN = 5;        // standard rotation
+  const REST_AFTER_END_MIN = 30; // pause if team replays
+  const MIN_GAP_SAME_TEAM_START = MATCH_MIN + REST_AFTER_END_MIN; // 80 min between 2 starts
+
+  const COURTS_DEFAULT = {
     A: "court Manon Queen Bee",
     B: "court Lisa de Los Pimentos"
   };
 
+  // ============================================================
+  // DOM
+  // ============================================================
+  const accessDenied = document.getElementById("accessDenied");
+  const adminZone = document.getElementById("adminZone");
+  const liveStatus = document.getElementById("liveStatus");
+
+  const tabDH = document.getElementById("tabDH");
+  const tabDD = document.getElementById("tabDD");
+  const panelDH = document.getElementById("panelDH");
+  const panelDD = document.getElementById("panelDD");
+
+  const dhStatus = document.getElementById("dhStatus");
+  const ddStatus = document.getElementById("ddStatus");
+  const dhList = document.getElementById("dhList");
+  const ddList = document.getElementById("ddList");
+
+  const btnGenDH = document.getElementById("btnGenDH");
+  const btnResetDH = document.getElementById("btnResetDH");
+  const btnGenDD = document.getElementById("btnGenDD");
+  const btnResetDD = document.getElementById("btnResetDD");
+
+  // ============================================================
+  // FIRESTORE REFS
+  // ============================================================
+  const refDrawDH = () => doc(db, "tirages_open", "dh");
+  const refProgDH = () => doc(db, "programmations_open", "dh");
+  const refProgDD = () => doc(db, "programmations_open", "dd");
+  const qDDTeams = () => query(collection(db, "equipes_dd_public"), orderBy("createdAt", "asc"));
+
+  // ============================================================
+  // STATE
+  // ============================================================
+  let dhDraw = null;
+  let ddTeams = [];
+  let progDH = null;
+  let progDD = null;
+
+  let unsubDraw = null;
+  let unsubDD = null;
+  let unsubProgDH = null;
+  let unsubProgDD = null;
+
+  // ============================================================
+  // UTILS
+  // ============================================================
   function esc(s){
     return (s ?? "").toString()
       .replaceAll("&","&amp;")
       .replaceAll("<","&lt;")
       .replaceAll(">","&gt;")
       .replaceAll('"',"&quot;");
+  }
+
+  function parseHHMM(hhmm){
+    const m = /^(\d{1,2}):(\d{2})$/.exec((hhmm||"").trim());
+    if(!m) return 0;
+    return Number(m[1])*60 + Number(m[2]);
+  }
+  function fmtHHMM(mins){
+    const h = Math.floor(mins/60);
+    const m = mins%60;
+    return String(h).padStart(2,"0") + ":" + String(m).padStart(2,"0");
+  }
+
+  function toNum(v){
+    if(v === null || v === undefined || v === "") return null;
+    const n = typeof v === "number" ? v : Number(String(v).replace(",", ".").trim());
+    return Number.isFinite(n) ? n : null;
+  }
+
+  function teamRank(t){
+    const a = toNum(t?.p1Rank);
+    const b = toNum(t?.p2Rank);
+    if(a === null || b === null) return null;
+    return a + b;
+  }
+
+  function teamIdOf(t){
+    if(!t) return "—";
+    return (t.id || t.teamId || t.teamName || (t.p1FirstName + "_" + t.p2FirstName) || "team").toString();
   }
 
   function teamTitle(t){ return (t?.teamName || "Équipe").toString(); }
@@ -204,8 +344,370 @@
     return `${p1}${p1 && p2 ? " • " : ""}${p2}`;
   }
 
+  function courtLabel(courts, key){
+    const name = courts?.[key] || key || "—";
+    const emo = (key === "A") ? "🐝" : (key === "B" ? "🌶️" : "🎾");
+    return `${emo} ${name} ${emo}`;
+  }
+  function courtClass(key){
+    return (key === "A") ? "courtA" : (key === "B" ? "courtB" : "");
+  }
+
+  // ============================================================
+  // DH POOLS from draw
+  // ============================================================
+  function computeDhPools(draw){
+    const teams = Array.isArray(draw?.teams) ? draw.teams : [];
+    const byId = new Map(teams.map(t => [t.id, t]));
+
+    const seed1 = draw?.seed1 || null;
+    const seed2 = draw?.seed2 || null;
+
+    const order = Array.isArray(draw?.order) ? draw.order : [];
+    const revealed = Number(draw?.revealed || 0);
+    const revealedIds = order.slice(0, revealed);
+    const revealedTeams = revealedIds.map(id => byId.get(id)).filter(Boolean);
+
+    const montjoly = [];
+    const kourou   = [];
+
+    if(seed1) montjoly.push(seed1);
+    if(seed2) kourou.push(seed2);
+
+    for(let i=0;i<revealedTeams.length;i++){
+      const t = revealedTeams[i];
+      if(i === 0) montjoly.push(t);
+      else if(i === 1) kourou.push(t);
+      else {
+        const j = i - 2;
+        (j % 2 === 0 ? montjoly : kourou).push(t);
+      }
+    }
+
+    return { montjoly, kourou, revealed, total: (teams.length||0) };
+  }
+
+  // ============================================================
+  // ✅ DD: récupérer "toutes les équipes classées"
+  // - on prend la LISTE PRINCIPALE (main + auto, pas wait)
+  // - on exclut STBY
+  // - on ne garde que celles avec p1Rank et p2Rank (donc "classées")
+  // - tri par teamRank asc (puis createdAt)
+  // ============================================================
+  function computeDdRankedMain(rows){
+    const MAX_MAIN = 10;
+
+    const all = [...rows].sort((a,b)=> (a.createdAtMs||0) - (b.createdAtMs||0));
+
+    const eligible = all.filter(r => !r.stby);
+    const forcedMain = eligible.filter(r => r.list === "main");
+    const auto = eligible.filter(r => !r.list);
+    const main = [];
+    const used = new Set();
+
+    for(const r of forcedMain){
+      if(main.length >= MAX_MAIN) break;
+      if(!used.has(r.id)){ main.push(r); used.add(r.id); }
+    }
+    for(const r of auto){
+      if(main.length >= MAX_MAIN) break;
+      if(!used.has(r.id)){ main.push(r); used.add(r.id); }
+    }
+
+    const ranked = main
+      .filter(r => teamRank(r) !== null) // ✅ uniquement classées
+      .sort((a,b)=>{
+        const aa = teamRank(a);
+        const bb = teamRank(b);
+        if(aa !== bb) return aa - bb;
+        return (a.createdAtMs||0) - (b.createdAtMs||0);
+      });
+
+    return ranked;
+  }
+
+  // ============================================================
+  // MATCH GENERATORS
+  // ============================================================
+  function rr3Matches(poolName, teams3){
+    const [t1,t2,t3] = teams3;
+    if(!t1 || !t2 || !t3) return [];
+    return [
+      { kind:"match", cat:"DH", stage:`Poule ${poolName} (M1)`, A:t1, B:t3 },
+      { kind:"match", cat:"DH", stage:`Poule ${poolName} (M2)`, A:t2, B:t3 },
+      { kind:"match", cat:"DH", stage:`Poule ${poolName} (M3)`, A:t1, B:t2, isLast:true },
+    ];
+  }
+
+  // ✅ Round-robin N équipes (méthode "circle")
+  function rrRoundRobinMatches(label, teams){
+    const t = [...teams];
+    if(t.length < 2) return [];
+
+    // si impair -> BYE
+    const BYE = { __bye:true, id:"BYE", teamName:"BYE", p1FirstName:"", p2FirstName:"" };
+    if(t.length % 2 === 1) t.push(BYE);
+
+    const n = t.length;
+    const rounds = n - 1;
+    const half = n / 2;
+
+    let arr = [...t];
+    const out = [];
+
+    for(let r=0; r<rounds; r++){
+      const pairs = [];
+      for(let i=0; i<half; i++){
+        const a = arr[i];
+        const b = arr[n - 1 - i];
+        if(a.__bye || b.__bye) continue;
+        pairs.push([a,b]);
+      }
+
+      // ordre des matchs dans le round: tel quel
+      for(const [A,B] of pairs){
+        out.push({
+          kind:"match",
+          cat:"DD",
+          stage:`${label} (R${r+1})`,
+          A, B
+        });
+      }
+
+      // rotation (fixe arr[0])
+      const fixed = arr[0];
+      const rest = arr.slice(1);
+      rest.unshift(rest.pop());
+      arr = [fixed, ...rest];
+    }
+
+    return out;
+  }
+
+  // ✅ force "1 vs 2 en dernier" (1 = meilleur rank, 2 = second)
+  function moveTop1vTop2Last(matches, top1, top2){
+    const aId = teamIdOf(top1);
+    const bId = teamIdOf(top2);
+
+    const idx = matches.findIndex(m=>{
+      const x = teamIdOf(m.A), y = teamIdOf(m.B);
+      return (x === aId && y === bId) || (x === bId && y === aId);
+    });
+
+    if(idx >= 0 && idx !== matches.length - 1){
+      const [m] = matches.splice(idx, 1);
+      matches.push({ ...m, stage: (m.stage || "") + " · (TOP)" });
+    }
+    return matches;
+  }
+
+  function P(name){
+    return { id:name, teamName:name, p1FirstName:"", p2FirstName:"" };
+  }
+
+  // ============================================================
+  // SCHEDULER (rest + rotation)
+  // ============================================================
+  function scheduleWithConstraints(plans, startMin, courtsKeys){
+    const keys = Array.isArray(courtsKeys) ? courtsKeys : ["A","B"];
+    const courtAvail = new Map(keys.map(k => [k, startMin]));
+    const teamLastStart = new Map();
+
+    function minStartForTeams(m){
+      if(m.kind !== "match") return startMin;
+      const aId = teamIdOf(m.A);
+      const bId = teamIdOf(m.B);
+
+      const aLast = teamLastStart.get(aId);
+      const bLast = teamLastStart.get(bId);
+
+      const aOk = (aLast === undefined) ? startMin : (aLast + MIN_GAP_SAME_TEAM_START);
+      const bOk = (bLast === undefined) ? startMin : (bLast + MIN_GAP_SAME_TEAM_START);
+
+      return Math.max(aOk, bOk);
+    }
+
+    const out = [];
+    for(const p of plans){
+      const c = p.courtKey || keys[0] || "A";
+      const cOk = courtAvail.get(c) ?? startMin;
+
+      const tOk = (p.kind === "match") ? minStartForTeams(p) : startMin;
+      const forced = Number.isFinite(p.forceMinStart) ? Number(p.forceMinStart) : startMin;
+      const start = Math.max(cOk, tOk, forced);
+
+      if(p.kind === "match"){
+        courtAvail.set(c, start + MATCH_MIN + ROTATION_MIN);
+        teamLastStart.set(teamIdOf(p.A), start);
+        teamLastStart.set(teamIdOf(p.B), start);
+      } else if(p.kind === "block"){
+        const dur = Number(p.durationMin || 0);
+        courtAvail.set(c, start + Math.max(0, dur));
+      } else {
+        courtAvail.set(c, start);
+      }
+
+      out.push({ ...p, timeMin: start, time: fmtHHMM(start) });
+    }
+
+    out.sort((a,b)=>{
+      if(a.timeMin !== b.timeMin) return a.timeMin - b.timeMin;
+      return (a.courtKey||"").localeCompare(b.courtKey||"");
+    });
+
+    return out;
+  }
+
+  // ============================================================
+  // BUILD PROGRAMMATIONS
+  // ============================================================
+  function buildProgDHFromDraw(draw){
+    const pools = computeDhPools(draw);
+    const mont = pools.montjoly.slice(0,3);
+    const kou  = pools.kourou.slice(0,3);
+
+    const montMatches = rr3Matches("Montjoly", mont);
+    const kouMatches  = rr3Matches("Kourou", kou);
+
+    const planPools = [
+      ...montMatches.map(m => ({ ...m, courtKey:"A" })),
+      ...kouMatches.map(m  => ({ ...m, courtKey:"A" })),
+    ];
+
+    const startMin = parseHHMM(START_TIME);
+    const scheduledPools = scheduleWithConstraints(planPools, startMin, ["A"]);
+
+    const lastPool = scheduledPools
+      .filter(x => x.kind==="match" && x.cat==="DH" && /\(M3\)/.test(x.stage))
+      .sort((a,b)=>a.timeMin-b.timeMin)
+      .at(-1);
+
+    const lastPoolStart = lastPool ? lastPool.timeMin : startMin;
+    const sfEarliest = lastPoolStart + MIN_GAP_SAME_TEAM_START;
+
+    const finalsPlan = [
+      { kind:"block", cat:"DH", stage:"⏳ Pause / attente (hypothèse défavorable)", courtKey:"A", title:"⏳ Pause / attente", note:"On garantit 30 min de repos après le dernier match de poule avant la 1/2", durationMin:0, forceMinStart: sfEarliest },
+      { kind:"match", cat:"DH", stage:"Demi-finale 1", courtKey:"A", A:P("1er Montjoly"), B:P("2e Kourou") },
+      { kind:"match", cat:"DH", stage:"Demi-finale 2", courtKey:"A", A:P("1er Kourou"),  B:P("2e Montjoly") },
+      { kind:"match", cat:"DH", stage:"Match 5e place", courtKey:"A", A:P("3e Montjoly"),  B:P("3e Kourou") },
+      { kind:"match", cat:"DH", stage:"Petite finale (3e place)", courtKey:"A", A:P("Perdant SF1"), B:P("Perdant SF2") },
+      { kind:"match", cat:"DH", stage:"Finale", courtKey:"A", A:P("Gagnant SF1"), B:P("Gagnant SF2") },
+    ];
+
+    const scheduledAll = scheduleWithConstraints([...scheduledPools, ...finalsPlan], startMin, ["A"]);
+
+    const slots = scheduledAll.map((x, idx)=>({
+      slot: idx+1,
+      time: x.time,
+      court: "A",
+      note: x.kind === "block" ? (x.note || "") : ""
+    }));
+
+    const matches = {};
+    const schedule = {};
+
+    scheduledAll.forEach((x, idx)=>{
+      const mid = `DH${String(idx+1).padStart(2,"0")}`;
+      matches[mid] = {
+        id: mid,
+        kind: x.kind,
+        cat: "DH",
+        stage: x.stage || "",
+        A: x.A || null,
+        B: x.B || null,
+        title: x.title || "",
+        note: x.note || ""
+      };
+      schedule[mid] = { slot: idx+1, court: "A" };
+    });
+
+    return {
+      formatVersion: 2,
+      cat: "DH",
+      updatedAt: serverTimestamp(),
+      createdAt: serverTimestamp(),
+      courts: { ...COURTS_DEFAULT },
+      meta: {
+        startTime: START_TIME,
+        mode: "singleCourt",
+        fixedCourt: "A",
+        timing: { MATCH_MIN, ROTATION_MIN, REST_AFTER_END_MIN, MIN_GAP_SAME_TEAM_START }
+      },
+      slots,
+      matches,
+      schedule,
+      source: { drawDoc: "tirages_open/dh", drawUpdatedAt: draw?.updatedAt || null }
+    };
+  }
+
+  function buildProgDDFromTeams(rows){
+    const ranked = computeDdRankedMain(rows);
+
+    if(ranked.length < 3){
+      throw new Error("Pas assez d’équipes DD classées (il faut au moins 3 équipes avec classements).");
+    }
+
+    // ✅ toutes les équipes classées (ex: 5 -> 10 matchs)
+    let ddMatches = rrRoundRobinMatches("Poule DD", ranked);
+
+    // force top1 vs top2 en dernier si possible
+    if(ranked.length >= 2){
+      ddMatches = moveTop1vTop2Last(ddMatches, ranked[0], ranked[1]);
+    }
+
+    const startMin = parseHHMM(START_TIME);
+    const plan = ddMatches.map(m => ({ ...m, courtKey:"B" }));
+    const scheduled = scheduleWithConstraints(plan, startMin, ["B"]);
+
+    const slots = scheduled.map((x, idx)=>({
+      slot: idx+1,
+      time: x.time,
+      court: "B",
+      note: ""
+    }));
+
+    const matches = {};
+    const schedule = {};
+
+    scheduled.forEach((x, idx)=>{
+      const mid = `DD${String(idx+1).padStart(2,"0")}`;
+      matches[mid] = {
+        id: mid,
+        kind: "match",
+        cat: "DD",
+        stage: x.stage || "",
+        A: x.A || null,
+        B: x.B || null
+      };
+      schedule[mid] = { slot: idx+1, court: "B" };
+    });
+
+    return {
+      formatVersion: 2,
+      cat: "DD",
+      updatedAt: serverTimestamp(),
+      createdAt: serverTimestamp(),
+      courts: { ...COURTS_DEFAULT },
+      meta: {
+        startTime: START_TIME,
+        mode: "singleCourt",
+        fixedCourt: "B",
+        timing: { MATCH_MIN, ROTATION_MIN, REST_AFTER_END_MIN, MIN_GAP_SAME_TEAM_START }
+      },
+      slots,
+      matches,
+      schedule,
+      source: {
+        ddCollection: "equipes_dd_public",
+        rankedTeams: ranked.map(r => ({ id:r.id, teamName:r.teamName, rank: teamRank(r) }))
+      }
+    };
+  }
+
+  // ============================================================
+  // RENDER LISTS (admin)
+  // ============================================================
   function normalizeEntry(entry, slotObj){
-    // accepte: number | {slot, court} | undefined
     if(typeof entry === "number"){
       const slot = Number(entry);
       const court = slotObj?.court || "A";
@@ -216,25 +718,56 @@
       const court = entry.court || slotObj?.court || "A";
       return { slot, court };
     }
-    return { slot: Number(slotObj?.slot || 1), court: slotObj?.court || "A" };
+    const fallbackSlot = Number(slotObj?.slot || 1);
+    return { slot: fallbackSlot, court: slotObj?.court || "A" };
   }
 
-  function courtLabel(courts, key){
-    const name = (courts?.[key] || COURTS_FALLBACK[key] || key || "—");
-    const emo = (key === "A") ? "🐝" : (key === "B" ? "🌶️" : "🎾");
-    return `${emo} ${name} ${emo}`;
-  }
-  function courtClass(key){
-    return (key === "A") ? "courtA" : (key === "B" ? "courtB" : "");
-  }
+  function matchCardAdmin({ prog, slotObj, mid, entry }){
+    const m = prog?.matches?.[mid];
+    if(!m) return "";
 
-  function matchCard({ time, courtKey, courts, cat, stage, A, B }){
+    const norm = normalizeEntry(entry, slotObj);
+    const courtKey = norm.court;
+    const courts = prog?.courts || COURTS_DEFAULT;
+
+    if(m.kind === "block"){
+      return `
+        <div class="match-card block">
+          <div class="match-head">
+            <div class="m-slot">#${esc(slotObj.slot)} · ${esc(mid)}</div>
+            <div class="m-time">${esc(slotObj.time)}</div>
+            <div class="m-court">${esc(courtLabel(courts, courtKey))}</div>
+            <div class="m-tag">⏳ Bloc</div>
+            <div class="actions">
+              <button class="btnx" data-act="court" data-mid="${esc(mid)}" title="Changer de terrain">${courtKey === "A" ? "🐝" : "🌶️"}</button>
+              <button class="btnx" data-act="up" data-slot="${esc(slotObj.slot)}" ${slotObj.slot<=1 ? "disabled":""}>↑</button>
+              <button class="btnx" data-act="down" data-slot="${esc(slotObj.slot)}" ${slotObj.slot>=prog.slots.length ? "disabled":""}>↓</button>
+            </div>
+          </div>
+          <div class="team-row">
+            <div class="team-title">${esc(m.title || m.stage || "Bloc")}</div>
+            ${m.note ? `<div class="team-sub muted">${esc(m.note)}</div>` : ``}
+          </div>
+        </div>
+      `;
+    }
+
+    const A = m.A || null;
+    const B = m.B || null;
+
     return `
       <div class="match-card ${esc(courtClass(courtKey))}">
         <div class="match-head">
-          <div class="m-time">${esc(time)}</div>
+          <div class="m-slot">#${esc(slotObj.slot)} · ${esc(mid)}</div>
+          <div class="m-time">${esc(slotObj.time)}</div>
           <div class="m-court">${esc(courtLabel(courts, courtKey))}</div>
-          <div class="m-tag">${esc(cat)} · ${esc(stage)}</div>
+          <div class="m-tag">${esc(m.cat)} · ${esc(m.stage || "")}</div>
+
+          <div class="actions">
+            <button class="btnx" data-act="court" data-mid="${esc(mid)}" title="Changer de terrain">${courtKey === "A" ? "🐝" : "🌶️"}</button>
+            <button class="btnx" data-act="up" data-slot="${esc(slotObj.slot)}" ${slotObj.slot<=1 ? "disabled":""}>↑</button>
+            <button class="btnx" data-act="down" data-slot="${esc(slotObj.slot)}" ${slotObj.slot>=prog.slots.length ? "disabled":""}>↓</button>
+          </div>
         </div>
 
         <div class="team-row">
@@ -252,91 +785,337 @@
     `;
   }
 
-  function blockCard({ time, courtKey, courts, title, note }){
-    return `
-      <div class="match-card block">
-        <div class="match-head">
-          <div class="m-time">${esc(time)}</div>
-          <div class="m-court">${esc(courtLabel(courts, courtKey))}</div>
-          <div class="m-tag">⏳ Bloc</div>
-        </div>
-        <div class="team-row">
-          <div class="team-title">${esc(title || "Bloc")}</div>
-          ${note ? `<div class="team-sub muted">${esc(note)}</div>` : ``}
-        </div>
-      </div>
-    `;
-  }
-
-  function render(prog){
-    if(!prog || !Array.isArray(prog.slots) || !prog.slots.length){
-      statusText.textContent = "ℹ️ Programmation DD non publiée.";
-      subtitle.textContent = "";
-      chronoList.innerHTML = `<p class="muted" style="margin:0;">Aucun match pour le moment.</p>`;
+  function renderProgInto(prog, box, statusEl){
+    if(!prog || !prog.slots || !prog.matches || !prog.schedule){
+      box.innerHTML = `<p class="muted" style="margin:0;">Aucune programmation. Génère-la ci-dessus.</p>`;
+      statusEl.textContent = "—";
       return;
     }
 
-    const courts = prog.courts || COURTS_FALLBACK;
-    const slots = prog.slots || [];
-    const matches = prog.matches || {};
+    const slots = Array.isArray(prog.slots) ? prog.slots : [];
     const schedule = prog.schedule || {};
+    const matches = prog.matches || {};
 
-    // map slot -> mid
-    const slotToMid = new Map();
+    const slotToMatch = new Map();
     for(const [mid, entry] of Object.entries(schedule)){
       const slotNum = (typeof entry === "number") ? Number(entry) : Number(entry?.slot);
       if(!Number.isFinite(slotNum)) continue;
       if(!matches[mid]) continue;
-      if(!slotToMid.has(slotNum)) slotToMid.set(slotNum, mid);
+      if(!slotToMatch.has(slotNum)) slotToMatch.set(slotNum, mid);
     }
 
     const cards = [];
     for(const s of slots){
-      const mid = slotToMid.get(Number(s.slot));
+      const mid = slotToMatch.get(Number(s.slot));
       if(!mid) continue;
-      const m = matches[mid];
-      if(!m) continue;
-
-      const norm = normalizeEntry(schedule[mid], s);
-      const courtKey = norm.court || s.court || "A";
-
-      if(m.kind === "block"){
-        cards.push(blockCard({
-          time: s.time || "—",
-          courtKey,
-          courts,
-          title: m.title || m.stage || "Bloc",
-          note: m.note || ""
-        }));
-      }else{
-        cards.push(matchCard({
-          time: s.time || "—",
-          courtKey,
-          courts,
-          cat: m.cat || "DD",
-          stage: m.stage || "",
-          A: m.A,
-          B: m.B
-        }));
-      }
+      const entry = schedule[mid];
+      cards.push(matchCardAdmin({ prog, slotObj:s, mid, entry }));
     }
 
-    statusText.textContent = "🟢 En direct";
-    subtitle.textContent = "Programmation officielle (mise à jour en direct).";
-    chronoList.innerHTML = cards.length
+    box.innerHTML = cards.length
       ? `<div class="match-list">${cards.join("")}</div>`
       : `<p class="muted" style="margin:0;">Aucun match.</p>`;
+
+    statusEl.textContent = "✅ OK";
   }
 
-  onSnapshot(
-    doc(db, "programmations_open", "dd"),
-    (snap)=> render(snap.exists() ? (snap.data() || null) : null),
-    (err)=>{
-      console.error(err);
-      statusText.textContent = "🔴 Erreur Firestore (DD)";
-      chronoList.innerHTML = `<p class="muted" style="margin:0;">Impossible de charger la programmation.</p>`;
+  // ============================================================
+  // EDIT ACTIONS (swap slots / toggle court)
+  // ============================================================
+  async function swapSlots(refDoc, slotA, slotB){
+    const snap = await getDoc(refDoc);
+    if(!snap.exists()) throw new Error("Programmation introuvable.");
+    const prog = snap.data() || {};
+
+    const slots = Array.isArray(prog.slots) ? prog.slots : [];
+    const schedule = prog.schedule || {};
+
+    let mA = null, mB = null;
+
+    for(const [mid, entry] of Object.entries(schedule)){
+      const slotNum = (typeof entry === "number") ? Number(entry) : Number(entry?.slot);
+      if(slotNum === Number(slotA) && !mA) mA = mid;
+      if(slotNum === Number(slotB) && !mB) mB = mid;
     }
-  );
+
+    const newSchedule = { ...schedule };
+
+    function setEntry(mid, newSlot){
+      if(!mid) return;
+      const cur = newSchedule[mid];
+      const slotObj = slots.find(x => Number(x.slot) === Number(newSlot)) || null;
+      const norm = normalizeEntry(cur, slotObj);
+      newSchedule[mid] = { slot: Number(newSlot), court: norm.court };
+    }
+
+    setEntry(mA, slotB);
+    setEntry(mB, slotA);
+
+    await updateDoc(refDoc, { schedule: newSchedule, updatedAt: serverTimestamp() });
+  }
+
+  async function toggleCourt(refDoc, mid){
+    const snap = await getDoc(refDoc);
+    if(!snap.exists()) throw new Error("Programmation introuvable.");
+    const prog = snap.data() || {};
+    const schedule = prog.schedule || {};
+    const slots = Array.isArray(prog.slots) ? prog.slots : [];
+
+    const entry = schedule[mid];
+    const slotNum = (typeof entry === "number") ? Number(entry) : Number(entry?.slot);
+    const slotObj = slots.find(x => Number(x.slot) === slotNum) || null;
+
+    const norm = normalizeEntry(entry, slotObj);
+    const nextCourt = (norm.court === "A") ? "B" : "A";
+
+    await updateDoc(refDoc, {
+      schedule: { ...schedule, [mid]: { slot: norm.slot, court: nextCourt } },
+      updatedAt: serverTimestamp()
+    });
+  }
+
+  // ============================================================
+  // UI (tabs)
+  // ============================================================
+  function setTab(which){
+    const isDH = (which === "dh");
+    tabDH.classList.toggle("is-active", isDH);
+    tabDD.classList.toggle("is-active", !isDH);
+    panelDH.style.display = isDH ? "block" : "none";
+    panelDD.style.display = isDH ? "none" : "block";
+  }
+  tabDH.onclick = (e)=>{ e.preventDefault(); setTab("dh"); };
+  tabDD.onclick = (e)=>{ e.preventDefault(); setTab("dd"); };
+  setTab("dh");
+
+  // ============================================================
+  // BUTTONS
+  // ============================================================
+  btnGenDH.onclick = async (e)=>{
+    e.preventDefault();
+    btnGenDH.disabled = true;
+    dhStatus.textContent = "Génération…";
+    try{
+      if(!dhDraw) throw new Error("Tirage DH indisponible.");
+      const pools = computeDhPools(dhDraw);
+      if(pools.montjoly.length < 3 || pools.kourou.length < 3) throw new Error("Tirage DH incomplet (poules non complètes).");
+
+      const payload = buildProgDHFromDraw(dhDraw);
+      await setDoc(refProgDH(), payload, { merge:true });
+
+      dhStatus.textContent = "✅ DH généré.";
+    }catch(err){
+      console.error(err);
+      dhStatus.textContent = "❌ " + (err?.message || "Erreur");
+      alert("Erreur ❌\n\n" + (err?.message || "Impossible."));
+    }finally{
+      btnGenDH.disabled = false;
+    }
+  };
+
+  btnResetDH.onclick = async (e)=>{
+    e.preventDefault();
+    if(!confirm("Réinitialiser DH ?\n\nCela supprime l’ordre + les terrains DH.")) return;
+    btnResetDH.disabled = true;
+    dhStatus.textContent = "Réinitialisation…";
+    try{
+      await setDoc(refProgDH(), {
+        formatVersion: 2,
+        cat: "DH",
+        courts: { ...COURTS_DEFAULT },
+        slots: [],
+        matches: {},
+        schedule: {},
+        resetAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      }, { merge:true });
+      dhStatus.textContent = "✅ DH réinitialisé.";
+    }catch(err){
+      console.error(err);
+      dhStatus.textContent = "❌ " + (err?.message || "Erreur");
+      alert("Erreur ❌\n\n" + (err?.message || "Impossible."));
+    }finally{
+      btnResetDH.disabled = false;
+    }
+  };
+
+  btnGenDD.onclick = async (e)=>{
+    e.preventDefault();
+    btnGenDD.disabled = true;
+    ddStatus.textContent = "Génération…";
+    try{
+      const payload = buildProgDDFromTeams(ddTeams);
+      await setDoc(refProgDD(), payload, { merge:true });
+      ddStatus.textContent = "✅ DD généré.";
+    }catch(err){
+      console.error(err);
+      ddStatus.textContent = "❌ " + (err?.message || "Erreur");
+      alert("Erreur ❌\n\n" + (err?.message || "Impossible."));
+    }finally{
+      btnGenDD.disabled = false;
+    }
+  };
+
+  btnResetDD.onclick = async (e)=>{
+    e.preventDefault();
+    if(!confirm("Réinitialiser DD ?\n\nCela supprime l’ordre + les terrains DD.")) return;
+    btnResetDD.disabled = true;
+    ddStatus.textContent = "Réinitialisation…";
+    try{
+      await setDoc(refProgDD(), {
+        formatVersion: 2,
+        cat: "DD",
+        courts: { ...COURTS_DEFAULT },
+        slots: [],
+        matches: {},
+        schedule: {},
+        resetAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      }, { merge:true });
+      ddStatus.textContent = "✅ DD réinitialisé.";
+    }catch(err){
+      console.error(err);
+      ddStatus.textContent = "❌ " + (err?.message || "Erreur");
+      alert("Erreur ❌\n\n" + (err?.message || "Impossible."));
+    }finally{
+      btnResetDD.disabled = false;
+    }
+  };
+
+  // ============================================================
+  // LIST CLICK (edit)
+  // ============================================================
+  function attachListHandlers(listEl, refDoc, getProg, statusEl){
+    listEl.addEventListener("click", async (e)=>{
+      const btn = e.target.closest("button[data-act]");
+      if(!btn) return;
+
+      const prog = getProg();
+      if(!prog) return;
+
+      const act = btn.dataset.act;
+
+      try{
+        statusEl.textContent = "Traitement…";
+
+        if(act === "up" || act === "down"){
+          const slot = Number(btn.dataset.slot);
+          if(!Number.isFinite(slot)) return;
+          const max = Array.isArray(prog.slots) ? prog.slots.length : 0;
+          if(act === "up" && slot > 1) await swapSlots(refDoc, slot, slot-1);
+          if(act === "down" && slot < max) await swapSlots(refDoc, slot, slot+1);
+        }
+
+        if(act === "court"){
+          const mid = btn.dataset.mid;
+          if(!mid) return;
+          await toggleCourt(refDoc, mid);
+        }
+
+        statusEl.textContent = "✅ OK";
+      }catch(err){
+        console.error(err);
+        statusEl.textContent = "❌ " + (err?.message || "Erreur");
+        alert("Erreur ❌\n\n" + (err?.message || "Impossible."));
+      }
+    });
+  }
+
+  attachListHandlers(dhList, refProgDH(), ()=>progDH, dhStatus);
+  attachListHandlers(ddList, refProgDD(), ()=>progDD, ddStatus);
+
+  // ============================================================
+  // AUTH + LISTENERS
+  // ============================================================
+  function stopAll(){
+    if(unsubDraw){ unsubDraw(); unsubDraw = null; }
+    if(unsubDD){ unsubDD(); unsubDD = null; }
+    if(unsubProgDH){ unsubProgDH(); unsubProgDH = null; }
+    if(unsubProgDD){ unsubProgDD(); unsubProgDD = null; }
+  }
+
+  function showDenied(){
+    accessDenied.style.display = "block";
+    adminZone.style.display = "none";
+    panelDH.style.display = "none";
+    panelDD.style.display = "none";
+    stopAll();
+  }
+
+  function showAdmin(){
+    accessDenied.style.display = "none";
+    adminZone.style.display = "block";
+    panelDH.style.display = "block";
+    panelDD.style.display = "none";
+    setTab("dh");
+
+    liveStatus.textContent = "🟢 En direct (tirage + équipes + programmations)";
+
+    unsubDraw = onSnapshot(refDrawDH(), (snap)=>{
+      dhDraw = snap.exists() ? (snap.data() || {}) : null;
+    }, (err)=>{ console.error(err); });
+
+    unsubDD = onSnapshot(qDDTeams(), (snap)=>{
+      const rows = [];
+      snap.forEach(d=>{
+        const x = d.data() || {};
+        rows.push({
+          id: d.id,
+          teamName: x.teamName || "",
+          p1FirstName: x.p1FirstName || "",
+          p2FirstName: x.p2FirstName || "",
+          createdAtMs: x.createdAt?.toMillis ? x.createdAt.toMillis() : 0,
+          list: x.list || null,
+          stby: x.stby === true,
+          // ⚠️ p1Rank/p2Rank existent bien sur equipes_dd_public (admin/equipes les écrit)
+          p1Rank: x.p1Rank ?? null,
+          p2Rank: x.p2Rank ?? null
+        });
+      });
+      ddTeams = rows;
+
+      // petit status utile
+      const rankedCount = computeDdRankedMain(ddTeams).length;
+      if(rankedCount > 0){
+        ddStatus.textContent = `🟢 ${rankedCount} équipe(s) DD classée(s) (liste principale) détectée(s)`;
+      }
+    }, (err)=>{ console.error(err); });
+
+    unsubProgDH = onSnapshot(refProgDH(), (snap)=>{
+      progDH = snap.exists() ? (snap.data() || {}) : null;
+      renderProgInto(progDH, dhList, dhStatus);
+    }, (err)=>{
+      console.error(err);
+      dhStatus.textContent = `❌ Erreur Firestore (DH) : ${err?.code || ""} ${err?.message || ""}`.trim();
+    });
+
+    unsubProgDD = onSnapshot(refProgDD(), (snap)=>{
+      progDD = snap.exists() ? (snap.data() || {}) : null;
+      renderProgInto(progDD, ddList, ddStatus);
+    }, (err)=>{
+      console.error(err);
+      ddStatus.textContent = `❌ Erreur Firestore (DD) : ${err?.code || ""} ${err?.message || ""}`.trim();
+    });
+  }
+
+  document.getElementById("btnLogout").onclick = async (e)=>{
+    e.preventDefault();
+    await logout();
+    window.location.href = "../index.html";
+  };
+
+  onAuthStateChanged(auth, async (user)=>{
+    if(!user){ showDenied(); return; }
+
+    try{
+      const role = await getRoleByEmail(user.email);
+      if(role !== "admin"){ showDenied(); return; }
+      showAdmin();
+    }catch(err){
+      console.error(err);
+      showDenied();
+    }
+  });
 </script>
 
 </body>
