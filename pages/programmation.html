@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Programmation — Open BT Bricorama</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260228-open-public-programmation-v4-firestore" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260228-open-global-prog-v1" />
 </head>
 <body>
 
@@ -37,115 +37,48 @@
 <main class="container">
 
   <section class="card">
-    <h2 style="margin:0 0 10px;">🗓️ Programmation</h2>
+    <h2 style="margin:0 0 10px;">🗓️ Programmation (DH + DD)</h2>
     <p class="muted" id="statusText" style="margin:0;">Chargement…</p>
-
-    <div class="grid" style="margin-top:12px;">
-      <button class="btn is-active" id="tabChrono" style="font-weight:900; color:#111;">🕒 Chrono</button>
-      <button class="btn" id="tabPoules" style="font-weight:900; color:#111;">🏖️ Poules</button>
-    </div>
-
     <p class="muted" id="subtitle" style="margin-top:10px;"></p>
   </section>
 
-  <!-- =========================
-       ONGLET 1 : CHRONO (général)
-  ========================== -->
   <section class="card" id="panelChrono" style="display:block;">
-    <h2 style="margin:0 0 10px;">🕒 Planning des matchs (général)</h2>
+    <h2 style="margin:0 0 10px;">🕒 Planning global — 2 terrains</h2>
     <div id="chronoList"></div>
 
     <p class="muted" style="margin-top:10px;">
-      ⏱️ Règles de timing :
-      <br>• 1 match = <b>50 min</b> (5’ échauffement + 45’ jeu)
-      <br>• Rotation standard = <b>5 min</b>
-      <br>• Repos garanti = <b>30 min après la fin</b> ⇒ <b>80 min</b> minimum entre 2 débuts de match pour une même équipe.
-      <br>• Début officiel : <b>15h15</b>.
+      ⏱️ Affichage basé sur les programmations publiées par l’organisation (Firestore).
     </p>
-  </section>
-
-  <!-- =========================
-       ONGLET 2 : POULES (tirage + équipes DD)
-  ========================== -->
-  <section class="card" id="panelPoules" style="display:none;">
-    <h2 style="margin:0 0 10px;">🏖️ Poules</h2>
-
-    <div class="two-col">
-      <section class="card" style="margin:0;">
-        <h3 style="margin:0 0 8px;">🎾 DH — Montjoly</h3>
-        <div class="list" id="dhMontjoly"></div>
-      </section>
-
-      <section class="card" style="margin:0;">
-        <h3 style="margin:0 0 8px;">🎾 DH — Kourou</h3>
-        <div class="list" id="dhKourou"></div>
-      </section>
-    </div>
-
-    <section class="card" style="margin:12px 0 0;">
-      <h3 style="margin:0 0 8px;">🎾 DD — Poule (Top 4 classées)</h3>
-      <p class="muted" style="margin:0 0 10px;">
-        Les 4 équipes DD sont triées par <b>rang équipe</b> (p1Rank + p2Rank).
-      </p>
-      <div class="list" id="ddPool"></div>
-
-      <p class="muted" style="margin-top:10px;">
-        ⚠️ Si un classement manque, l’équipe peut apparaître en bas (rang “—”).
-      </p>
-    </section>
   </section>
 
 </main>
 
 <style>
-  .topbar-row-step{
-    grid-template-columns: var(--logo-size) 1fr var(--logo-size);
-  }
+  .topbar-row-step{ grid-template-columns: var(--logo-size) 1fr var(--logo-size); }
   .step-title-wrap{
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    display:flex; align-items:center; justify-content:center;
     min-height: calc(var(--logo-size) * 0.55);
   }
   .step-title-img{
-    width:min(520px,100%);
-    max-height:88px;
-    height:auto;
-    object-fit:contain;
-    display:block;
-    filter: drop-shadow(0 1px 0 rgba(0,0,0,.15));
+    width:min(520px,100%); max-height:88px; height:auto; object-fit:contain;
+    display:block; filter: drop-shadow(0 1px 0 rgba(0,0,0,.15));
   }
 
-  .nav-step{
-    gap:8px;
-    flex-wrap:wrap;
-  }
-  .nav-step a{
-    padding:8px 12px;
-    flex: 0 0 auto;
-    text-align:center;
-    white-space:nowrap;
-  }
+  .nav-step{ gap:8px; flex-wrap:wrap; }
+  .nav-step a{ padding:8px 12px; flex:0 0 auto; text-align:center; white-space:nowrap; }
   @media (max-width: 560px){
     .nav-step{ justify-content:space-between; }
     .nav-step a{ width: calc((100% - 16px) / 3); }
     .nav-step a:nth-child(n+4){ width: calc((100% - 8px) / 2); }
   }
   @media (max-width: 420px){
-    .nav-step a{ padding:7px 10px; font-size: 13px; }
+    .nav-step a{ padding:7px 10px; font-size:13px; }
     .step-title-img{ max-height:74px; }
   }
   .nav a[aria-current="page"]{
     background: rgba(255,255,255,.26);
     border-color: rgba(255,255,255,.45);
     box-shadow: 0 6px 14px rgba(0,0,0,.10);
-  }
-
-  .btn.is-active{
-    background:#111 !important;
-    border-color:#111 !important;
-    color:#fff !important;
-    box-shadow: 0 10px 22px rgba(0,0,0,.18);
   }
 
   .match-list{ display:flex; flex-direction:column; gap:14px; }
@@ -161,166 +94,40 @@
   .match-card.courtB{ background:#FFE6EA; border-color:rgba(255, 0, 60, .25); }
   .match-card.block{ background:#F3F6FF; border-color:rgba(60, 110, 255, .20); }
 
-  .match-head{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    min-width:0;
-  }
-  .m-time{
-    font-size:13px;
-    font-weight:900;
-    white-space:nowrap;
-    letter-spacing:.2px;
-  }
+  .match-head{ display:flex; align-items:center; gap:10px; min-width:0; }
+  .m-time{ font-size:13px; font-weight:900; white-space:nowrap; letter-spacing:.2px; }
   .m-court{
-    font-size:13px;
-    font-weight:400;
-    font-style:italic;
-    opacity:.95;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    min-width:0;
-    flex:1;
+    font-size:13px; font-weight:400; font-style:italic; opacity:.95;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; flex:1;
   }
   .m-tag{
-    font-size:11px;
-    font-weight:1000;
-    white-space:nowrap;
-    border:1px solid rgba(0,0,0,.12);
-    border-radius:999px;
-    padding:6px 10px;
-    opacity:.95;
+    font-size:11px; font-weight:1000; white-space:nowrap;
+    border:1px solid rgba(0,0,0,.12); border-radius:999px; padding:6px 10px; opacity:.95;
     flex:0 0 auto;
   }
 
-  .team-row{
-    margin-top:10px;
-    display:grid;
-    grid-template-columns: 1fr;
-    gap:6px;
-  }
-  .team-title{
-    font-size:15px;
-    font-weight:950;
-    line-height:1.15;
-    white-space:normal;
-    overflow-wrap:anywhere;
-  }
-  .team-sub{
-    font-size:13px;
-    font-weight:700;
-    opacity:.85;
-    white-space:normal;
-    overflow-wrap:anywhere;
-    line-height:1.25;
-  }
-  .vs-line{
-    margin:10px 0 6px;
-    text-align:center;
-    font-weight:900;
-    letter-spacing:2px;
-    opacity:.55;
-    font-size:12px;
-  }
-
-  .two-col{
-    display:grid;
-    grid-template-columns: 1fr 1fr;
-    gap:12px;
-  }
-  @media (max-width: 720px){
-    .two-col{ grid-template-columns: 1fr; }
-  }
-  .list{
-    display:grid;
-    gap:8px;
-    margin-top:10px;
-  }
-  .rowcard{
-    border:1px solid #eee;
-    border-radius:14px;
-    background:#fff;
-    padding:12px;
-    box-shadow:0 6px 16px rgba(0,0,0,.04);
-  }
-  .rowline{
-    display:flex;
-    justify-content:space-between;
-    gap:10px;
-    align-items:flex-start;
-  }
-  .rmain{ min-width:0; }
-  .rtitle{
-    font-weight:1000;
-    line-height:1.2;
-    white-space:normal;
-    overflow-wrap:anywhere;
-  }
-  .rsub{
-    margin-top:6px;
-    font-size:12px;
-    opacity:.85;
-    line-height:1.35;
-  }
-  .tag{
-    border:1px solid rgba(0,0,0,.12);
-    border-radius:999px;
-    padding:5px 9px;
-    font-size:11px;
-    font-weight:1000;
-    white-space:nowrap;
-    opacity:.9;
-    flex:0 0 auto;
-  }
+  .team-row{ margin-top:10px; display:grid; grid-template-columns:1fr; gap:6px; }
+  .team-title{ font-size:15px; font-weight:950; line-height:1.15; white-space:normal; overflow-wrap:anywhere; }
+  .team-sub{ font-size:13px; font-weight:700; opacity:.85; white-space:normal; overflow-wrap:anywhere; line-height:1.25; }
+  .vs-line{ margin:10px 0 6px; text-align:center; font-weight:900; letter-spacing:2px; opacity:.55; font-size:12px; }
 </style>
 
 <script type="module">
   import { db } from "../assets/js/firebase.js";
-  import {
-    doc, onSnapshot, collection, query, orderBy
-  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+  import { doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-  // =========================
-  // CONFIG
-  // =========================
-  const START_TIME = "15:15";
+  const statusText = document.getElementById("statusText");
+  const subtitle   = document.getElementById("subtitle");
+  const chronoList = document.getElementById("chronoList");
 
-  const COURTS = {
+  const COURTS_FALLBACK = {
     A: "court Manon Queen Bee",
     B: "court Lisa de Los Pimentos"
   };
 
-  // =========================
-  // DOM
-  // =========================
-  const statusText = document.getElementById("statusText");
-  const subtitle   = document.getElementById("subtitle");
-
-  const tabChrono  = document.getElementById("tabChrono");
-  const tabPoules  = document.getElementById("tabPoules");
-
-  const panelChrono = document.getElementById("panelChrono");
-  const panelPoules = document.getElementById("panelPoules");
-
-  const chronoList = document.getElementById("chronoList");
-
-  const dhMontjoly = document.getElementById("dhMontjoly");
-  const dhKourou   = document.getElementById("dhKourou");
-  const ddPoolBox  = document.getElementById("ddPool");
-
-  // =========================
-  // STATE
-  // =========================
-  let dhDraw = null;
-  let ddTeams = [];
   let progDH = null;
   let progDD = null;
 
-  // =========================
-  // UTILS
-  // =========================
   function esc(s){
     return (s ?? "").toString()
       .replaceAll("&","&amp;")
@@ -329,17 +136,10 @@
       .replaceAll('"',"&quot;");
   }
 
-  function toNum(v){
-    if(v === null || v === undefined || v === "") return null;
-    const n = typeof v === "number" ? v : Number(String(v).replace(",", ".").trim());
-    return Number.isFinite(n) ? n : null;
-  }
-
-  function teamRank(t){
-    const a = toNum(t?.p1Rank);
-    const b = toNum(t?.p2Rank);
-    if(a === null || b === null) return null;
-    return a + b;
+  function parseHHMM(hhmm){
+    const m = /^(\d{1,2}):(\d{2})$/.exec((hhmm||"").trim());
+    if(!m) return Number.POSITIVE_INFINITY;
+    return Number(m[1])*60 + Number(m[2]);
   }
 
   function teamTitle(t){ return (t?.teamName || "Équipe").toString(); }
@@ -350,64 +150,59 @@
     return `${p1}${p1 && p2 ? " • " : ""}${p2}`;
   }
 
-  function rowCardTeam(t, tag){
-    if(!t){
-      return `<div class="rowcard"><div class="rowline"><div class="rmain"><div class="rtitle">—</div></div></div></div>`;
+  function normalizeEntry(entry, slotObj){
+    if(typeof entry === "number"){
+      const slot = Number(entry);
+      const court = slotObj?.court || "A";
+      return { slot, court };
     }
-    return `
-      <div class="rowcard">
-        <div class="rowline">
-          <div class="rmain">
-            <div class="rtitle">${esc(teamTitle(t))}</div>
-            <div class="rsub muted">${esc(teamSub(t))}</div>
-          </div>
-          ${tag ? `<div class="tag">${esc(tag)}</div>` : ``}
-        </div>
-      </div>
-    `;
+    if(entry && typeof entry === "object"){
+      const slot = Number(entry.slot);
+      const court = entry.court || slotObj?.court || "A";
+      return { slot, court };
+    }
+    return { slot: Number(slotObj?.slot || 1), court: slotObj?.court || "A" };
   }
 
-  function courtLabel(key){
-    const name = COURTS[key] || key || "—";
+  function courtLabel(courts, key){
+    const name = (courts?.[key] || COURTS_FALLBACK[key] || key || "—");
     const emo = (key === "A") ? "🐝" : (key === "B" ? "🌶️" : "🎾");
     return `${emo} ${name} ${emo}`;
   }
   function courtClass(key){
-    return (key === "A") ? "courtA" : (key === "B" ? "courtB" : "";
+    return (key === "A") ? "courtA" : (key === "B" ? "courtB" : "");
   }
 
-  function matchCard({ time, courtKey, cat, stage, teamA, teamB }){
-    const cls = courtClass(courtKey);
+  function matchCard({ time, courtKey, courts, cat, stage, A, B }){
     return `
-      <div class="match-card ${esc(cls)}">
+      <div class="match-card ${esc(courtClass(courtKey))}">
         <div class="match-head">
           <div class="m-time">${esc(time)}</div>
-          <div class="m-court">${esc(courtLabel(courtKey))}</div>
+          <div class="m-court">${esc(courtLabel(courts, courtKey))}</div>
           <div class="m-tag">${esc(cat)} · ${esc(stage)}</div>
         </div>
 
         <div class="team-row">
-          <div class="team-title">${esc(teamTitle(teamA))}</div>
-          <div class="team-sub muted">${esc(teamSub(teamA))}</div>
+          <div class="team-title">${esc(teamTitle(A))}</div>
+          <div class="team-sub muted">${esc(teamSub(A))}</div>
         </div>
 
         <div class="vs-line">VS</div>
 
         <div class="team-row">
-          <div class="team-title">${esc(teamTitle(teamB))}</div>
-          <div class="team-sub muted">${esc(teamSub(teamB))}</div>
+          <div class="team-title">${esc(teamTitle(B))}</div>
+          <div class="team-sub muted">${esc(teamSub(B))}</div>
         </div>
       </div>
     `;
   }
 
-  function blockCard({ time, courtKey, title, note }){
-    const cls = "block";
+  function blockCard({ time, courtKey, courts, title, note }){
     return `
-      <div class="match-card ${esc(cls)}">
+      <div class="match-card block">
         <div class="match-head">
           <div class="m-time">${esc(time)}</div>
-          <div class="m-court">${esc(courtLabel(courtKey))}</div>
+          <div class="m-court">${esc(courtLabel(courts, courtKey))}</div>
           <div class="m-tag">⏳ Bloc</div>
         </div>
         <div class="team-row">
@@ -418,244 +213,106 @@
     `;
   }
 
-  // =========================
-  // POOLS (tirage)
-  // =========================
-  function computeDhPools(draw){
-    const teams = Array.isArray(draw?.teams) ? draw.teams : [];
-    const byId = new Map(teams.map(t => [t.id, t]));
+  function flattenProg(prog, fallbackCat){
+    if(!prog || !Array.isArray(prog.slots) || !prog.slots.length) return [];
 
-    const seed1 = draw?.seed1 || null;
-    const seed2 = draw?.seed2 || null;
-
-    const order = Array.isArray(draw?.order) ? draw.order : [];
-    const revealed = Number(draw?.revealed || 0);
-    const revealedIds = order.slice(0, revealed);
-    const revealedTeams = revealedIds.map(id => byId.get(id)).filter(Boolean);
-
-    const montjoly = [];
-    const kourou   = [];
-
-    if(seed1) montjoly.push(seed1);
-    if(seed2) kourou.push(seed2);
-
-    for(let i=0;i<revealedTeams.length;i++){
-      const t = revealedTeams[i];
-      if(i === 0) montjoly.push(t);
-      else if(i === 1) kourou.push(t);
-      else {
-        const j = i - 2;
-        (j % 2 === 0 ? montjoly : kourou).push(t);
-      }
-    }
-
-    return { montjoly, kourou, revealed, total: (teams.length||0) };
-  }
-
-  function computeDdTop4(rows){
-    const MAX_MAIN = 10;
-
-    const all = [...rows].sort((a,b)=> (a.createdAtMs||0) - (b.createdAtMs||0));
-    const forcedMain = all.filter(r => r.list === "main");
-    const auto = all.filter(r => !r.list);
-
-    const main = [];
-    const used = new Set();
-
-    for(const r of forcedMain){
-      if(!used.has(r.id)){ main.push(r); used.add(r.id); }
-    }
-    for(const r of auto){
-      if(main.length >= MAX_MAIN) break;
-      if(!used.has(r.id)){ main.push(r); used.add(r.id); }
-    }
-
-    const ranked = [...main];
-    ranked.sort((a,b)=>{
-      const at = teamRank(a);
-      const bt = teamRank(b);
-      const aa = (at === null ? Number.POSITIVE_INFINITY : at);
-      const bb = (bt === null ? Number.POSITIVE_INFINITY : bt);
-      if(aa !== bb) return aa - bb;
-      return (a.createdAtMs||0) - (b.createdAtMs||0);
-    });
-
-    return ranked.slice(0,4);
-  }
-
-  // =========================
-  // Convert Firestore prog doc -> list items (time, court, match)
-  // =========================
-  function chronoFromProg(prog){
-    if(!prog || !prog.slots || !prog.matches || !prog.schedule) return [];
-    const slots = Array.isArray(prog.slots) ? prog.slots : [];
+    const courts = prog.courts || COURTS_FALLBACK;
+    const slots = prog.slots || [];
     const matches = prog.matches || {};
     const schedule = prog.schedule || {};
 
-    const out = [];
-
+    const slotToMid = new Map();
     for(const [mid, entry] of Object.entries(schedule)){
+      const slotNum = (typeof entry === "number") ? Number(entry) : Number(entry?.slot);
+      if(!Number.isFinite(slotNum)) continue;
+      if(!matches[mid]) continue;
+      if(!slotToMid.has(slotNum)) slotToMid.set(slotNum, mid);
+    }
+
+    const out = [];
+    for(const s of slots){
+      const mid = slotToMid.get(Number(s.slot));
+      if(!mid) continue;
+
       const m = matches[mid];
       if(!m) continue;
 
-      const slotNum = (typeof entry === "number") ? Number(entry) : Number(entry?.slot);
-      if(!Number.isFinite(slotNum)) continue;
-
-      const slotObj = slots.find(s => Number(s.slot) === slotNum);
-      if(!slotObj) continue;
-
-      const courtKey = (typeof entry === "object" && entry?.court) ? entry.court : (slotObj.court || (prog.cat === "DD" ? "B" : "A"));
-      const time = slotObj.time || "—";
+      const norm = normalizeEntry(schedule[mid], s);
+      const courtKey = norm.court || s.court || "A";
+      const time = s.time || "—";
 
       out.push({
         time,
-        timeSort: slotNum, // stable fallback
+        timeMin: parseHHMM(time),
         courtKey,
-        cat: m.cat || prog.cat || "",
+        courts,
         kind: m.kind || "match",
+        cat: m.cat || fallbackCat,
         stage: m.stage || "",
-        title: m.title || "",
-        note: m.note || "",
         A: m.A || null,
-        B: m.B || null
+        B: m.B || null,
+        title: m.title || "",
+        note: m.note || ""
       });
     }
-
-    // best effort sort by HH:MM then court
-    out.sort((a,b)=>{
-      const pa = (a.time||"").split(":");
-      const pb = (b.time||"").split(":");
-      const ma = (Number(pa[0])*60 + Number(pa[1])) || 0;
-      const mb = (Number(pb[0])*60 + Number(pb[1])) || 0;
-      if(ma !== mb) return ma - mb;
-      return (a.courtKey||"").localeCompare(b.courtKey||"");
-    });
 
     return out;
   }
 
-  // =========================
-  // RENDER
-  // =========================
-  function setActiveTab(which){
-    const isChrono = which === "chrono";
-    panelChrono.style.display = isChrono ? "block" : "none";
-    panelPoules.style.display = isChrono ? "none" : "block";
-    tabChrono.classList.toggle("is-active", isChrono);
-    tabPoules.classList.toggle("is-active", !isChrono);
-  }
-
   function renderAll(){
-    // Subtitle & status
-    subtitle.textContent = `Début ${START_TIME} • DH sur 🐝 terrain A • DD sur 🌶️ terrain B • affichage en direct (FireStore)`;
+    const items = [
+      ...flattenProg(progDH, "DH"),
+      ...flattenProg(progDD, "DD"),
+    ].sort((a,b)=>{
+      if(a.timeMin !== b.timeMin) return a.timeMin - b.timeMin;
+      return (a.courtKey||"").localeCompare(b.courtKey||"");
+    });
 
-    // POULES (tirage + équipes)
-    if(dhDraw){
-      const pools = computeDhPools(dhDraw);
-      dhMontjoly.innerHTML = pools.montjoly.length
-        ? pools.montjoly.slice(0,3).map((t,i)=> rowCardTeam(t, `#${i+1}`)).join("")
-        : `<p class="muted" style="margin:0;">—</p>`;
-
-      dhKourou.innerHTML = pools.kourou.length
-        ? pools.kourou.slice(0,3).map((t,i)=> rowCardTeam(t, `#${i+1}`)).join("")
-        : `<p class="muted" style="margin:0;">—</p>`;
-    } else {
-      dhMontjoly.innerHTML = `<p class="muted" style="margin:0;">—</p>`;
-      dhKourou.innerHTML   = `<p class="muted" style="margin:0;">—</p>`;
-    }
-
-    const ddTop4 = computeDdTop4(ddTeams);
-    ddPoolBox.innerHTML = ddTop4.length
-      ? ddTop4.map((t,i)=>{
-          const tr = teamRank(t);
-          const tag = (tr === null) ? `#${i+1} · —` : `#${i+1} · 🏷️ ${tr}`;
-          return rowCardTeam(t, tag);
-        }).join("")
-      : `<p class="muted" style="margin:0;">Pas assez d’équipes classées (il faut 4 équipes DD).</p>`;
-
-    // CHRONO (FireStore DH + DD)
-    const dhItems = chronoFromProg(progDH);
-    const ddItems = chronoFromProg(progDD);
-    const all = [...dhItems, ...ddItems];
-
-    if(!all.length){
-      statusText.textContent = "⏳ Programmation non disponible (attente génération admin).";
-      chronoList.innerHTML = `<p class="muted" style="margin:0;">Va sur Admin → Programmation et clique “Générer DH” et “Générer DD”.</p>`;
+    if(!items.length){
+      statusText.textContent = "ℹ️ Programmation non publiée.";
+      subtitle.textContent = "";
+      chronoList.innerHTML = `<p class="muted" style="margin:0;">Aucun match pour le moment.</p>`;
       return;
     }
 
     statusText.textContent = "🟢 En direct";
-    chronoList.innerHTML = `<div class="match-list">${
-      all.map(x=>{
-        if(x.kind === "block"){
-          return blockCard({ time:x.time, courtKey:x.courtKey, title:x.title, note:x.note });
-        }
-        return matchCard({
+    subtitle.textContent = "Planning global (DH + DD) mis à jour en direct.";
+
+    const cards = items.map(x=>{
+      if(x.kind === "block"){
+        return blockCard({
           time: x.time,
           courtKey: x.courtKey,
-          cat: x.cat,
-          stage: x.stage,
-          teamA: x.A,
-          teamB: x.B
+          courts: x.courts,
+          title: x.title || x.stage || "Bloc",
+          note: x.note || ""
         });
-      }).join("")
-    }</div>`;
-  }
-
-  tabChrono.onclick = (e)=>{ e.preventDefault(); setActiveTab("chrono"); };
-  tabPoules.onclick = (e)=>{ e.preventDefault(); setActiveTab("poules"); };
-  setActiveTab("chrono");
-
-  // =========================
-  // FIRESTORE LISTENERS
-  // =========================
-  onSnapshot(doc(db, "programmations_open", "dh"), (snap)=>{
-    progDH = snap.exists() ? (snap.data() || null) : null;
-    renderAll();
-  }, (err)=>{
-    console.error(err);
-    statusText.textContent = "🔴 Erreur Firestore (programmation DH)";
-  });
-
-  onSnapshot(doc(db, "programmations_open", "dd"), (snap)=>{
-    progDD = snap.exists() ? (snap.data() || null) : null;
-    renderAll();
-  }, (err)=>{
-    console.error(err);
-    statusText.textContent = "🔴 Erreur Firestore (programmation DD)";
-  });
-
-  onSnapshot(doc(db, "tirages_open", "dh"), (snap)=>{
-    dhDraw = snap.exists() ? (snap.data() || {}) : null;
-    renderAll();
-  }, (err)=>{
-    console.error(err);
-    statusText.textContent = "🔴 Erreur Firestore (tirage DH)";
-  });
-
-  const qDD = query(collection(db, "equipes_dd_public"), orderBy("createdAt", "asc"));
-  onSnapshot(qDD, (snap)=>{
-    const rows = [];
-    snap.forEach(d=>{
-      const x = d.data() || {};
-      rows.push({
-        id: d.id,
-        teamName: x.teamName || "",
-        p1FirstName: x.p1FirstName || "",
-        p2FirstName: x.p2FirstName || "",
-        createdAtMs: x.createdAt?.toMillis ? x.createdAt.toMillis() : 0,
-        list: x.list || null,
-        stby: x.stby === true,
-        p1Rank: x.p1Rank ?? null,
-        p2Rank: x.p2Rank ?? null
+      }
+      return matchCard({
+        time: x.time,
+        courtKey: x.courtKey,
+        courts: x.courts,
+        cat: x.cat,
+        stage: x.stage,
+        A: x.A,
+        B: x.B
       });
     });
-    ddTeams = rows;
-    renderAll();
-  }, (err)=>{
-    console.error(err);
-    statusText.textContent = "🔴 Erreur Firestore (équipes DD)";
-  });
+
+    chronoList.innerHTML = `<div class="match-list">${cards.join("")}</div>`;
+  }
+
+  onSnapshot(
+    doc(db, "programmations_open", "dh"),
+    (snap)=>{ progDH = snap.exists() ? (snap.data() || null) : null; renderAll(); },
+    (err)=>{ console.error(err); statusText.textContent = "🔴 Erreur Firestore (DH)"; }
+  );
+
+  onSnapshot(
+    doc(db, "programmations_open", "dd"),
+    (snap)=>{ progDD = snap.exists() ? (snap.data() || null) : null; renderAll(); },
+    (err)=>{ console.error(err); statusText.textContent = "🔴 Erreur Firestore (DD)"; }
+  );
 </script>
 
 </body>
