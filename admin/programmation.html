@@ -139,13 +139,16 @@
 
 <header class="topbar">
   <div class="container">
-    <div class="topbar-row topbar-row-step">
+    <div class="topbar-row">
       <div class="brand-logo">
         <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
       </div>
 
-      <div class="step-title-wrap" aria-label="Open BT — Admin Programmation">
-        <img class="step-title-img" src="../assets/img/bt250.png" alt="BT250">
+      <div class="brand-title"
+           style="display:flex;align-items:center;justify-content:center;">
+        <div style="font-weight:1000; letter-spacing:.2px;">
+          🛠️ Admin — Open BT Bricorama
+        </div>
       </div>
 
       <div class="brand-logo">
@@ -153,22 +156,20 @@
       </div>
     </div>
 
-    <!-- ✅ Bandeau nav identique à admin/equipes + onglet actif -->
-    <nav class="nav nav-step">
+    <nav class="nav">
       <a href="../index.html">🏠 Accueil public</a>
 
-      <a href="index.html?scope=general">📰 Infos</a>
       <a href="equipes.html?scope=dh">👥 Équipes</a>
       <a href="inscriptions.html?scope=dh">📝 Inscriptions</a>
       <a href="tirage.html?scope=dh">🎲 Tirage</a>
       <a href="resultats.html?scope=dh">✅ Résultats</a>
-      <a href="programmation.html" aria-current="page">🗓️ Programmation</a>
+      <a href="programmation.html?scope=dh"
+         aria-current="page">🗓️ Programmation</a>
 
       <a href="#" id="btnLogout">🚪 Déconnexion</a>
     </nav>
   </div>
 </header>
-
 <main class="container">
 
   <section class="card" id="accessDenied" style="display:none;">
