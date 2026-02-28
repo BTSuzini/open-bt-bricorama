@@ -233,7 +233,7 @@
 
 <script type="module">
   import { auth, db } from "../assets/js/firebase.js";
-  import { logout, requireRole } from "../assets/js/session.js";
+  import { logout, getRoleByEmail } from "../assets/js/session.js";
   import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
   import {
     doc, getDoc, setDoc, updateDoc, onSnapshot, serverTimestamp,
@@ -1117,15 +1117,18 @@
     window.location.href = "../index.html";
   };
 
-  const g = await requireRole(["admin"]);
-  if(!g.ok){ showDenied(); }
-  else { showAdmin(); }
-
   onAuthStateChanged(auth, async (user)=>{
-    if(!user){ showDenied(); return; }
-    const g2 = await requireRole(["admin"]);
-    if(!g2.ok){ showDenied(); return; }
-  });
+  if(!user){ showDenied(); return; }
+
+  try{
+    const role = await getRoleByEmail(user.email);
+    if(role !== "admin"){ showDenied(); return; }
+    showAdmin();
+  }catch(err){
+    console.error(err);
+    showDenied();
+  }
+});
 </script>
 
 </body>
