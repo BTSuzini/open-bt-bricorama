@@ -27,6 +27,7 @@
       </div>
     </div>
 
+    <!-- ✅ Nav haut (public + logout) -->
     <nav class="nav">
       <a href="../index.html">🏠 Accueil public</a>
       <a href="#" id="btnLogout">🚪 Déconnexion</a>
@@ -94,6 +95,15 @@
 </main>
 
 <style>
+  /* ===== Onglet actif (nav + tabs) ===== */
+  .nav a[aria-current="page"],
+  .btn.is-active{
+    background: rgba(17,17,17,.10);
+    border-color: rgba(17,17,17,.25);
+    box-shadow: 0 10px 22px rgba(0,0,0,.10);
+    font-weight: 1000 !important;
+  }
+
   /* Cards */
   .team-card{
     border:1px solid #eee;
@@ -212,12 +222,15 @@
   import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
   import {
     collection, getDocs, query, orderBy,
-    doc, getDoc, setDoc, updateDoc, deleteDoc, serverTimestamp
+    doc, setDoc, updateDoc, deleteDoc, serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
   // ---- scope (URL ?scope=dh|dd|general)
   const params = new URLSearchParams(location.search);
   const scopeFromUrl = (params.get("scope") || "dh").toLowerCase();
+
+  // ---- current page (for active tab highlight)
+  const currentPage = (location.pathname.split("/").pop() || "").toLowerCase(); // ex: "equipes.html"
 
   // ---- DOM
   const accessDenied = document.getElementById("accessDenied");
@@ -286,29 +299,48 @@
   function setTabs(sc){
     tabsEl.innerHTML = "";
 
-    const make = (label, href, active=false) => {
+    const isActive = (href) => {
+      try{
+        const u = new URL(href, location.href);
+        const page = (u.pathname.split("/").pop() || "").toLowerCase();
+        return page === currentPage;
+      }catch(e){
+        return false;
+      }
+    };
+
+    const make = (label, href) => {
       const a = document.createElement("a");
       a.className = "btn";
       a.href = href;
       a.textContent = label;
-      if(active) a.style.fontWeight = "900";
+
+      const active = isActive(href);
+      if(active){
+        a.classList.add("is-active");
+        a.setAttribute("aria-current", "page");
+      }
       tabsEl.appendChild(a);
     };
 
     if(sc === "general"){
       hintEl.textContent = "🌐 Zone Général : accès aux pages générales.";
-      make("📰 Infos", "index.html?scope=general", false);
-      make("👥 Équipes", "equipes.html?scope=dh", true);
-      make("📝 Inscriptions", "inscriptions.html?scope=dh", false);
-      make("🎲 Tirage", "tirage.html?scope=dh", false);
+      make("📰 Infos",          "index.html?scope=general");
+      make("👥 Équipes",        "equipes.html?scope=dh");            // renvoie vers DH
+      make("📝 Inscriptions",   "inscriptions.html?scope=dh");
+      make("🎲 Tirage",         "tirage.html?scope=dh");
+      make("✅ Résultats",      "resultats.html?scope=dh");
+      make("🗓️ Programmation",  "programmation.html?scope=dh");
       return;
     }
 
-    hintEl.textContent = `🎾 Zone ${zoneText(sc)} : gestion équipes / inscriptions / tirage.`;
-    make("👥 Équipes", `equipes.html?scope=${encodeURIComponent(sc)}`, true);
-    make("📝 Inscriptions", `inscriptions.html?scope=${encodeURIComponent(sc)}`, false);
-    make("🎲 Tirage", `tirage.html?scope=${encodeURIComponent(sc)}`, false);
-    make("📰 Infos", "index.html?scope=general", false);
+    hintEl.textContent = `🎾 Zone ${zoneText(sc)} : gestion équipes / inscriptions / tirage / résultats / programmation.`;
+    make("👥 Équipes",        `equipes.html?scope=${encodeURIComponent(sc)}`);
+    make("📝 Inscriptions",   `inscriptions.html?scope=${encodeURIComponent(sc)}`);
+    make("🎲 Tirage",         `tirage.html?scope=${encodeURIComponent(sc)}`);
+    make("✅ Résultats",      `resultats.html?scope=${encodeURIComponent(sc)}`);
+    make("🗓️ Programmation",  `programmation.html?scope=${encodeURIComponent(sc)}`);
+    make("📰 Infos",          "index.html?scope=general");
   }
 
   function showPanels(sc){
@@ -520,14 +552,12 @@
     const p2Phone     = prompt("J2 — Téléphone :", row.p2Phone || "");
     if(p2Phone === null) return;
 
-    // ✅ écritures
     await patchPrivate(sc, row.id, {
       teamName,
       p1FirstName, p1LastName, p1Licence, p1Phone,
       p2FirstName, p2LastName, p2Licence, p2Phone
     });
 
-    // ✅ miroir minimal côté public (pour vues publiques)
     await patchPublic(sc, row.id, {
       teamName,
       p1FirstName,
