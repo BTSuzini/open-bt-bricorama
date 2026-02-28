@@ -4,10 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin — Programmation (Open BT)</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260227-admin-open-prog-v1" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260228-admin-open-prog-v2" />
 
   <style>
-    /* ✅ Onglet actif (nav + tabs) */
     .nav a[aria-current="page"],
     .btn.is-active{
       background: rgba(17,17,17,.10) !important;
@@ -144,8 +143,7 @@
         <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
       </div>
 
-      <div class="brand-title"
-           style="display:flex;align-items:center;justify-content:center;">
+      <div class="brand-title" style="display:flex;align-items:center;justify-content:center;">
         <div style="font-weight:1000; letter-spacing:.2px;">
           🛠️ Admin — Open BT Bricorama
         </div>
@@ -163,13 +161,13 @@
       <a href="inscriptions.html?scope=dh">📝 Inscriptions</a>
       <a href="tirage.html?scope=dh">🎲 Tirage</a>
       <a href="resultats.html?scope=dh">✅ Résultats</a>
-      <a href="programmation.html?scope=dh"
-         aria-current="page">🗓️ Programmation</a>
+      <a href="programmation.html?scope=dh" aria-current="page">🗓️ Programmation</a>
 
       <a href="#" id="btnLogout">🚪 Déconnexion</a>
     </nav>
   </div>
 </header>
+
 <main class="container">
 
   <section class="card" id="accessDenied" style="display:none;">
@@ -189,8 +187,8 @@
           <button class="btn" id="btnResetDH" style="font-weight:950; color:#111;">🧨 Réinitialiser DH</button>
         </div>
         <p class="hint muted">
-          Génère la programmation DH depuis le tirage (<b>tirages_open/dh</b>) et applique les règles de repos.<br>
-          Réinitialiser = vide totalement la programmation DH (order + terrain).
+          Génère la programmation DH depuis le tirage (<b>tirages_open/dh</b>) à <b>partir de 15h15</b>, sur <b>1 terrain (A)</b>.<br>
+          Réinitialiser = vide totalement la programmation DH (ordre + terrain).
         </p>
       </div>
 
@@ -201,7 +199,7 @@
           <button class="btn" id="btnResetDD" style="font-weight:950; color:#111;">🧨 Réinitialiser DD</button>
         </div>
         <p class="hint muted">
-          Génère la poule DD à 4 (Top 4 classées) avec <b>#1 vs #2 en dernier</b>.<br>
+          Génère la poule DD à 4 (Top 4 classées) avec <b>#1 vs #2 en dernier</b>, à <b>partir de 15h15</b>, sur <b>1 terrain (B)</b>.<br>
           Réinitialiser = vide totalement la programmation DD.
         </p>
       </div>
@@ -241,7 +239,7 @@
   } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
   // ============================================================
-  // CONFIG (identique public)
+  // CONFIG
   // ============================================================
   const START_TIME = "15:15";
 
@@ -260,7 +258,6 @@
   // ============================================================
   const accessDenied = document.getElementById("accessDenied");
   const adminZone = document.getElementById("adminZone");
-
   const liveStatus = document.getElementById("liveStatus");
 
   const tabDH = document.getElementById("tabDH");
@@ -284,7 +281,6 @@
   const refDrawDH = () => doc(db, "tirages_open", "dh");
   const refProgDH = () => doc(db, "programmations_open", "dh");
   const refProgDD = () => doc(db, "programmations_open", "dd");
-
   const qDDTeams = () => query(collection(db, "equipes_dd_public"), orderBy("createdAt", "asc"));
 
   // ============================================================
@@ -292,7 +288,6 @@
   // ============================================================
   let dhDraw = null;
   let ddTeams = [];
-
   let progDH = null;
   let progDD = null;
 
@@ -359,7 +354,7 @@
   }
 
   // ============================================================
-  // DH POOLS from draw (same rule as public)
+  // DH POOLS from draw
   // ============================================================
   function computeDhPools(draw){
     const teams = Array.isArray(draw?.teams) ? draw.teams : [];
@@ -393,7 +388,7 @@
   }
 
   // ============================================================
-  // DD Top 4 (same rule as public)
+  // DD Top 4
   // ============================================================
   function computeDdTop4(rows){
     const MAX_MAIN = 10;
@@ -427,10 +422,10 @@
   }
 
   // ============================================================
-  // MATCH GENERATORS (règlement)
+  // MATCH GENERATORS
   // ============================================================
   function rr3Matches(poolName, teams3){
-    const [t1,t2,t3] = teams3; // #1 #2 #3
+    const [t1,t2,t3] = teams3;
     if(!t1 || !t2 || !t3) return [];
     return [
       { kind:"match", cat:"DH", stage:`Poule ${poolName} (M1)`, A:t1, B:t3 },
@@ -470,7 +465,7 @@
   function scheduleWithConstraints(plans, startMin, courtsKeys){
     const keys = Array.isArray(courtsKeys) ? courtsKeys : ["A","B"];
     const courtAvail = new Map(keys.map(k => [k, startMin]));
-    const teamLastStart = new Map(); // teamId -> lastStartMin
+    const teamLastStart = new Map();
 
     function minStartForTeams(m){
       if(m.kind !== "match") return startMin;
@@ -488,13 +483,11 @@
 
     const out = [];
     for(const p of plans){
-      const c = p.courtKey || "A";
+      const c = p.courtKey || keys[0] || "A";
       const cOk = courtAvail.get(c) ?? startMin;
 
       const tOk = (p.kind === "match") ? minStartForTeams(p) : startMin;
-
       const forced = Number.isFinite(p.forceMinStart) ? Number(p.forceMinStart) : startMin;
-
       const start = Math.max(cOk, tOk, forced);
 
       if(p.kind === "match"){
@@ -520,7 +513,9 @@
   }
 
   // ============================================================
-  // BUILD DEFAULT PROGRAMMATIONS
+  // BUILD PROGRAMMATIONS
+  // - DH: 1 seul terrain A dès 15h15 (poules + classement)
+  // - DD: 1 seul terrain B dès 15h15 (poule top4)
   // ============================================================
   function buildProgDHFromDraw(draw){
     const pools = computeDhPools(draw);
@@ -530,107 +525,40 @@
     const montMatches = rr3Matches("Montjoly", mont);
     const kouMatches  = rr3Matches("Kourou", kou);
 
-    const plan = [];
-    for(let i=0;i<2;i++){
-      if(montMatches[i]) plan.push({ ...montMatches[i], courtKey:"A" });
-      if(kouMatches[i])  plan.push({ ...kouMatches[i],  courtKey:"B" });
-    }
-    if(montMatches[2]) plan.push({ ...montMatches[2], courtKey:"A" });
-    if(kouMatches[2])  plan.push({ ...kouMatches[2],  courtKey:"A" });
+    // ✅ DH sur 1 terrain (A) : tout en séquentiel
+    const planPools = [
+      ...montMatches.map(m => ({ ...m, courtKey:"A" })),
+      ...kouMatches.map(m  => ({ ...m, courtKey:"A" })),
+    ];
 
     const startMin = parseHHMM(START_TIME);
-    const scheduledPools = scheduleWithConstraints(plan, startMin, ["A","B"]);
+    const scheduledPools = scheduleWithConstraints(planPools, startMin, ["A"]);
 
-    const lastPoolM3 = scheduledPools
-      .filter(x => x.kind==="match" && x.cat==="DH" && /\(M3\)/.test(x.stage) && x.courtKey==="A")
+    // last pool match start on A
+    const lastPool = scheduledPools
+      .filter(x => x.kind==="match" && x.cat==="DH" && /\(M3\)/.test(x.stage))
       .sort((a,b)=>a.timeMin-b.timeMin)
       .at(-1);
 
-    const lastPoolStart = lastPoolM3 ? lastPoolM3.timeMin : startMin;
+    const lastPoolStart = lastPool ? lastPool.timeMin : startMin;
     const sfEarliest = lastPoolStart + MIN_GAP_SAME_TEAM_START;
 
     const finalsPlan = [
       { kind:"block", cat:"DH", stage:"⏳ Pause / attente (hypothèse défavorable)", courtKey:"A", title:"⏳ Pause / attente", note:"On garantit 30 min de repos après le dernier match de poule avant la 1/2", durationMin:0, forceMinStart: sfEarliest },
-
       { kind:"match", cat:"DH", stage:"Demi-finale 1", courtKey:"A", A:P("1er Montjoly"), B:P("2e Kourou") },
       { kind:"match", cat:"DH", stage:"Demi-finale 2", courtKey:"A", A:P("1er Kourou"),  B:P("2e Montjoly") },
-
       { kind:"match", cat:"DH", stage:"Match 5e place", courtKey:"A", A:P("3e Montjoly"),  B:P("3e Kourou") },
       { kind:"match", cat:"DH", stage:"Petite finale (3e place)", courtKey:"A", A:P("Perdant SF1"), B:P("Perdant SF2") },
       { kind:"match", cat:"DH", stage:"Finale", courtKey:"A", A:P("Gagnant SF1"), B:P("Gagnant SF2") },
     ];
 
-    const scheduledAll = (function(){
-      const keys = ["A","B"];
-      const courtAvail = new Map(keys.map(k => [k, startMin]));
-      const teamLastStart = new Map();
-
-      for(const it of scheduledPools){
-        const c = it.courtKey;
-        const end = (it.kind === "match")
-          ? (it.timeMin + MATCH_MIN + ROTATION_MIN)
-          : (it.kind === "block")
-            ? (it.timeMin + Number(it.durationMin||0))
-            : it.timeMin;
-
-        courtAvail.set(c, Math.max(courtAvail.get(c) ?? startMin, end));
-
-        if(it.kind === "match"){
-          teamLastStart.set(teamIdOf(it.A), it.timeMin);
-          teamLastStart.set(teamIdOf(it.B), it.timeMin);
-        }
-      }
-
-      function minStartForTeams(m){
-        if(m.kind !== "match") return startMin;
-        const aId = teamIdOf(m.A);
-        const bId = teamIdOf(m.B);
-
-        const aLast = teamLastStart.get(aId);
-        const bLast = teamLastStart.get(bId);
-
-        const aOk = (aLast === undefined) ? startMin : (aLast + MIN_GAP_SAME_TEAM_START);
-        const bOk = (bLast === undefined) ? startMin : (bLast + MIN_GAP_SAME_TEAM_START);
-
-        return Math.max(aOk, bOk);
-      }
-
-      const out = [...scheduledPools];
-
-      for(const p of finalsPlan){
-        const c = p.courtKey || "A";
-        const cOk = courtAvail.get(c) ?? startMin;
-        const tOk = (p.kind === "match") ? minStartForTeams(p) : startMin;
-        const forced = Number.isFinite(p.forceMinStart) ? Number(p.forceMinStart) : startMin;
-
-        const start = Math.max(cOk, tOk, forced);
-
-        if(p.kind === "match"){
-          courtAvail.set(c, start + MATCH_MIN + ROTATION_MIN);
-          teamLastStart.set(teamIdOf(p.A), start);
-          teamLastStart.set(teamIdOf(p.B), start);
-        } else if(p.kind === "block"){
-          const dur = Number(p.durationMin || 0);
-          courtAvail.set(c, start + Math.max(0, dur));
-        } else {
-          courtAvail.set(c, start);
-        }
-
-        out.push({ ...p, timeMin: start, time: fmtHHMM(start) });
-      }
-
-      out.sort((a,b)=>{
-        if(a.timeMin !== b.timeMin) return a.timeMin - b.timeMin;
-        return (a.courtKey||"").localeCompare(b.courtKey||"");
-      });
-
-      return out;
-    })();
+    // append finals on same court A
+    const scheduledAll = scheduleWithConstraints([...scheduledPools, ...finalsPlan], startMin, ["A"]);
 
     const slots = scheduledAll.map((x, idx)=>({
       slot: idx+1,
       time: x.time,
-      court: x.courtKey || "A",
+      court: "A",
       note: x.kind === "block" ? (x.note || "") : ""
     }));
 
@@ -649,17 +577,19 @@
         title: x.title || "",
         note: x.note || ""
       };
-      schedule[mid] = { slot: idx+1, court: x.courtKey || "A" };
+      schedule[mid] = { slot: idx+1, court: "A" };
     });
 
     return {
-      formatVersion: 1,
+      formatVersion: 2,
       cat: "DH",
       updatedAt: serverTimestamp(),
       createdAt: serverTimestamp(),
       courts: { ...COURTS_DEFAULT },
       meta: {
         startTime: START_TIME,
+        mode: "singleCourt",
+        fixedCourt: "A",
         timing: { MATCH_MIN, ROTATION_MIN, REST_AFTER_END_MIN, MIN_GAP_SAME_TEAM_START }
       },
       slots,
@@ -675,14 +605,15 @@
 
     const ddMatches = dd4MatchesLastTop2("Poule DD", top4);
 
+    // ✅ DD sur 1 terrain (B)
     const startMin = parseHHMM(START_TIME);
     const plan = ddMatches.map(m => ({ ...m, courtKey:"B" }));
-    const scheduled = scheduleWithConstraints(plan, startMin, ["A","B"]);
+    const scheduled = scheduleWithConstraints(plan, startMin, ["B"]);
 
     const slots = scheduled.map((x, idx)=>({
       slot: idx+1,
       time: x.time,
-      court: x.courtKey || "B",
+      court: "B",
       note: ""
     }));
 
@@ -699,17 +630,19 @@
         A: x.A || null,
         B: x.B || null
       };
-      schedule[mid] = { slot: idx+1, court: x.courtKey || "B" };
+      schedule[mid] = { slot: idx+1, court: "B" };
     });
 
     return {
-      formatVersion: 1,
+      formatVersion: 2,
       cat: "DD",
       updatedAt: serverTimestamp(),
       createdAt: serverTimestamp(),
       courts: { ...COURTS_DEFAULT },
       meta: {
         startTime: START_TIME,
+        mode: "singleCourt",
+        fixedCourt: "B",
         timing: { MATCH_MIN, ROTATION_MIN, REST_AFTER_END_MIN, MIN_GAP_SAME_TEAM_START }
       },
       slots,
@@ -725,12 +658,12 @@
   function normalizeEntry(entry, slotObj){
     if(typeof entry === "number"){
       const slot = Number(entry);
-      const court = slotObj?.court || (slot % 2 === 1 ? "A" : "B");
+      const court = slotObj?.court || "A";
       return { slot, court };
     }
     if(entry && typeof entry === "object"){
       const slot = Number(entry.slot);
-      const court = entry.court || slotObj?.court || (slot % 2 === 1 ? "A" : "B");
+      const court = entry.court || slotObj?.court || "A";
       return { slot, court };
     }
     const fallbackSlot = Number(slotObj?.slot || 1);
@@ -754,9 +687,7 @@
             <div class="m-court">${esc(courtLabel(courts, courtKey))}</div>
             <div class="m-tag">⏳ Bloc</div>
             <div class="actions">
-              <button class="btnx" data-act="court" data-mid="${esc(mid)}" title="Changer de terrain">
-                ${courtKey === "A" ? "🐝" : "🌶️"}
-              </button>
+              <button class="btnx" data-act="court" data-mid="${esc(mid)}" title="Changer de terrain">${courtKey === "A" ? "🐝" : "🌶️"}</button>
               <button class="btnx" data-act="up" data-slot="${esc(slotObj.slot)}" ${slotObj.slot<=1 ? "disabled":""}>↑</button>
               <button class="btnx" data-act="down" data-slot="${esc(slotObj.slot)}" ${slotObj.slot>=prog.slots.length ? "disabled":""}>↓</button>
             </div>
@@ -781,9 +712,7 @@
           <div class="m-tag">${esc(m.cat)} · ${esc(m.stage || "")}</div>
 
           <div class="actions">
-            <button class="btnx" data-act="court" data-mid="${esc(mid)}" title="Changer de terrain">
-              ${courtKey === "A" ? "🐝" : "🌶️"}
-            </button>
+            <button class="btnx" data-act="court" data-mid="${esc(mid)}" title="Changer de terrain">${courtKey === "A" ? "🐝" : "🌶️"}</button>
             <button class="btnx" data-act="up" data-slot="${esc(slotObj.slot)}" ${slotObj.slot<=1 ? "disabled":""}>↑</button>
             <button class="btnx" data-act="down" data-slot="${esc(slotObj.slot)}" ${slotObj.slot>=prog.slots.length ? "disabled":""}>↓</button>
           </div>
@@ -805,7 +734,7 @@
   }
 
   function renderProgInto(prog, box, statusEl){
-    if(!prog){
+    if(!prog || !prog.slots || !prog.matches || !prog.schedule){
       box.innerHTML = `<p class="muted" style="margin:0;">Aucune programmation. Génère-la ci-dessus.</p>`;
       statusEl.textContent = "—";
       return;
@@ -903,13 +832,12 @@
     panelDH.style.display = isDH ? "block" : "none";
     panelDD.style.display = isDH ? "none" : "block";
   }
-
   tabDH.onclick = (e)=>{ e.preventDefault(); setTab("dh"); };
   tabDD.onclick = (e)=>{ e.preventDefault(); setTab("dd"); };
   setTab("dh");
 
   // ============================================================
-  // BUTTONS: GENERATE / RESET (DH & DD)
+  // BUTTONS
   // ============================================================
   btnGenDH.onclick = async (e)=>{
     e.preventDefault();
@@ -940,7 +868,7 @@
     dhStatus.textContent = "Réinitialisation…";
     try{
       await setDoc(refProgDH(), {
-        formatVersion: 1,
+        formatVersion: 2,
         cat: "DH",
         courts: { ...COURTS_DEFAULT },
         slots: [],
@@ -952,8 +880,8 @@
       dhStatus.textContent = "✅ DH réinitialisé.";
     }catch(err){
       console.error(err);
-      dhStatus.textContent = "❌ Erreur";
-      alert("Erreur ❌");
+      dhStatus.textContent = "❌ " + (err?.message || "Erreur");
+      alert("Erreur ❌\n\n" + (err?.message || "Impossible."));
     }finally{
       btnResetDH.disabled = false;
     }
@@ -983,7 +911,7 @@
     ddStatus.textContent = "Réinitialisation…";
     try{
       await setDoc(refProgDD(), {
-        formatVersion: 1,
+        formatVersion: 2,
         cat: "DD",
         courts: { ...COURTS_DEFAULT },
         slots: [],
@@ -995,8 +923,8 @@
       ddStatus.textContent = "✅ DD réinitialisé.";
     }catch(err){
       console.error(err);
-      ddStatus.textContent = "❌ Erreur";
-      alert("Erreur ❌");
+      ddStatus.textContent = "❌ " + (err?.message || "Erreur");
+      alert("Erreur ❌\n\n" + (err?.message || "Impossible."));
     }finally{
       btnResetDD.disabled = false;
     }
@@ -1035,8 +963,8 @@
         statusEl.textContent = "✅ OK";
       }catch(err){
         console.error(err);
-        statusEl.textContent = "❌ Erreur";
-        alert("Erreur ❌");
+        statusEl.textContent = "❌ " + (err?.message || "Erreur");
+        alert("Erreur ❌\n\n" + (err?.message || "Impossible."));
       }
     });
   }
@@ -1099,7 +1027,7 @@
       renderProgInto(progDH, dhList, dhStatus);
     }, (err)=>{
       console.error(err);
-      dhStatus.textContent = "❌ Erreur Firestore (DH)";
+      dhStatus.textContent = `❌ Erreur Firestore (DH) : ${err?.code || ""} ${err?.message || ""}`.trim();
     });
 
     unsubProgDD = onSnapshot(refProgDD(), (snap)=>{
@@ -1107,7 +1035,7 @@
       renderProgInto(progDD, ddList, ddStatus);
     }, (err)=>{
       console.error(err);
-      ddStatus.textContent = "❌ Erreur Firestore (DD)";
+      ddStatus.textContent = `❌ Erreur Firestore (DD) : ${err?.code || ""} ${err?.message || ""}`.trim();
     });
   }
 
@@ -1118,17 +1046,17 @@
   };
 
   onAuthStateChanged(auth, async (user)=>{
-  if(!user){ showDenied(); return; }
+    if(!user){ showDenied(); return; }
 
-  try{
-    const role = await getRoleByEmail(user.email);
-    if(role !== "admin"){ showDenied(); return; }
-    showAdmin();
-  }catch(err){
-    console.error(err);
-    showDenied();
-  }
-});
+    try{
+      const role = await getRoleByEmail(user.email);
+      if(role !== "admin"){ showDenied(); return; }
+      showAdmin();
+    }catch(err){
+      console.error(err);
+      showDenied();
+    }
+  });
 </script>
 
 </body>
