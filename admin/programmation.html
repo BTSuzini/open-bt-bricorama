@@ -7,12 +7,13 @@
   <link rel="stylesheet" href="../assets/css/main.css?v=20260227-admin-open-prog-v1" />
 
   <style>
-    /* ✅ Onglet actif noir/blanc */
+    /* ✅ Onglet actif (nav + tabs) */
+    .nav a[aria-current="page"],
     .btn.is-active{
-      background:#111 !important;
-      border-color:#111 !important;
-      color:#fff !important;
-      box-shadow: 0 10px 22px rgba(0,0,0,.18);
+      background: rgba(17,17,17,.10) !important;
+      border-color: rgba(17,17,17,.25) !important;
+      box-shadow: 0 10px 22px rgba(0,0,0,.10);
+      font-weight: 1000 !important;
     }
 
     .match-list{ display:flex; flex-direction:column; gap:14px; }
@@ -152,8 +153,17 @@
       </div>
     </div>
 
+    <!-- ✅ Bandeau nav identique à admin/equipes + onglet actif -->
     <nav class="nav nav-step">
       <a href="../index.html">🏠 Accueil public</a>
+
+      <a href="index.html?scope=general">📰 Infos</a>
+      <a href="equipes.html?scope=dh">👥 Équipes</a>
+      <a href="inscriptions.html?scope=dh">📝 Inscriptions</a>
+      <a href="tirage.html?scope=dh">🎲 Tirage</a>
+      <a href="resultats.html?scope=dh">✅ Résultats</a>
+      <a href="programmation.html" aria-current="page">🗓️ Programmation</a>
+
       <a href="#" id="btnLogout">🚪 Déconnexion</a>
     </nav>
   </div>
@@ -482,7 +492,6 @@
 
       const tOk = (p.kind === "match") ? minStartForTeams(p) : startMin;
 
-      // optional forced start
       const forced = Number.isFinite(p.forceMinStart) ? Number(p.forceMinStart) : startMin;
 
       const start = Math.max(cOk, tOk, forced);
@@ -521,28 +530,24 @@
     const kouMatches  = rr3Matches("Kourou", kou);
 
     const plan = [];
-    // first 2 matches each pool in parallel (A/B)
     for(let i=0;i<2;i++){
       if(montMatches[i]) plan.push({ ...montMatches[i], courtKey:"A" });
       if(kouMatches[i])  plan.push({ ...kouMatches[i],  courtKey:"B" });
     }
-    // last match each pool on SAME terrain A
     if(montMatches[2]) plan.push({ ...montMatches[2], courtKey:"A" });
     if(kouMatches[2])  plan.push({ ...kouMatches[2],  courtKey:"A" });
 
     const startMin = parseHHMM(START_TIME);
     const scheduledPools = scheduleWithConstraints(plan, startMin, ["A","B"]);
 
-    // worst-case start for SF1 = last pool M3 start + 80
     const lastPoolM3 = scheduledPools
-      .filter(x => x.kind==="match" && x.cat==="DH" && /\\(M3\\)/.test(x.stage) && x.courtKey==="A")
+      .filter(x => x.kind==="match" && x.cat==="DH" && /\(M3\)/.test(x.stage) && x.courtKey==="A")
       .sort((a,b)=>a.timeMin-b.timeMin)
       .at(-1);
 
     const lastPoolStart = lastPoolM3 ? lastPoolM3.timeMin : startMin;
     const sfEarliest = lastPoolStart + MIN_GAP_SAME_TEAM_START;
 
-    // finals (all on A)
     const finalsPlan = [
       { kind:"block", cat:"DH", stage:"⏳ Pause / attente (hypothèse défavorable)", courtKey:"A", title:"⏳ Pause / attente", note:"On garantit 30 min de repos après le dernier match de poule avant la 1/2", durationMin:0, forceMinStart: sfEarliest },
 
@@ -554,9 +559,7 @@
       { kind:"match", cat:"DH", stage:"Finale", courtKey:"A", A:P("Gagnant SF1"), B:P("Gagnant SF2") },
     ];
 
-    // schedule finals after pools, carrying constraints from pools
     const scheduledAll = (function(){
-      // seed maps from existing scheduledPools
       const keys = ["A","B"];
       const courtAvail = new Map(keys.map(k => [k, startMin]));
       const teamLastStart = new Map();
@@ -623,7 +626,6 @@
       return out;
     })();
 
-    // build slots + matches + schedule map
     const slots = scheduledAll.map((x, idx)=>({
       slot: idx+1,
       time: x.time,
@@ -672,8 +674,6 @@
 
     const ddMatches = dd4MatchesLastTop2("Poule DD", top4);
 
-    // Reprise de ton principe : DD joue sur B par défaut.
-    // (L’ordre/terrain restera modifiable avec les boutons.)
     const startMin = parseHHMM(START_TIME);
     const plan = ddMatches.map(m => ({ ...m, courtKey:"B" }));
     const scheduled = scheduleWithConstraints(plan, startMin, ["A","B"]);
@@ -722,7 +722,6 @@
   // RENDER LISTS (admin)
   // ============================================================
   function normalizeEntry(entry, slotObj){
-    // entry can be {slot,court} or number
     if(typeof entry === "number"){
       const slot = Number(entry);
       const court = slotObj?.court || (slot % 2 === 1 ? "A" : "B");
@@ -815,7 +814,6 @@
     const schedule = prog.schedule || {};
     const matches = prog.matches || {};
 
-    // slot -> mid (1 match per slot)
     const slotToMatch = new Map();
     for(const [mid, entry] of Object.entries(schedule)){
       const slotNum = (typeof entry === "number") ? Number(entry) : Number(entry?.slot);
@@ -1072,14 +1070,10 @@
 
     liveStatus.textContent = "🟢 En direct (tirage + équipes + programmations)";
 
-    // DH draw
     unsubDraw = onSnapshot(refDrawDH(), (snap)=>{
       dhDraw = snap.exists() ? (snap.data() || {}) : null;
-    }, (err)=>{
-      console.error(err);
-    });
+    }, (err)=>{ console.error(err); });
 
-    // DD teams
     unsubDD = onSnapshot(qDDTeams(), (snap)=>{
       const rows = [];
       snap.forEach(d=>{
@@ -1097,11 +1091,8 @@
         });
       });
       ddTeams = rows;
-    }, (err)=>{
-      console.error(err);
-    });
+    }, (err)=>{ console.error(err); });
 
-    // prog DH
     unsubProgDH = onSnapshot(refProgDH(), (snap)=>{
       progDH = snap.exists() ? (snap.data() || {}) : null;
       renderProgInto(progDH, dhList, dhStatus);
@@ -1110,7 +1101,6 @@
       dhStatus.textContent = "❌ Erreur Firestore (DH)";
     });
 
-    // prog DD
     unsubProgDD = onSnapshot(refProgDD(), (snap)=>{
       progDD = snap.exists() ? (snap.data() || {}) : null;
       renderProgInto(progDD, ddList, ddStatus);
