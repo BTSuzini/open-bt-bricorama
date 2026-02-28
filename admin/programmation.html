@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin — Programmation (Open BT)</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260228-admin-open-prog-v2" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260228-admin-open-prog-v3-dd-seedlast" />
 
   <style>
     .nav a[aria-current="page"],
@@ -199,7 +199,7 @@
           <button class="btn" id="btnResetDD" style="font-weight:950; color:#111;">🧨 Réinitialiser DD</button>
         </div>
         <p class="hint muted">
-          Génère la poule DD à 4 (Top 4 classées) avec <b>#1 vs #2 en dernier</b>, à <b>partir de 15h15</b>, sur <b>1 terrain (B)</b>.<br>
+          Génère la poule DD avec <b>toutes les équipes “classées”</b> (liste principale + ranks) et impose <b>#1 vs #2 en dernier</b>, à <b>partir de 15h15</b>, sur <b>1 terrain (B)</b>.<br>
           Réinitialiser = vide totalement la programmation DD.
         </p>
       </div>
@@ -253,6 +253,8 @@
     B: "court Lisa de Los Pimentos"
   };
 
+  const MAX_MAIN = 10; // liste principale
+
   // ============================================================
   // DOM
   // ============================================================
@@ -281,7 +283,7 @@
   const refDrawDH = () => doc(db, "tirages_open", "dh");
   const refProgDH = () => doc(db, "programmations_open", "dh");
   const refProgDD = () => doc(db, "programmations_open", "dd");
-  const qDDTeams = () => query(collection(db, "equipes_dd_public"), orderBy("createdAt", "asc"));
+  const qDDTeams  = () => query(collection(db, "equipes_dd_public"), orderBy("createdAt", "asc"));
 
   // ============================================================
   // STATE
@@ -388,14 +390,14 @@
   }
 
   // ============================================================
-  // DD Top 4
+  // DD — LISTE PRINCIPALE + "CLASSÉES"
+  // - même logique que ta page dd/equipes (main list)
+  // - "classées" = main list + ranks présents + pas stby
   // ============================================================
-  function computeDdTop4(rows){
-    const MAX_MAIN = 10;
-
+  function computeDdMainList(rows){
     const all = [...rows].sort((a,b)=> (a.createdAtMs||0) - (b.createdAtMs||0));
     const forcedMain = all.filter(r => r.list === "main");
-    const auto = all.filter(r => !r.list);
+    const auto       = all.filter(r => !r.list);
 
     const main = [];
     const used = new Set();
@@ -407,18 +409,24 @@
       if(main.length >= MAX_MAIN) break;
       if(!used.has(r.id)){ main.push(r); used.add(r.id); }
     }
+    return main;
+  }
 
-    const ranked = [...main];
+  function computeDdRankedAll(rows){
+    const main = computeDdMainList(rows);
+
+    const ranked = main
+      .filter(r => !r.stby)
+      .filter(r => teamRank(r) !== null);
+
     ranked.sort((a,b)=>{
-      const at = teamRank(a);
-      const bt = teamRank(b);
-      const aa = (at === null ? Number.POSITIVE_INFINITY : at);
-      const bb = (bt === null ? Number.POSITIVE_INFINITY : bt);
-      if(aa !== bb) return aa - bb;
+      const aa = teamRank(a);
+      const bb = teamRank(b);
+      if(aa !== bb) return aa - bb; // meilleur (plus petit) = tête de série
       return (a.createdAtMs||0) - (b.createdAtMs||0);
     });
 
-    return ranked.slice(0,4);
+    return ranked;
   }
 
   // ============================================================
@@ -434,25 +442,42 @@
     ];
   }
 
-  function dd4MatchesLastTop2(label, teams4){
-    const t = teams4;
-    if(!t || t.length < 4) return [];
-    const pairs = [
-      [0,3], // 1v4
-      [1,2], // 2v3
-      [0,2], // 1v3
-      [1,3], // 2v4
-      [2,3], // 3v4
-      [0,1], // 1v2 last
-    ];
-    return pairs.map((p,i)=>({
+  // ✅ Round-robin N équipes, avec contrainte: #1 vs #2 en dernier
+  function rrMatchesSeedLast(label, teams){
+    const out = [];
+    const n = teams.length;
+    if(n < 2) return out;
+
+    // indices tête de série: 0 et 1 (déjà triées par teamRank asc)
+    const iSeedA = 0;
+    const iSeedB = 1;
+
+    // génère tous les matchs sauf seed1 vs seed2
+    for(let i=0;i<n;i++){
+      for(let j=i+1;j<n;j++){
+        const isSeedMatch = (i === iSeedA && j === iSeedB);
+        if(isSeedMatch) continue;
+        out.push({
+          kind:"match",
+          cat:"DD",
+          stage:`${label} (M${out.length+1})`,
+          A: teams[i],
+          B: teams[j],
+        });
+      }
+    }
+
+    // ajoute seed1 vs seed2 en dernier
+    out.push({
       kind:"match",
       cat:"DD",
-      stage:`${label} (M${i+1})`,
-      A:t[p[0]],
-      B:t[p[1]],
-      isLast: (i === pairs.length - 1)
-    }));
+      stage:`${label} (M${out.length+1}) — 🔥 #1 vs #2`,
+      A: teams[iSeedA],
+      B: teams[iSeedB],
+      isLast:true
+    });
+
+    return out;
   }
 
   function P(name){
@@ -514,8 +539,6 @@
 
   // ============================================================
   // BUILD PROGRAMMATIONS
-  // - DH: 1 seul terrain A dès 15h15 (poules + classement)
-  // - DD: 1 seul terrain B dès 15h15 (poule top4)
   // ============================================================
   function buildProgDHFromDraw(draw){
     const pools = computeDhPools(draw);
@@ -525,7 +548,6 @@
     const montMatches = rr3Matches("Montjoly", mont);
     const kouMatches  = rr3Matches("Kourou", kou);
 
-    // ✅ DH sur 1 terrain (A) : tout en séquentiel
     const planPools = [
       ...montMatches.map(m => ({ ...m, courtKey:"A" })),
       ...kouMatches.map(m  => ({ ...m, courtKey:"A" })),
@@ -534,7 +556,6 @@
     const startMin = parseHHMM(START_TIME);
     const scheduledPools = scheduleWithConstraints(planPools, startMin, ["A"]);
 
-    // last pool match start on A
     const lastPool = scheduledPools
       .filter(x => x.kind==="match" && x.cat==="DH" && /\(M3\)/.test(x.stage))
       .sort((a,b)=>a.timeMin-b.timeMin)
@@ -552,7 +573,6 @@
       { kind:"match", cat:"DH", stage:"Finale", courtKey:"A", A:P("Gagnant SF1"), B:P("Gagnant SF2") },
     ];
 
-    // append finals on same court A
     const scheduledAll = scheduleWithConstraints([...scheduledPools, ...finalsPlan], startMin, ["A"]);
 
     const slots = scheduledAll.map((x, idx)=>({
@@ -600,10 +620,17 @@
   }
 
   function buildProgDDFromTeams(rows){
-    const top4 = computeDdTop4(rows);
-    if(top4.length < 4) throw new Error("Pas assez d’équipes DD (il faut 4 équipes).");
+    const ranked = computeDdRankedAll(rows);
 
-    const ddMatches = dd4MatchesLastTop2("Poule DD", top4);
+    if(ranked.length < 3){
+      throw new Error("Pas assez d’équipes DD classées (min 3) dans la liste principale (MAIN + ranks).");
+    }
+    if(ranked.length < 2){
+      throw new Error("Il faut au moins 2 équipes classées pour imposer #1 vs #2 en dernier.");
+    }
+
+    // ✅ Round robin avec contrainte seed1 vs seed2 dernier
+    const ddMatches = rrMatchesSeedLast("Poule DD", ranked);
 
     // ✅ DD sur 1 terrain (B)
     const startMin = parseHHMM(START_TIME);
@@ -628,7 +655,8 @@
         cat: "DD",
         stage: x.stage || "",
         A: x.A || null,
-        B: x.B || null
+        B: x.B || null,
+        isLast: x.isLast === true
       };
       schedule[mid] = { slot: idx+1, court: "B" };
     });
@@ -643,12 +671,16 @@
         startTime: START_TIME,
         mode: "singleCourt",
         fixedCourt: "B",
-        timing: { MATCH_MIN, ROTATION_MIN, REST_AFTER_END_MIN, MIN_GAP_SAME_TEAM_START }
+        timing: { MATCH_MIN, ROTATION_MIN, REST_AFTER_END_MIN, MIN_GAP_SAME_TEAM_START },
+        dd: {
+          rankedCount: ranked.length,
+          lastMatchRule: "#1 vs #2"
+        }
       },
       slots,
       matches,
       schedule,
-      source: { ddCollection: "equipes_dd_public" }
+      source: { ddCollection: "equipes_dd_public", ddRule: "main+rankedOnly" }
     };
   }
 
@@ -894,7 +926,7 @@
     try{
       const payload = buildProgDDFromTeams(ddTeams);
       await setDoc(refProgDD(), payload, { merge:true });
-      ddStatus.textContent = "✅ DD généré.";
+      ddStatus.textContent = "✅ DD généré (seed1 vs seed2 en dernier).";
     }catch(err){
       console.error(err);
       ddStatus.textContent = "❌ " + (err?.message || "Erreur");
