@@ -3,179 +3,558 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
   <title>Open BT Bricorama</title>
 
-  <link rel="stylesheet" href="assets/css/main.css?v=20260228-home" />
+  <link rel="stylesheet" href="assets/css/main.css?v=20260401-home-modern" />
+
+  <style>
+    :root{
+      --bg: #f6f7f9;
+      --card: #ffffff;
+      --text: #1d2733;
+      --muted: #667085;
+      --border: rgba(16,24,40,.08);
+      --shadow: 0 10px 30px rgba(16,24,40,.08);
+
+      --brico-yellow: #ffd400;
+      --brico-yellow-dark: #f0c400;
+      --green: #1f7a3a;
+      --green-dark: #16602d;
+      --blue-dark: #16324a;
+      --danger: #c62828;
+      --danger-dark: #9f1f1f;
+
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+      --radius-sm: 12px;
+
+      --container: 1120px;
+    }
+
+    *{ box-sizing:border-box; }
+
+    html, body{
+      margin:0;
+      padding:0;
+      background:
+        radial-gradient(circle at top left, rgba(255,212,0,.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(31,122,58,.10), transparent 24%),
+        var(--bg);
+      color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    img{
+      max-width:100%;
+      display:block;
+    }
+
+    .container{
+      width:min(var(--container), calc(100% - 28px));
+      margin:0 auto;
+    }
+
+    .hero-wrap{
+      padding:18px 0 10px;
+    }
+
+    .hero{
+      position:relative;
+      overflow:hidden;
+      border-radius:30px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.14), rgba(255,255,255,.02)),
+        linear-gradient(135deg, var(--brico-yellow) 0%, #ffe14d 50%, var(--brico-yellow-dark) 100%);
+      box-shadow:0 18px 40px rgba(255,212,0,.22);
+      border:1px solid rgba(0,0,0,.05);
+      padding:20px 18px 22px;
+    }
+
+    .hero::before,
+    .hero::after{
+      content:"";
+      position:absolute;
+      border-radius:999px;
+      background:rgba(255,255,255,.18);
+      pointer-events:none;
+    }
+
+    .hero::before{
+      width:220px;
+      height:220px;
+      top:-80px;
+      right:-60px;
+    }
+
+    .hero::after{
+      width:140px;
+      height:140px;
+      bottom:-50px;
+      left:-30px;
+    }
+
+    .hero-top{
+      display:grid;
+      grid-template-columns:72px 1fr 72px;
+      align-items:center;
+      gap:12px;
+      position:relative;
+      z-index:1;
+    }
+
+    .hero-logo{
+      width:72px;
+      height:72px;
+      background:rgba(255,255,255,.28);
+      border:1px solid rgba(255,255,255,.35);
+      border-radius:20px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      backdrop-filter:blur(6px);
+      padding:8px;
+    }
+
+    .hero-logo img{
+      max-width:100%;
+      max-height:100%;
+      object-fit:contain;
+    }
+
+    .hero-center{
+      text-align:center;
+    }
+
+    .hero-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,.35);
+      border:1px solid rgba(255,255,255,.45);
+      font-size:13px;
+      font-weight:700;
+      color:#5c4b00;
+      margin-bottom:10px;
+      backdrop-filter:blur(6px);
+    }
+
+    .hero h1{
+      margin:0;
+      font-size:clamp(28px, 5vw, 46px);
+      line-height:1.02;
+      letter-spacing:-0.03em;
+      color:#15202b;
+    }
+
+    .hero-subtitle{
+      margin:10px auto 0;
+      max-width:700px;
+      font-size:clamp(14px, 2.4vw, 17px);
+      line-height:1.5;
+      color:#3f4a54;
+      font-weight:600;
+    }
+
+    .hero-pills{
+      position:relative;
+      z-index:1;
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:10px;
+      margin-top:18px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:10px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,.72);
+      border:1px solid rgba(255,255,255,.8);
+      color:#26323d;
+      font-size:14px;
+      font-weight:700;
+      backdrop-filter:blur(6px);
+    }
+
+    main{
+      padding:18px 0 32px;
+    }
+
+    .page-grid{
+      display:grid;
+      gap:18px;
+    }
+
+    .section-card{
+      background:rgba(255,255,255,.9);
+      backdrop-filter:blur(10px);
+      border:1px solid var(--border);
+      border-radius:var(--radius-xl);
+      box-shadow:var(--shadow);
+      padding:20px;
+    }
+
+    .section-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:16px;
+    }
+
+    .section-title{
+      margin:0;
+      font-size:22px;
+      line-height:1.15;
+      letter-spacing:-0.02em;
+    }
+
+    .section-text{
+      margin:8px 0 0;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.55;
+    }
+
+    .section-tag{
+      flex-shrink:0;
+      padding:8px 12px;
+      border-radius:999px;
+      background:#f3f4f6;
+      color:#344054;
+      font-size:12px;
+      font-weight:800;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+    }
+
+    .action-grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:14px;
+    }
+
+    .action-btn{
+      position:relative;
+      overflow:hidden;
+      min-height:88px;
+      border-radius:20px;
+      padding:18px 18px 16px;
+      color:#fff;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:6px;
+      box-shadow:0 12px 24px rgba(16,24,40,.12);
+      transition:transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+    }
+
+    .action-btn::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:linear-gradient(135deg, rgba(255,255,255,.15), rgba(255,255,255,0));
+      pointer-events:none;
+    }
+
+    .action-btn:hover{
+      transform:translateY(-2px);
+      box-shadow:0 16px 28px rgba(16,24,40,.16);
+    }
+
+    .action-btn .emoji{
+      font-size:24px;
+      line-height:1;
+      position:relative;
+      z-index:1;
+    }
+
+    .action-btn .label{
+      font-size:18px;
+      font-weight:800;
+      line-height:1.15;
+      position:relative;
+      z-index:1;
+    }
+
+    .action-btn .sub{
+      font-size:14px;
+      opacity:.92;
+      line-height:1.35;
+      position:relative;
+      z-index:1;
+    }
+
+    .btn-dh{
+      background:linear-gradient(135deg, #1f7a3a, #23934a);
+    }
+
+    .btn-dd{
+      background:linear-gradient(135deg, #16324a, #23506f);
+    }
+
+    .btn-admin{
+      background:linear-gradient(135deg, #2d3748, #111827);
+    }
+
+    .btn-jat{
+      background:linear-gradient(135deg, #7c3aed, #5b21b6);
+    }
+
+    .btn-logout{
+      background:linear-gradient(135deg, var(--danger), var(--danger-dark));
+    }
+
+    .status-box{
+      margin-top:16px;
+      padding:14px 16px;
+      border-radius:16px;
+      background:#f8fafc;
+      border:1px solid rgba(16,24,40,.06);
+      color:#475467;
+      font-size:14px;
+      line-height:1.5;
+    }
+
+    .status-box strong{
+      color:#1d2733;
+    }
+
+    @media (min-width: 760px){
+      .action-grid.two{
+        grid-template-columns:1fr 1fr;
+      }
+
+      .action-grid.three{
+        grid-template-columns:1fr 1fr 1fr;
+      }
+
+      .section-card{
+        padding:24px;
+      }
+
+      .hero{
+        padding:24px 24px 26px;
+      }
+
+      .hero-top{
+        grid-template-columns:88px 1fr 88px;
+      }
+
+      .hero-logo{
+        width:88px;
+        height:88px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<header class="topbar">
-  <div class="container">
+  <div class="hero-wrap">
+    <header class="container">
+      <section class="hero">
+        <div class="hero-top">
+          <div class="hero-logo">
+            <img src="assets/img/logo-suzini.png" alt="TC Suzini">
+          </div>
 
-    <div class="topbar-row">
-      <div class="brand-logo">
-        <img src="assets/img/logo-suzini.png" alt="TC Suzini">
-      </div>
+          <div class="hero-center">
+            <div class="hero-badge">🏖️ Tournoi officiel de beach tennis</div>
+            <h1>Open BT Bricorama</h1>
+            <p class="hero-subtitle">
+              Accédez au tournoi, aux tableaux et aux espaces d’organisation
+              depuis une interface plus claire, plus moderne et pensée pour mobile.
+            </p>
+          </div>
 
-      <div class="brand-title">
-        <strong>🏖️ Open BT Bricorama</strong>
-      </div>
+          <div class="hero-logo">
+            <img src="assets/img/logo-openbt.png" alt="Open BT">
+          </div>
+        </div>
 
-      <div class="brand-logo">
-        <img src="assets/img/logo-openbt.png" alt="Open BT">
-      </div>
-    </div>
-
+        <div class="hero-pills">
+          <span class="pill">🎾 Double Hommes</span>
+          <span class="pill">🎾 Double Dames</span>
+          <span class="pill">🔐 Admin & JAT</span>
+        </div>
+      </section>
+    </header>
   </div>
-</header>
 
-<main class="container">
+  <main class="container">
+    <div class="page-grid">
 
-  <!-- ========================= -->
-  <!-- ACCÈS TOURNOI -->
-  <!-- ========================= -->
-  <section class="card">
-    <h2>🎾 Accès tournoi</h2>
+      <!-- ACCÈS TOURNOI -->
+      <section class="section-card">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">🎾 Entrer dans le tournoi</h2>
+            <p class="section-text">
+              Choisissez votre tableau pour accéder aux pages dédiées du tournoi.
+            </p>
+          </div>
+          <div class="section-tag">Tournoi</div>
+        </div>
 
-    <div class="grid">
-      <a class="btn" href="dh/index.html">🎾 Double Hommes</a>
-      <a class="btn" href="dd/index.html">🎾 Double Dames</a>
+        <div class="action-grid two">
+          <a class="action-btn btn-dh" href="dh/index.html">
+            <span class="emoji">🎾</span>
+            <span class="label">Double Hommes</span>
+            <span class="sub">Accéder à l’espace DH</span>
+          </a>
+
+          <a class="action-btn btn-dd" href="dd/index.html">
+            <span class="emoji">🎾</span>
+            <span class="label">Double Dames</span>
+            <span class="sub">Accéder à l’espace DD</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- ACCÈS ORGANISATEURS -->
+      <section class="section-card">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">🔐 Espace organisateurs</h2>
+            <p class="section-text">
+              Connexion sécurisée pour l’administration générale, le suivi JAT et la gestion de session.
+            </p>
+          </div>
+          <div class="section-tag">Sécurisé</div>
+        </div>
+
+        <div class="action-grid three">
+          <a class="action-btn btn-admin" href="#" id="btnAdmin">
+            <span class="emoji">🛠️</span>
+            <span class="label">Mode Admin</span>
+            <span class="sub">Gestion complète du tournoi</span>
+          </a>
+
+          <a class="action-btn btn-jat" href="#" id="btnJAT">
+            <span class="emoji">🎾</span>
+            <span class="label">Espace JAT</span>
+            <span class="sub">Accès arbitre / juge-arbitre</span>
+          </a>
+
+          <a class="action-btn btn-logout" href="#" id="btnLogout">
+            <span class="emoji">🚪</span>
+            <span class="label">Déconnexion</span>
+            <span class="sub">Fermer la session en cours</span>
+          </a>
+        </div>
+
+        <div class="status-box">
+          <strong>Statut :</strong>
+          <span id="authHint">Vérification de la connexion…</span>
+        </div>
+      </section>
+
     </div>
-  </section>
+  </main>
 
-  <!-- ========================= -->
-  <!-- ACCÈS ORGANISATEURS -->
-  <!-- ========================= -->
-  <section class="card">
-    <h2>🔐 Accès organisateurs</h2>
+  <script type="module">
+    import { auth } from "./assets/js/firebase.js";
+    import { loginAndRedirect, logout, getRoleByEmail }
+      from "./assets/js/session.js";
 
-    <div class="grid">
+    import {
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
-      <a class="btn" href="#" id="btnAdmin">
-        🛠️ Mode Admin
-      </a>
+    const btnAdmin  = document.getElementById("btnAdmin");
+    const btnJAT    = document.getElementById("btnJAT");
+    const btnLogout = document.getElementById("btnLogout");
+    const hint      = document.getElementById("authHint");
 
-      <a class="btn" href="#" id="btnJAT">
-        🎾 Espace JAT
-      </a>
+    /* =====================================================
+       ADMIN
+    ===================================================== */
+    btnAdmin.onclick = async (e) => {
+      e.preventDefault();
 
-      <a class="btn" href="#" id="btnLogout">
-        🚪 Déconnexion
-      </a>
+      if (!auth.currentUser) {
+        await loginAndRedirect();
+      }
 
-    </div>
+      const u = auth.currentUser;
+      if (!u) {
+        alert("Connexion annulée.");
+        return;
+      }
 
-    <p class="muted" id="authHint" style="margin-top:10px;">
-      Accès sécurisé organisateurs.
-    </p>
-  </section>
+      const role = await getRoleByEmail(u.email);
 
-</main>
+      if (role !== "admin") {
+        alert("Accès réservé aux administrateurs.");
+        return;
+      }
 
-<!-- ================================================= -->
-<!-- FIREBASE -->
-<!-- ================================================= -->
-<script type="module">
+      window.location.href = "admin/index.html?scope=general";
+    };
 
-import { auth } from "./assets/js/firebase.js";
-import { loginAndRedirect, logout, getRoleByEmail }
-  from "./assets/js/session.js";
+    /* =====================================================
+       JAT
+    ===================================================== */
+    btnJAT.onclick = async (e) => {
+      e.preventDefault();
 
-import {
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+      if (!auth.currentUser) {
+        await loginAndRedirect();
+      }
 
+      const u = auth.currentUser;
+      if (!u) {
+        alert("Connexion annulée.");
+        return;
+      }
 
-const btnAdmin = document.getElementById("btnAdmin");
-const btnJAT   = document.getElementById("btnJAT");
-const btnLogout = document.getElementById("btnLogout");
-const hint = document.getElementById("authHint");
+      const role = await getRoleByEmail(u.email);
 
+      if (role !== "admin" && role !== "jat") {
+        alert("Accès réservé JAT.");
+        return;
+      }
 
-/* =====================================================
-   ADMIN
-===================================================== */
-btnAdmin.onclick = async (e)=>{
-  e.preventDefault();
+      window.location.href = "jat/index.html";
+    };
 
-  if(!auth.currentUser){
-    await loginAndRedirect();
-  }
+    /* =====================================================
+       LOGOUT
+    ===================================================== */
+    btnLogout.onclick = async (e) => {
+      e.preventDefault();
+      await logout();
+    };
 
-  const u = auth.currentUser;
-  if(!u){
-    alert("Connexion annulée.");
-    return;
-  }
+    /* =====================================================
+       STATUS USER
+    ===================================================== */
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        hint.textContent = "Non connecté.";
+        return;
+      }
 
-  const role = await getRoleByEmail(u.email);
-
-  if(role !== "admin"){
-    alert("Accès réservé aux administrateurs.");
-    return;
-  }
-
-  window.location.href = "admin/index.html?scope=general";
-};
-
-
-/* =====================================================
-   JAT
-===================================================== */
-btnJAT.onclick = async (e)=>{
-  e.preventDefault();
-
-  if(!auth.currentUser){
-    await loginAndRedirect();
-  }
-
-  const u = auth.currentUser;
-  if(!u){
-    alert("Connexion annulée.");
-    return;
-  }
-
-  const role = await getRoleByEmail(u.email);
-
-  if(role !== "admin" && role !== "jat"){
-    alert("Accès réservé JAT.");
-    return;
-  }
-
-  window.location.href = "jat/index.html";
-};
-
-
-/* =====================================================
-   LOGOUT
-===================================================== */
-btnLogout.onclick = async (e)=>{
-  e.preventDefault();
-  await logout();
-};
-
-
-/* =====================================================
-   STATUS USER
-===================================================== */
-onAuthStateChanged(auth, async (user)=>{
-  if(!user){
-    hint.textContent = "Non connecté.";
-    return;
-  }
-
-  try{
-    const role = await getRoleByEmail(user.email);
-    hint.textContent =
-      `Connecté : ${user.email} — rôle : ${role || "aucun"}`;
-  }catch{
-    hint.textContent = "Utilisateur connecté.";
-  }
-});
-
-</script>
+      try {
+        const role = await getRoleByEmail(user.email);
+        hint.textContent = `Connecté : ${user.email} — rôle : ${role || "aucun"}`;
+      } catch {
+        hint.textContent = "Utilisateur connecté.";
+      }
+    });
+  </script>
 
 </body>
 </html>
