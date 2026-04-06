@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Open BT Bricorama</title>
-  <link rel="stylesheet" href="assets/css/main.css?v=20260405-index-bandeau-v3" />
+  <link rel="stylesheet" href="assets/css/main.css?v=20260406-index-bandeau-v4" />
 
   <style>
     :root{
@@ -134,17 +134,56 @@
       object-fit:contain;
     }
 
-    .header-nav{
+    .header-nav-wrap{
       grid-column:1 / 4;
       grid-row:2;
+      position:relative;
+    }
+
+    .header-nav-wrap::before,
+    .header-nav-wrap::after{
+      position:absolute;
+      top:50%;
+      transform:translateY(-50%);
+      z-index:3;
+      width:34px;
+      height:46px;
       display:flex;
       align-items:center;
       justify-content:center;
+      font-size:18px;
+      font-weight:1000;
+      color:rgba(23,33,43,.58);
+      pointer-events:none;
+    }
+
+    .header-nav-wrap::before{
+      content:"‹";
+      left:0;
+      background:linear-gradient(90deg, rgba(255,221,58,.92) 0%, rgba(255,221,58,.72) 48%, rgba(255,221,58,0) 100%);
+      border-top-left-radius:999px;
+      border-bottom-left-radius:999px;
+    }
+
+    .header-nav-wrap::after{
+      content:"›";
+      right:0;
+      background:linear-gradient(270deg, rgba(255,221,58,.92) 0%, rgba(255,221,58,.72) 48%, rgba(255,221,58,0) 100%);
+      border-top-right-radius:999px;
+      border-bottom-right-radius:999px;
+    }
+
+    .header-nav{
+      display:flex;
+      align-items:center;
+      justify-content:flex-start;
       gap:10px;
       overflow-x:auto;
       -webkit-overflow-scrolling:touch;
       scrollbar-width:none;
-      padding:2px 0 0;
+      padding:2px 34px 0;
+      scroll-padding-left:34px;
+      scroll-padding-right:34px;
     }
 
     .header-nav::-webkit-scrollbar{
@@ -595,6 +634,19 @@
         width:min(420px, 100%);
       }
 
+      .header-nav-wrap::before,
+      .header-nav-wrap::after{
+        width:42px;
+        height:50px;
+        font-size:20px;
+      }
+
+      .header-nav{
+        padding-left:42px;
+        padding-right:42px;
+        justify-content:center;
+      }
+
       .hero{
         padding:28px 28px 30px;
       }
@@ -640,19 +692,21 @@
         <img src="assets/img/BT500.png" alt="BT500">
       </div>
 
-      <nav class="header-nav">
-        <a class="nav-link primary" href="index.html">🏠 Accueil</a>
-        <a class="nav-link" href="pages/equipes.html">👥 Équipes</a>
-        <a class="nav-link" href="pages/programmation.html">📅 Programmation</a>
-        <a class="nav-link" href="pages/classements.html">🏆 Résultats</a>
-        <a class="nav-link" href="pages/reglement.html">📘 Règlement</a>
-        <a class="nav-link" href="pages/inscriptions.html">📝 Inscriptions</a>
-        <a class="nav-link" href="pages/boutique.html">🛍️ Boutique</a>
-        <a class="nav-link" href="pages/repas.html">🍽️ Repas</a>
-        <a class="nav-link" href="pages/tirage.html">🎲 Tirage</a>
-        <a class="nav-link" href="pages/infos.html">ℹ️ Infos</a>
-        <a class="nav-link" href="pages/contact.html">📩 Contact</a>
-      </nav>
+      <div class="header-nav-wrap">
+        <nav class="header-nav">
+          <a class="nav-link primary" href="index.html">🏠 Accueil</a>
+          <a class="nav-link" href="pages/equipes.html">👥 Équipes</a>
+          <a class="nav-link" href="pages/programmation.html">📅 Programmation</a>
+          <a class="nav-link" href="pages/classements.html">🏆 Résultats</a>
+          <a class="nav-link" href="pages/reglement.html">📘 Règlement</a>
+          <a class="nav-link" href="pages/inscriptions.html">📝 Inscriptions</a>
+          <a class="nav-link" href="pages/boutique.html">🛍️ Boutique</a>
+          <a class="nav-link" href="pages/repas.html">🍽️ Repas</a>
+          <a class="nav-link" href="pages/tirage.html">🎲 Tirage</a>
+          <a class="nav-link" href="pages/infos.html">ℹ️ Infos</a>
+          <a class="nav-link" href="pages/contact.html">📩 Contact</a>
+        </nav>
+      </div>
     </div>
   </header>
 
