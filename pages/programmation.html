@@ -4,316 +4,618 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Programmation — Open BT Bricorama</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260228-open-global-prog-v1" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260406-open-programmation-placeholder-v1" />
+
+  <style>
+    :root{
+      --bg: #f4f1ea;
+      --card: rgba(255,255,255,.92);
+      --card-strong: rgba(255,255,255,.96);
+      --text: #17212b;
+      --muted: #667085;
+      --border: rgba(16,24,40,.08);
+      --shadow: 0 16px 40px rgba(16,24,40,.10);
+
+      --yellow: #ffd400;
+      --yellow-dark: #efc000;
+      --sun-orange: #ff8a2a;
+      --sun-red: #d94b2b;
+      --sun-pink: #d94f7a;
+      --violet: #6b2bd9;
+      --night: #0f1e35;
+      --deep-blue: #183b68;
+      --sea: #1e6fa8;
+      --green: #1f7a3a;
+      --dark: #111827;
+
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
+
+      --container: 1180px;
+
+      --header-h: 146px;
+    }
+
+    *{ box-sizing:border-box; }
+
+    html{ scroll-behavior:smooth; }
+
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 20% 0%, rgba(255,202,64,.18), transparent 20%),
+        radial-gradient(circle at 80% 10%, rgba(217,79,122,.14), transparent 24%),
+        linear-gradient(180deg, #f6f2ea 0%, #f3f0eb 100%);
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    img{
+      display:block;
+      max-width:100%;
+    }
+
+    .container{
+      width:min(var(--container), calc(100% - 28px));
+      margin:0 auto;
+    }
+
+    /* =========================
+       HEADER UNIQUE
+    ========================= */
+    .site-header{
+      position:fixed;
+      top:0;
+      left:0;
+      right:0;
+      z-index:1000;
+      background:linear-gradient(135deg, var(--yellow), #ffe25d 52%, var(--yellow-dark));
+      border-bottom:1px solid rgba(0,0,0,.06);
+      box-shadow:0 10px 24px rgba(255,212,0,.22);
+    }
+
+    .header-inner{
+      min-height:var(--header-h);
+      display:grid;
+      grid-template-columns:70px 1fr 70px;
+      grid-template-rows:auto auto;
+      align-items:center;
+      gap:10px 18px;
+      padding:10px 0 12px;
+    }
+
+    .header-logo{
+      width:70px;
+      height:70px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .header-logo img{
+      max-width:100%;
+      max-height:100%;
+      object-fit:contain;
+      filter:drop-shadow(0 6px 10px rgba(0,0,0,.14));
+    }
+
+    .header-logo.left{
+      grid-column:1;
+      grid-row:1;
+      justify-self:start;
+    }
+
+    .header-logo.center{
+      grid-column:2;
+      grid-row:1;
+      justify-self:center;
+      width:min(320px, 100%);
+      height:70px;
+    }
+
+    .header-logo.right{
+      grid-column:3;
+      grid-row:1;
+      justify-self:end;
+    }
+
+    .header-logo.center img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+    }
+
+    .header-nav-wrap{
+      grid-column:1 / 4;
+      grid-row:2;
+      position:relative;
+    }
+
+    .header-nav-wrap::before,
+    .header-nav-wrap::after{
+      position:absolute;
+      top:50%;
+      transform:translateY(-50%);
+      z-index:3;
+      width:34px;
+      height:46px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:18px;
+      font-weight:1000;
+      color:rgba(23,33,43,.58);
+      pointer-events:none;
+    }
+
+    .header-nav-wrap::before{
+      content:"‹";
+      left:0;
+      background:linear-gradient(90deg, rgba(255,221,58,.92) 0%, rgba(255,221,58,.72) 48%, rgba(255,221,58,0) 100%);
+      border-top-left-radius:999px;
+      border-bottom-left-radius:999px;
+    }
+
+    .header-nav-wrap::after{
+      content:"›";
+      right:0;
+      background:linear-gradient(270deg, rgba(255,221,58,.92) 0%, rgba(255,221,58,.72) 48%, rgba(255,221,58,0) 100%);
+      border-top-right-radius:999px;
+      border-bottom-right-radius:999px;
+    }
+
+    .header-nav{
+      display:flex;
+      align-items:center;
+      justify-content:flex-start;
+      gap:10px;
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+      padding:2px 34px 0;
+      scroll-padding-left:34px;
+      scroll-padding-right:34px;
+    }
+
+    .header-nav::-webkit-scrollbar{
+      display:none;
+    }
+
+    .nav-link{
+      flex:0 0 auto;
+      min-height:42px;
+      padding:10px 18px;
+      border-radius:999px;
+      background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.82));
+      border:1px solid rgba(255,255,255,.55);
+      color:#344054;
+      font-size:14px;
+      font-weight:900;
+      white-space:nowrap;
+      box-shadow:
+        0 8px 18px rgba(0,0,0,.10),
+        inset 0 1px 0 rgba(255,255,255,.7);
+      transition:transform .16s ease, box-shadow .16s ease, background .16s ease;
+    }
+
+    .nav-link:hover{
+      transform:translateY(-1px);
+      box-shadow:
+        0 10px 20px rgba(0,0,0,.12),
+        inset 0 1px 0 rgba(255,255,255,.7);
+    }
+
+    .nav-link.primary{
+      background:linear-gradient(180deg, #2ea44f, #1f7a3a);
+      color:#fff;
+      border-color:rgba(0,0,0,.06);
+      box-shadow:
+        0 10px 18px rgba(31,122,58,.24),
+        inset 0 1px 0 rgba(255,255,255,.18);
+    }
+
+    /* =========================
+       MAIN
+    ========================= */
+    main{
+      padding-top:calc(var(--header-h) + 24px);
+      padding-bottom:40px;
+    }
+
+    .section{
+      margin-top:22px;
+    }
+
+    .hero{
+      position:relative;
+      overflow:hidden;
+      border-radius:32px;
+      padding:28px 22px 24px;
+      color:#fff;
+      box-shadow:
+        0 20px 44px rgba(16,24,40,.16),
+        inset 0 0 0 1px rgba(255,255,255,.06);
+      background:
+        radial-gradient(circle at 50% 68%, rgba(255,212,0,.40), transparent 18%),
+        radial-gradient(circle at 30% 18%, rgba(255,138,42,.55), transparent 22%),
+        radial-gradient(circle at 78% 22%, rgba(217,79,122,.44), transparent 20%),
+        linear-gradient(180deg, #24132e 0%, #6c2c2f 32%, #e1782d 68%, #f7b257 100%);
+    }
+
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 50% 100%, rgba(0,0,0,.28), transparent 32%),
+        linear-gradient(180deg, rgba(7,16,32,.08), rgba(7,16,32,.18));
+      pointer-events:none;
+    }
+
+    .hero-inner{
+      position:relative;
+      z-index:1;
+      display:grid;
+      gap:18px;
+    }
+
+    .hero-topline{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:center;
+    }
+
+    .hero-pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:9px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,.14);
+      color:#fff6d8;
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.02em;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);
+      backdrop-filter:blur(8px);
+    }
+
+    .hero-content{
+      text-align:center;
+      max-width:900px;
+      margin:0 auto;
+    }
+
+    .hero-title{
+      margin:0;
+      font-size:clamp(30px, 5vw, 54px);
+      line-height:1;
+      letter-spacing:-0.04em;
+      font-weight:900;
+      text-shadow:0 10px 24px rgba(0,0,0,.20);
+    }
+
+    .hero-sub{
+      margin:12px auto 0;
+      max-width:760px;
+      font-size:16px;
+      line-height:1.55;
+      color:rgba(255,255,255,.95);
+      font-weight:600;
+    }
+
+    .panel{
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.35);
+      border-radius:var(--radius-xl);
+      box-shadow:var(--shadow);
+      padding:20px;
+    }
+
+    .panel-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      margin-bottom:16px;
+    }
+
+    .panel-title{
+      margin:0;
+      font-size:28px;
+      line-height:1.05;
+      letter-spacing:-0.03em;
+      color:#1c2430;
+    }
+
+    .panel-text{
+      margin:8px 0 0;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.55;
+    }
+
+    .panel-tag{
+      flex-shrink:0;
+      padding:8px 13px;
+      border-radius:999px;
+      background:#eef2f6;
+      color:#344054;
+      font-size:12px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+    }
+
+    .placeholder-grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:14px;
+      margin-top:14px;
+    }
+
+    .placeholder-card{
+      border:1px solid rgba(16,24,40,.08);
+      border-radius:22px;
+      background:linear-gradient(180deg, rgba(255,255,255,.98), rgba(248,250,252,.96));
+      padding:18px;
+      box-shadow:0 8px 18px rgba(16,24,40,.05);
+    }
+
+    .placeholder-title{
+      margin:0 0 8px;
+      font-size:20px;
+      font-weight:900;
+      color:#1c2430;
+    }
+
+    .placeholder-text{
+      margin:0;
+      color:var(--muted);
+      line-height:1.6;
+    }
+
+    .switches{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .switch-btn{
+      appearance:none;
+      border:1px solid rgba(16,24,40,.10);
+      background:#fff;
+      border-radius:999px;
+      min-height:50px;
+      padding:12px 14px;
+      font-weight:900;
+      font-size:15px;
+      color:#1c2430;
+      cursor:pointer;
+      transition:all .18s ease;
+      box-shadow:0 8px 16px rgba(16,24,40,.04);
+    }
+
+    .switch-btn[aria-selected="true"]{
+      background:linear-gradient(180deg, #2ea44f, #1f7a3a);
+      color:#fff;
+      border-color:#1f7a3a;
+      box-shadow:0 12px 22px rgba(31,122,58,.20);
+    }
+
+    .note{
+      margin-top:14px;
+      padding:15px 16px;
+      border-radius:18px;
+      background:linear-gradient(135deg, rgba(255,212,0,.12), rgba(255,138,42,.06));
+      border:1px solid rgba(255,196,0,.34);
+      color:#4b5563;
+      font-size:14px;
+      line-height:1.55;
+    }
+
+    .muted{
+      color:var(--muted);
+    }
+
+    @media (min-width: 760px){
+      :root{
+        --header-h: 158px;
+      }
+
+      .header-inner{
+        grid-template-columns:90px 1fr 90px;
+        gap:12px 22px;
+      }
+
+      .header-logo{
+        width:90px;
+        height:90px;
+      }
+
+      .header-logo.center{
+        height:78px;
+        width:min(420px, 100%);
+      }
+
+      .header-nav-wrap::before,
+      .header-nav-wrap::after{
+        width:42px;
+        height:50px;
+        font-size:20px;
+      }
+
+      .header-nav{
+        padding-left:42px;
+        padding-right:42px;
+        justify-content:center;
+      }
+
+      .switches{
+        grid-template-columns:1fr 1fr;
+      }
+
+      .placeholder-grid{
+        grid-template-columns:1fr 1fr;
+      }
+
+      .panel{
+        padding:24px;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<header class="topbar">
-  <div class="container">
-    <div class="topbar-row topbar-row-step">
-      <div class="brand-logo">
-        <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="header-logo left">
+        <img src="../assets/img/blason-suzini.png" alt="Blason Suzini">
       </div>
 
-      <div class="step-title-wrap" aria-label="Open BT — Programmation">
-        <img class="step-title-img" src="../assets/img/bt250.png" alt="BT250">
+      <div class="header-logo center">
+        <img src="../assets/img/openbt.png" alt="Open BT Bricorama">
       </div>
 
-      <div class="brand-logo">
-        <img src="../assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
+      <div class="header-logo right">
+        <img src="../assets/img/BT500.png" alt="BT500">
+      </div>
+
+      <div class="header-nav-wrap">
+        <nav class="header-nav">
+          <a class="nav-link" href="../index.html">🏠 Accueil</a>
+          <a class="nav-link" href="equipes.html">👥 Équipes</a>
+          <a class="nav-link primary" href="programmation.html">📅 Programmation</a>
+          <a class="nav-link" href="classements.html">🏆 Résultats</a>
+          <a class="nav-link" href="reglement.html">📘 Règlement</a>
+          <a class="nav-link" href="inscriptions.html">📝 Inscriptions</a>
+          <a class="nav-link" href="boutique.html">🛍️ Boutique</a>
+          <a class="nav-link" href="repas.html">🍽️ Repas</a>
+          <a class="nav-link" href="tirage.html">🎲 Tirage</a>
+          <a class="nav-link" href="infos.html">ℹ️ Infos</a>
+          <a class="nav-link" href="contact.html">📩 Contact</a>
+        </nav>
       </div>
     </div>
+  </header>
 
-    <nav class="nav nav-step">
-      <a href="../index.html" title="Accueil" aria-label="Accueil">🏠</a>
-      <a href="inscriptions.html">📝 Inscriptions</a>
-      <a href="tirage.html" title="Tirage" aria-label="Tirage">🎲</a>
-      <a href="equipes.html" aria-label="Équipes">👥 Équipes</a>
-      <a href="programmation.html" aria-current="page">🗓️ Programme</a>
-    </nav>
-  </div>
-</header>
+  <main class="container">
 
-<main class="container">
+    <section class="section">
+      <div class="hero">
+        <div class="hero-inner">
+          <div class="hero-topline">
+            <span class="hero-pill">Open BT Bricorama</span>
+            <span class="hero-pill">📅 Programmation</span>
+            <span class="hero-pill">BT500</span>
+          </div>
 
-  <section class="card">
-    <h2 style="margin:0 0 10px;">🗓️ Programmation (DH + DD)</h2>
-    <p class="muted" id="statusText" style="margin:0;">Chargement…</p>
-    <p class="muted" id="subtitle" style="margin-top:10px;"></p>
-  </section>
-
-  <section class="card" id="panelChrono" style="display:block;">
-    <h2 style="margin:0 0 10px;">🕒 Planning global — 2 terrains</h2>
-    <div id="chronoList"></div>
-
-    <p class="muted" style="margin-top:10px;">
-      ⏱️ Affichage basé sur les programmations publiées par l’organisation (Firestore).
-    </p>
-  </section>
-
-</main>
-
-<style>
-  .topbar-row-step{ grid-template-columns: var(--logo-size) 1fr var(--logo-size); }
-  .step-title-wrap{
-    display:flex; align-items:center; justify-content:center;
-    min-height: calc(var(--logo-size) * 0.55);
-  }
-  .step-title-img{
-    width:min(520px,100%); max-height:88px; height:auto; object-fit:contain;
-    display:block; filter: drop-shadow(0 1px 0 rgba(0,0,0,.15));
-  }
-
-  .nav-step{ gap:8px; flex-wrap:wrap; }
-  .nav-step a{ padding:8px 12px; flex:0 0 auto; text-align:center; white-space:nowrap; }
-  @media (max-width: 560px){
-    .nav-step{ justify-content:space-between; }
-    .nav-step a{ width: calc((100% - 16px) / 3); }
-    .nav-step a:nth-child(n+4){ width: calc((100% - 8px) / 2); }
-  }
-  @media (max-width: 420px){
-    .nav-step a{ padding:7px 10px; font-size:13px; }
-    .step-title-img{ max-height:74px; }
-  }
-  .nav a[aria-current="page"]{
-    background: rgba(255,255,255,.26);
-    border-color: rgba(255,255,255,.45);
-    box-shadow: 0 6px 14px rgba(0,0,0,.10);
-  }
-
-  .match-list{ display:flex; flex-direction:column; gap:14px; }
-
-  .match-card{
-    border-radius:18px;
-    border:2px solid rgba(0,0,0,.06);
-    padding:14px;
-    background:#fff;
-    box-shadow:0 1px 0 rgba(0,0,0,.03);
-  }
-  .match-card.courtA{ background:#FFF6D6; border-color:rgba(255, 196, 0, .35); }
-  .match-card.courtB{ background:#FFE6EA; border-color:rgba(255, 0, 60, .25); }
-  .match-card.block{ background:#F3F6FF; border-color:rgba(60, 110, 255, .20); }
-
-  .match-head{ display:flex; align-items:center; gap:10px; min-width:0; }
-  .m-time{ font-size:13px; font-weight:900; white-space:nowrap; letter-spacing:.2px; }
-  .m-court{
-    font-size:13px; font-weight:400; font-style:italic; opacity:.95;
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; min-width:0; flex:1;
-  }
-  .m-tag{
-    font-size:11px; font-weight:1000; white-space:nowrap;
-    border:1px solid rgba(0,0,0,.12); border-radius:999px; padding:6px 10px; opacity:.95;
-    flex:0 0 auto;
-  }
-
-  .team-row{ margin-top:10px; display:grid; grid-template-columns:1fr; gap:6px; }
-  .team-title{ font-size:15px; font-weight:950; line-height:1.15; white-space:normal; overflow-wrap:anywhere; }
-  .team-sub{ font-size:13px; font-weight:700; opacity:.85; white-space:normal; overflow-wrap:anywhere; line-height:1.25; }
-  .vs-line{ margin:10px 0 6px; text-align:center; font-weight:900; letter-spacing:2px; opacity:.55; font-size:12px; }
-</style>
-
-<script type="module">
-  import { db } from "../assets/js/firebase.js";
-  import { doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-
-  const statusText = document.getElementById("statusText");
-  const subtitle   = document.getElementById("subtitle");
-  const chronoList = document.getElementById("chronoList");
-
-  const COURTS_FALLBACK = {
-    A: "court Manon Queen Bee",
-    B: "court Lisa de Los Pimentos"
-  };
-
-  let progDH = null;
-  let progDD = null;
-
-  function esc(s){
-    return (s ?? "").toString()
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;");
-  }
-
-  function parseHHMM(hhmm){
-    const m = /^(\d{1,2}):(\d{2})$/.exec((hhmm||"").trim());
-    if(!m) return Number.POSITIVE_INFINITY;
-    return Number(m[1])*60 + Number(m[2]);
-  }
-
-  function teamTitle(t){ return (t?.teamName || "Équipe").toString(); }
-  function teamSub(t){
-    const p1 = (t?.p1FirstName || "").toString().trim();
-    const p2 = (t?.p2FirstName || "").toString().trim();
-    if(!p1 && !p2) return "";
-    return `${p1}${p1 && p2 ? " • " : ""}${p2}`;
-  }
-
-  function normalizeEntry(entry, slotObj){
-    if(typeof entry === "number"){
-      const slot = Number(entry);
-      const court = slotObj?.court || "A";
-      return { slot, court };
-    }
-    if(entry && typeof entry === "object"){
-      const slot = Number(entry.slot);
-      const court = entry.court || slotObj?.court || "A";
-      return { slot, court };
-    }
-    return { slot: Number(slotObj?.slot || 1), court: slotObj?.court || "A" };
-  }
-
-  function courtLabel(courts, key){
-    const name = (courts?.[key] || COURTS_FALLBACK[key] || key || "—");
-    const emo = (key === "A") ? "🐝" : (key === "B" ? "🌶️" : "🎾");
-    return `${emo} ${name} ${emo}`;
-  }
-  function courtClass(key){
-    return (key === "A") ? "courtA" : (key === "B" ? "courtB" : "");
-  }
-
-  function matchCard({ time, courtKey, courts, cat, stage, A, B }){
-    return `
-      <div class="match-card ${esc(courtClass(courtKey))}">
-        <div class="match-head">
-          <div class="m-time">${esc(time)}</div>
-          <div class="m-court">${esc(courtLabel(courts, courtKey))}</div>
-          <div class="m-tag">${esc(cat)} · ${esc(stage)}</div>
-        </div>
-
-        <div class="team-row">
-          <div class="team-title">${esc(teamTitle(A))}</div>
-          <div class="team-sub muted">${esc(teamSub(A))}</div>
-        </div>
-
-        <div class="vs-line">VS</div>
-
-        <div class="team-row">
-          <div class="team-title">${esc(teamTitle(B))}</div>
-          <div class="team-sub muted">${esc(teamSub(B))}</div>
+          <div class="hero-content">
+            <h1 class="hero-title">Programmation du tournoi</h1>
+            <p class="hero-sub">
+              Cette page est en cours de préparation. La structure est déjà prête pour accueillir
+              plus tard la programmation du <strong>Double Messieurs</strong> et du <strong>Double Dames</strong>.
+            </p>
+          </div>
         </div>
       </div>
-    `;
-  }
+    </section>
 
-  function blockCard({ time, courtKey, courts, title, note }){
-    return `
-      <div class="match-card block">
-        <div class="match-head">
-          <div class="m-time">${esc(time)}</div>
-          <div class="m-court">${esc(courtLabel(courts, courtKey))}</div>
-          <div class="m-tag">⏳ Bloc</div>
+    <section class="section">
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">Programmation</h2>
+            <p class="panel-text">
+              Placeholder public. Le système est prêt pour une future intégration des matchs, horaires, terrains et statuts.
+            </p>
+          </div>
+          <div class="panel-tag">Placeholder</div>
         </div>
-        <div class="team-row">
-          <div class="team-title">${esc(title || "Bloc")}</div>
-          ${note ? `<div class="team-sub muted">${esc(note)}</div>` : ``}
+
+        <div class="switches" role="tablist" aria-label="Choix du tableau">
+          <button class="switch-btn" id="btnDH" type="button" aria-selected="true">👨 Double Messieurs</button>
+          <button class="switch-btn" id="btnDD" type="button" aria-selected="false">👩 Double Dames</button>
+        </div>
+
+        <div class="note">
+          Tableau affiché actuellement : <strong id="catLabel">Double Messieurs</strong><br>
+          Cette page est volontairement en mode simple pour rendre le site fonctionnel tout de suite, tout en restant facile à faire évoluer ensuite.
+        </div>
+
+        <div class="placeholder-grid" id="placeholderGrid">
+          <div class="placeholder-card">
+            <h3 class="placeholder-title">🕒 Horaires</h3>
+            <p class="placeholder-text">
+              Ici viendra la liste des rencontres avec les horaires prévus, les éventuels retards et les mises à jour en direct.
+            </p>
+          </div>
+
+          <div class="placeholder-card">
+            <h3 class="placeholder-title">🏟️ Terrains</h3>
+            <p class="placeholder-text">
+              Cette zone pourra afficher le terrain concerné, l’ordre des matchs et les éventuels déplacements de programmation.
+            </p>
+          </div>
+
+          <div class="placeholder-card">
+            <h3 class="placeholder-title">🎾 Matchs</h3>
+            <p class="placeholder-text">
+              On pourra y intégrer ensuite les affiches du jour, les oppositions prévues et les badges de statut : à venir, en cours, terminé.
+            </p>
+          </div>
+
+          <div class="placeholder-card">
+            <h3 class="placeholder-title">📣 Informations utiles</h3>
+            <p class="placeholder-text">
+              Cette zone pourra servir aux annonces : heure de convocation, changements météo, consignes d’organisation ou points d’attention.
+            </p>
+          </div>
         </div>
       </div>
-    `;
-  }
+    </section>
 
-  function flattenProg(prog, fallbackCat){
-    if(!prog || !Array.isArray(prog.slots) || !prog.slots.length) return [];
+  </main>
 
-    const courts = prog.courts || COURTS_FALLBACK;
-    const slots = prog.slots || [];
-    const matches = prog.matches || {};
-    const schedule = prog.schedule || {};
+  <script>
+    const btnDH = document.getElementById("btnDH");
+    const btnDD = document.getElementById("btnDD");
+    const catLabel = document.getElementById("catLabel");
 
-    const slotToMid = new Map();
-    for(const [mid, entry] of Object.entries(schedule)){
-      const slotNum = (typeof entry === "number") ? Number(entry) : Number(entry?.slot);
-      if(!Number.isFinite(slotNum)) continue;
-      if(!matches[mid]) continue;
-      if(!slotToMid.has(slotNum)) slotToMid.set(slotNum, mid);
+    function setCategory(cat){
+      const isDH = cat === "DH";
+      btnDH.setAttribute("aria-selected", isDH ? "true" : "false");
+      btnDD.setAttribute("aria-selected", isDH ? "false" : "true");
+      catLabel.textContent = isDH ? "Double Messieurs" : "Double Dames";
+
+      try{
+        localStorage.setItem("open_programmation_cat", cat);
+      }catch(e){}
     }
 
-    const out = [];
-    for(const s of slots){
-      const mid = slotToMid.get(Number(s.slot));
-      if(!mid) continue;
+    btnDH.addEventListener("click", ()=> setCategory("DH"));
+    btnDD.addEventListener("click", ()=> setCategory("DD"));
 
-      const m = matches[mid];
-      if(!m) continue;
-
-      const norm = normalizeEntry(schedule[mid], s);
-      const courtKey = norm.court || s.court || "A";
-      const time = s.time || "—";
-
-      out.push({
-        time,
-        timeMin: parseHHMM(time),
-        courtKey,
-        courts,
-        kind: m.kind || "match",
-        cat: m.cat || fallbackCat,
-        stage: m.stage || "",
-        A: m.A || null,
-        B: m.B || null,
-        title: m.title || "",
-        note: m.note || ""
-      });
-    }
-
-    return out;
-  }
-
-  function renderAll(){
-    const items = [
-      ...flattenProg(progDH, "DH"),
-      ...flattenProg(progDD, "DD"),
-    ].sort((a,b)=>{
-      if(a.timeMin !== b.timeMin) return a.timeMin - b.timeMin;
-      return (a.courtKey||"").localeCompare(b.courtKey||"");
-    });
-
-    if(!items.length){
-      statusText.textContent = "ℹ️ Programmation non publiée.";
-      subtitle.textContent = "";
-      chronoList.innerHTML = `<p class="muted" style="margin:0;">Aucun match pour le moment.</p>`;
-      return;
-    }
-
-    statusText.textContent = "🟢 En direct";
-    subtitle.textContent = "Planning global (DH + DD) mis à jour en direct.";
-
-    const cards = items.map(x=>{
-      if(x.kind === "block"){
-        return blockCard({
-          time: x.time,
-          courtKey: x.courtKey,
-          courts: x.courts,
-          title: x.title || x.stage || "Bloc",
-          note: x.note || ""
-        });
+    try{
+      const savedCat = localStorage.getItem("open_programmation_cat");
+      if(savedCat === "DD"){
+        setCategory("DD");
+      }else{
+        setCategory("DH");
       }
-      return matchCard({
-        time: x.time,
-        courtKey: x.courtKey,
-        courts: x.courts,
-        cat: x.cat,
-        stage: x.stage,
-        A: x.A,
-        B: x.B
-      });
-    });
-
-    chronoList.innerHTML = `<div class="match-list">${cards.join("")}</div>`;
-  }
-
-  onSnapshot(
-    doc(db, "programmations_open", "dh"),
-    (snap)=>{ progDH = snap.exists() ? (snap.data() || null) : null; renderAll(); },
-    (err)=>{ console.error(err); statusText.textContent = "🔴 Erreur Firestore (DH)"; }
-  );
-
-  onSnapshot(
-    doc(db, "programmations_open", "dd"),
-    (snap)=>{ progDD = snap.exists() ? (snap.data() || null) : null; renderAll(); },
-    (err)=>{ console.error(err); statusText.textContent = "🔴 Erreur Firestore (DD)"; }
-  );
-</script>
+    }catch(e){
+      setCategory("DH");
+    }
+  </script>
 
 </body>
 </html>
