@@ -4,410 +4,548 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Règlement — Open BT Bricorama</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260224" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260406-open-reglement-placeholder-v1" />
 
   <style>
-    /* ===== BANDEAU IDENTIQUE INDEX ===== */
-    .topbar-row-step{
-      grid-template-columns: var(--logo-size) 1fr var(--logo-size);
+    :root{
+      --bg: #f4f1ea;
+      --card: rgba(255,255,255,.92);
+      --card-strong: rgba(255,255,255,.96);
+      --text: #17212b;
+      --muted: #667085;
+      --border: rgba(16,24,40,.08);
+      --shadow: 0 16px 40px rgba(16,24,40,.10);
+
+      --yellow: #ffd400;
+      --yellow-dark: #efc000;
+      --sun-orange: #ff8a2a;
+      --sun-red: #d94b2b;
+      --sun-pink: #d94f7a;
+      --violet: #6b2bd9;
+      --night: #0f1e35;
+      --deep-blue: #183b68;
+      --sea: #1e6fa8;
+      --green: #1f7a3a;
+      --dark: #111827;
+
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
+
+      --container: 1180px;
+
+      --header-h: 146px;
     }
-    .step-title-wrap{
+
+    *{ box-sizing:border-box; }
+
+    html{ scroll-behavior:smooth; }
+
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 20% 0%, rgba(255,202,64,.18), transparent 20%),
+        radial-gradient(circle at 80% 10%, rgba(217,79,122,.14), transparent 24%),
+        linear-gradient(180deg, #f6f2ea 0%, #f3f0eb 100%);
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    img{
+      display:block;
+      max-width:100%;
+    }
+
+    .container{
+      width:min(var(--container), calc(100% - 28px));
+      margin:0 auto;
+    }
+
+    /* =========================
+       HEADER UNIQUE
+    ========================= */
+    .site-header{
+      position:fixed;
+      top:0;
+      left:0;
+      right:0;
+      z-index:1000;
+      background:linear-gradient(135deg, var(--yellow), #ffe25d 52%, var(--yellow-dark));
+      border-bottom:1px solid rgba(0,0,0,.06);
+      box-shadow:0 10px 24px rgba(255,212,0,.22);
+    }
+
+    .header-inner{
+      min-height:var(--header-h);
+      display:grid;
+      grid-template-columns:70px 1fr 70px;
+      grid-template-rows:auto auto;
+      align-items:center;
+      gap:10px 18px;
+      padding:10px 0 12px;
+    }
+
+    .header-logo{
+      width:70px;
+      height:70px;
       display:flex;
       align-items:center;
       justify-content:center;
-      min-height: calc(var(--logo-size) * 0.55);
-    }
-    .step-title-img{
-      width: min(520px, 100%);
-      max-height: 88px;
-      height: auto;
-      object-fit: contain;
-      display:block;
-      filter: drop-shadow(0 1px 0 rgba(0,0,0,.15));
     }
 
-    /* Nav 2 lignes sur téléphone (6 onglets => 3 + 3) */
-    .nav-step{
-      gap:8px;
-      flex-wrap:wrap;
-    }
-    .nav-step a{
-      padding:8px 12px;
-      flex: 0 0 auto;
-      text-align:center;
-      white-space:nowrap;
-    }
-    @media (max-width: 560px){
-      .nav-step{ justify-content:space-between; }
-      .nav-step a{ width: calc((100% - 16px) / 3); }
-    }
-    @media (max-width: 420px){
-      .nav-step a{
-        padding:7px 10px;
-        font-size: 13px;
-      }
-      .step-title-img{ max-height: 74px; }
+    .header-logo img{
+      max-width:100%;
+      max-height:100%;
+      object-fit:contain;
+      filter:drop-shadow(0 6px 10px rgba(0,0,0,.14));
     }
 
-    /* Lien actif */
-    .nav a[aria-current="page"]{
-      background: rgba(255,255,255,.26);
-      border-color: rgba(255,255,255,.45);
-      box-shadow: 0 6px 14px rgba(0,0,0,.10);
+    .header-logo.left{
+      grid-column:1;
+      grid-row:1;
+      justify-self:start;
     }
 
-    /* ===== page règlement ===== */
-    .actions-bar{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:space-between;
-    }
-    .actions-left{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-    .actions-right{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      align-items:center;
+    .header-logo.center{
+      grid-column:2;
+      grid-row:1;
+      justify-self:center;
+      width:min(320px, 100%);
+      height:70px;
     }
 
-    .lang-label{
+    .header-logo.right{
+      grid-column:3;
+      grid-row:1;
+      justify-self:end;
+    }
+
+    .header-logo.center img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+    }
+
+    .header-nav-wrap{
+      grid-column:1 / 4;
+      grid-row:2;
+      position:relative;
+    }
+
+    .header-nav-wrap::before,
+    .header-nav-wrap::after{
+      position:absolute;
+      top:50%;
+      transform:translateY(-50%);
+      z-index:3;
+      width:34px;
+      height:46px;
       display:flex;
       align-items:center;
-      gap:8px;
-      padding:12px 14px;
-      border-radius:14px;
-      border:1px solid #ddd;
-      background:#fafafa;
-      font-weight:800;
-    }
-
-    .summary-grid{
-      display:grid;
-      grid-template-columns:1fr;
-      gap:12px;
-      margin-top:12px;
-    }
-
-    .mini-card{
-      border:1px solid #eee;
-      border-radius:14px;
-      padding:14px;
-      background:#fff;
-    }
-
-    .mini-card h3{
-      margin:0 0 8px 0;
+      justify-content:center;
       font-size:18px;
-      line-height:1.15;
+      font-weight:1000;
+      color:rgba(23,33,43,.58);
+      pointer-events:none;
     }
 
-    .mini-card ul{
+    .header-nav-wrap::before{
+      content:"‹";
+      left:0;
+      background:linear-gradient(90deg, rgba(255,221,58,.92) 0%, rgba(255,221,58,.72) 48%, rgba(255,221,58,0) 100%);
+      border-top-left-radius:999px;
+      border-bottom-left-radius:999px;
+    }
+
+    .header-nav-wrap::after{
+      content:"›";
+      right:0;
+      background:linear-gradient(270deg, rgba(255,221,58,.92) 0%, rgba(255,221,58,.72) 48%, rgba(255,221,58,0) 100%);
+      border-top-right-radius:999px;
+      border-bottom-right-radius:999px;
+    }
+
+    .header-nav{
+      display:flex;
+      align-items:center;
+      justify-content:flex-start;
+      gap:10px;
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+      padding:2px 34px 0;
+      scroll-padding-left:34px;
+      scroll-padding-right:34px;
+    }
+
+    .header-nav::-webkit-scrollbar{
+      display:none;
+    }
+
+    .nav-link{
+      flex:0 0 auto;
+      min-height:42px;
+      padding:10px 18px;
+      border-radius:999px;
+      background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.82));
+      border:1px solid rgba(255,255,255,.55);
+      color:#344054;
+      font-size:14px;
+      font-weight:900;
+      white-space:nowrap;
+      box-shadow:
+        0 8px 18px rgba(0,0,0,.10),
+        inset 0 1px 0 rgba(255,255,255,.7);
+      transition:transform .16s ease, box-shadow .16s ease, background .16s ease;
+    }
+
+    .nav-link:hover{
+      transform:translateY(-1px);
+      box-shadow:
+        0 10px 20px rgba(0,0,0,.12),
+        inset 0 1px 0 rgba(255,255,255,.7);
+    }
+
+    .nav-link.primary{
+      background:linear-gradient(180deg, #2ea44f, #1f7a3a);
+      color:#fff;
+      border-color:rgba(0,0,0,.06);
+      box-shadow:
+        0 10px 18px rgba(31,122,58,.24),
+        inset 0 1px 0 rgba(255,255,255,.18);
+    }
+
+    /* =========================
+       MAIN
+    ========================= */
+    main{
+      padding-top:calc(var(--header-h) + 24px);
+      padding-bottom:40px;
+    }
+
+    .section{
+      margin-top:22px;
+    }
+
+    .hero{
+      position:relative;
+      overflow:hidden;
+      border-radius:32px;
+      padding:28px 22px 24px;
+      color:#fff;
+      box-shadow:
+        0 20px 44px rgba(16,24,40,.16),
+        inset 0 0 0 1px rgba(255,255,255,.06);
+      background:
+        radial-gradient(circle at 50% 68%, rgba(255,212,0,.40), transparent 18%),
+        radial-gradient(circle at 30% 18%, rgba(255,138,42,.55), transparent 22%),
+        radial-gradient(circle at 78% 22%, rgba(217,79,122,.44), transparent 20%),
+        linear-gradient(180deg, #24132e 0%, #6c2c2f 32%, #e1782d 68%, #f7b257 100%);
+    }
+
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 50% 100%, rgba(0,0,0,.28), transparent 32%),
+        linear-gradient(180deg, rgba(7,16,32,.08), rgba(7,16,32,.18));
+      pointer-events:none;
+    }
+
+    .hero-inner{
+      position:relative;
+      z-index:1;
+      display:grid;
+      gap:18px;
+    }
+
+    .hero-topline{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:center;
+    }
+
+    .hero-pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:9px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,.14);
+      color:#fff6d8;
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.02em;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);
+      backdrop-filter:blur(8px);
+    }
+
+    .hero-content{
+      text-align:center;
+      max-width:900px;
+      margin:0 auto;
+    }
+
+    .hero-title{
       margin:0;
-      padding-left:18px;
+      font-size:clamp(30px, 5vw, 54px);
+      line-height:1;
+      letter-spacing:-0.04em;
+      font-weight:900;
+      text-shadow:0 10px 24px rgba(0,0,0,.20);
+    }
+
+    .hero-sub{
+      margin:12px auto 0;
+      max-width:760px;
+      font-size:16px;
+      line-height:1.55;
+      color:rgba(255,255,255,.95);
+      font-weight:600;
+    }
+
+    .panel{
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.35);
+      border-radius:var(--radius-xl);
+      box-shadow:var(--shadow);
+      padding:20px;
+    }
+
+    .panel-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      margin-bottom:16px;
+    }
+
+    .panel-title{
+      margin:0;
+      font-size:28px;
+      line-height:1.05;
+      letter-spacing:-0.03em;
+      color:#1c2430;
+    }
+
+    .panel-text{
+      margin:8px 0 0;
+      color:var(--muted);
+      font-size:15px;
       line-height:1.55;
     }
 
-    .mini-card li{ margin:6px 0; }
+    .panel-tag{
+      flex-shrink:0;
+      padding:8px 13px;
+      border-radius:999px;
+      background:#eef2f6;
+      color:#344054;
+      font-size:12px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+    }
 
-    @media (max-width: 480px){
-      .mini-card{ padding:14px; }
-      .mini-card h3{ font-size:17px; }
+    .placeholder-grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:14px;
+      margin-top:14px;
+    }
+
+    .placeholder-card{
+      border:1px solid rgba(16,24,40,.08);
+      border-radius:22px;
+      background:linear-gradient(180deg, rgba(255,255,255,.98), rgba(248,250,252,.96));
+      padding:18px;
+      box-shadow:0 8px 18px rgba(16,24,40,.05);
+    }
+
+    .placeholder-title{
+      margin:0 0 8px;
+      font-size:20px;
+      font-weight:900;
+      color:#1c2430;
+    }
+
+    .placeholder-text{
+      margin:0;
+      color:var(--muted);
+      line-height:1.6;
+    }
+
+    .note{
+      margin-top:14px;
+      padding:15px 16px;
+      border-radius:18px;
+      background:linear-gradient(135deg, rgba(255,212,0,.12), rgba(255,138,42,.06));
+      border:1px solid rgba(255,196,0,.34);
+      color:#4b5563;
+      font-size:14px;
+      line-height:1.55;
+    }
+
+    .muted{
+      color:var(--muted);
+    }
+
+    @media (min-width: 760px){
+      :root{
+        --header-h: 158px;
+      }
+
+      .header-inner{
+        grid-template-columns:90px 1fr 90px;
+        gap:12px 22px;
+      }
+
+      .header-logo{
+        width:90px;
+        height:90px;
+      }
+
+      .header-logo.center{
+        height:78px;
+        width:min(420px, 100%);
+      }
+
+      .header-nav-wrap::before,
+      .header-nav-wrap::after{
+        width:42px;
+        height:50px;
+        font-size:20px;
+      }
+
+      .header-nav{
+        padding-left:42px;
+        padding-right:42px;
+        justify-content:center;
+      }
+
+      .placeholder-grid{
+        grid-template-columns:1fr 1fr;
+      }
+
+      .panel{
+        padding:24px;
+      }
     }
   </style>
 </head>
 <body>
 
-<header class="topbar">
-  <div class="container">
-
-    <div class="topbar-row topbar-row-step">
-      <div class="brand-logo">
-        <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="header-logo left">
+        <img src="../assets/img/blason-suzini.png" alt="Blason Suzini">
       </div>
 
-      <div class="step-title-wrap" aria-label="Open BT Bricorama">
-        <img class="step-title-img" src="../assets/img/bt250.png" alt="BT250 — Open BT Bricorama">
+      <div class="header-logo center">
+        <img src="../assets/img/openbt.png" alt="Open BT Bricorama">
       </div>
 
-      <div class="brand-logo">
-        <img src="../assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
-      </div>
-    </div>
-
-    <nav class="nav nav-step">
-      <a href="../index.html">🏠 Accueil</a>
-      <a href="reglement.html" aria-current="page">📘 Règlement</a>
-      <a href="infos.html">ℹ️ Infos</a>
-      <a href="repas.html">🍽️ Repas</a>
-      <a href="boutique.html">🛍️ Boutique</a>
-      <a href="contact.html">📩 Contact</a>
-    </nav>
-
-  </div>
-</header>
-
-<main class="container">
-
-  <!-- Barre d'actions -->
-  <section class="card" style="margin-bottom:14px;">
-    <div class="actions-bar">
-
-      <div class="actions-left">
-        <!-- ✅ bouton vers le fichier complet -->
-        <a class="btn" href="reglement-complet.html" style="font-weight:900; color:#111;">
-          📄 Consulter le règlement (FR)
-        </a>
+      <div class="header-logo right">
+        <img src="../assets/img/BT500.png" alt="BT500">
       </div>
 
-      <div class="actions-right">
-        <div class="lang-label">🌍 Langue (résumé)</div>
-        <button class="btn" type="button" id="btnFR" style="font-weight:800; color:#111;">🇫🇷</button>
-        <button class="btn" type="button" id="btnPT" style="font-weight:800; color:#111;">🇧🇷</button>
-      </div>
-
-    </div>
-  </section>
-
-  <!-- ============================= -->
-  <!-- RÉSUMÉ DU RÈGLEMENT -->
-  <!-- ============================= -->
-  <section class="card">
-
-    <!-- FR -->
-    <div id="langFR">
-      <h2 style="margin:0;">📘 Règlement — Résumé</h2>
-      <p class="muted" style="margin:8px 0 0;">
-        Version simplifiée pour lecture mobile 📱 — se référer au règlement complet pour tous les détails.
-      </p>
-
-      <div class="summary-grid">
-
-        <div class="mini-card">
-          <h3>📅 L’évènement</h3>
-          <ul>
-            <li><b>Samedi 28 février 2026</b> — Open BT Bricorama (FFT <b>BT250</b>)</li>
-            <li>2 épreuves : <b>Double Hommes</b> + <b>Double Dames</b></li>
-            <li>
-              2 sites :
-              <ul>
-                <li><b>15h00 → 18h30</b> : Plage de Montabo</li>
-                <li><b>19h00 → 23h00</b> : Suzini Arena</li>
-              </ul>
-            </li>
-          </ul>
-        </div>
-
-        <div class="mini-card">
-          <h3>✅ Conditions & inscription</h3>
-          <ul>
-            <li>Licence FFT <b>Beach Tennis / multi-raquettes 2026</b> obligatoire 🪪</li>
-            <li>Seniors, ouvert dès <b>U16</b> (U12 possible avec dérogation + certificat médecin du sport &lt; 6 mois)</li>
-            <li><b>Poids équipe ≤ 120</b> (somme des classements des 2 joueurs) ⚖️</li>
-            <li>Inscription <b>par équipe uniquement</b> (pas d’inscription individuelle) 👥</li>
-            <li><b>10€ / joueur</b> soit <b>20€ / équipe</b> 💶</li>
-            <li>Inscriptions sur le mini-site : <b>vendredi 20/02 à 12h00</b> → <b>mercredi 25/02</b></li>
-            <li>Max <b>10 équipes</b> par épreuve (+ ajustements possibles pour compléter le tableau)</li>
-          </ul>
-        </div>
-
-        <div class="mini-card">
-          <h3>📋 Listes & remplacements</h3>
-          <ul>
-            <li>Liste établie par <b>ordre d’inscription</b> (diffusée le lendemain de la clôture)</li>
-            <li>Si complet : <b>liste d’attente</b> ⏳</li>
-            <li>Remplacement possible <b>jusqu’à validation des listes + tirage</b></li>
-            <li><b>Après tirage au sort : aucun remplacement</b> ❌</li>
-          </ul>
-        </div>
-
-        <div class="mini-card">
-          <h3>🎲 Tirage au sort</h3>
-          <ul>
-            <li><b>Vendredi 27/02</b> entre <b>12h00 et 13h00</b></li>
-            <li>Tableaux avec <b>2 à 8 têtes de série</b> (classement de référence de février)</li>
-          </ul>
-        </div>
-
-        <div class="mini-card">
-          <h3>🏁 Format des matchs</h3>
-          <ul>
-            <li>Formule sportive adaptée selon inscriptions (multimatchs / poules / mix)</li>
-            <li>Chaque équipe joue <b>2 à 5 matchs</b></li>
-            <li><b>Finale (format 4)</b> : 2 sets de 6 jeux (point décisif), TB à 6-6 ; 3e set = super TB 10</li>
-            <li><b>Autres matchs (format 6)</b> : 2 sets de 4 jeux (point décisif), TB à 3-3 ; 3e set = super TB 10</li>
-            <li>Repos cible : <b>30 min</b> (réductible si accord + décision JA)</li>
-          </ul>
-        </div>
-
-        <div class="mini-card">
-          <h3>⏰ Convocations / retards / paiement</h3>
-          <ul>
-            <li>Convocation à partir de <b>14h45</b> (début matchs <b>15h00</b>)</li>
-            <li>Sanctions retard : <b>5 min = 1 jeu</b> • <b>10 min = 2 jeux</b> • <b>15 min = WO</b></li>
-            <li>Paiement confirmé par le JA : via <b>SumUp</b> ou sur place (espèces)</li>
-            <li>Pièces possibles demandées : identité + attestation licence + certificat (si jeune en surclassement)</li>
-          </ul>
-        </div>
-
-        <div class="mini-card">
-          <h3>🏅 Points / organisation</h3>
-          <ul>
-            <li>Points BT250 : Vainqueur <b>250</b> • Finaliste <b>175</b> • 3e <b>140</b> • 4e <b>105</b> • 5e <b>88</b> • 6e <b>76</b> • 7e <b>65</b> • 8e <b>52</b></li>
-            <li>Comité du tournoi : <b>Jules Parisis</b>, <b>Quentin Savoyen</b>, <b>Mélanie Freitas</b></li>
-            <li>Juge-arbitre : <b>Enzo Horvath</b></li>
-          </ul>
-        </div>
-
-        <div class="mini-card">
-          <h3>🌦️ Divers</h3>
-          <ul>
-            <li>Force majeure : adaptation / suspension / annulation possible ; <b>remboursement</b> si annulation</li>
-            <li>Droit à l’image : photos/vidéos possibles pour communication du club</li>
-            <li>Assurance : via licence FFT ; effets personnels sous responsabilité du joueur</li>
-            <li>Fair-play : comportement antisportif → avertissement / pénalité / disqualification</li>
-          </ul>
-        </div>
-
+      <div class="header-nav-wrap">
+        <nav class="header-nav">
+          <a class="nav-link" href="../index.html">🏠 Accueil</a>
+          <a class="nav-link" href="equipes.html">👥 Équipes</a>
+          <a class="nav-link" href="programmation.html">📅 Programmation</a>
+          <a class="nav-link" href="classements.html">🏆 Résultats</a>
+          <a class="nav-link primary" href="reglement.html">📘 Règlement</a>
+          <a class="nav-link" href="inscriptions.html">📝 Inscriptions</a>
+          <a class="nav-link" href="boutique.html">🛍️ Boutique</a>
+          <a class="nav-link" href="repas.html">🍽️ Repas</a>
+          <a class="nav-link" href="tirage.html">🎲 Tirage</a>
+          <a class="nav-link" href="infos.html">ℹ️ Infos</a>
+          <a class="nav-link" href="contact.html">📩 Contact</a>
+        </nav>
       </div>
     </div>
+  </header>
 
-    <!-- PT-BR : traduction complète du résumé FR -->
-    <div id="langPT" style="display:none;">
-      <h2 style="margin:0;">📘 Regulamento — Resumo</h2>
-      <p class="muted" style="margin:8px 0 0;">
-        Versão simplificada para leitura no celular 📱 — consulte o regulamento completo (FR) para todos os detalhes.
-      </p>
+  <main class="container">
 
-      <div class="summary-grid">
+    <section class="section">
+      <div class="hero">
+        <div class="hero-inner">
+          <div class="hero-topline">
+            <span class="hero-pill">Open BT Bricorama</span>
+            <span class="hero-pill">📘 Règlement</span>
+            <span class="hero-pill">BT500</span>
+          </div>
 
-        <div class="mini-card">
-          <h3>📅 O evento</h3>
-          <ul>
-            <li><b>Sábado, 28 de fevereiro de 2026</b> — Open BT Bricorama (FFT <b>BT250</b>)</li>
-            <li>2 provas: <b>Dupla Masculina</b> + <b>Dupla Feminina</b></li>
-            <li>
-              2 locais:
-              <ul>
-                <li><b>15h00 → 18h30</b>: Praia de Montabo</li>
-                <li><b>19h00 → 23h00</b>: Suzini Arena</li>
-              </ul>
-            </li>
-          </ul>
+          <div class="hero-content">
+            <h1 class="hero-title">Règlement du tournoi</h1>
+            <p class="hero-sub">
+              Cette page est en cours de préparation. La structure est déjà prête pour accueillir
+              plus tard le règlement, les consignes de jeu, les formats et les informations officielles du tournoi.
+            </p>
+          </div>
         </div>
-
-        <div class="mini-card">
-          <h3>✅ Condições & inscrição</h3>
-          <ul>
-            <li>Licença FFT <b>Beach Tennis / multi-raquetes 2026</b> obrigatória 🪪</li>
-            <li>Sênior, aberto a partir de <b>U16</b> (U12 possível com autorização + atestado de médico do esporte &lt; 6 meses)</li>
-            <li><b>Peso da dupla ≤ 120</b> (soma dos rankings dos 2 jogadores) ⚖️</li>
-            <li>Inscrição <b>somente por dupla</b> (não há inscrição individual) 👥</li>
-            <li><b>10€ / jogador</b>, ou seja <b>20€ / dupla</b> 💶</li>
-            <li>Inscrições no mini-site: <b>sexta 20/02 às 12h00</b> → <b>quarta 25/02</b></li>
-            <li>Máximo de <b>10 duplas</b> por prova (+ ajustes possíveis para completar o quadro)</li>
-          </ul>
-        </div>
-
-        <div class="mini-card">
-          <h3>📋 Listas & substituições</h3>
-          <ul>
-            <li>Lista estabelecida por <b>ordem de inscrição</b> (divulgada no dia seguinte ao encerramento)</li>
-            <li>Se estiver completo: <b>lista de espera</b> ⏳</li>
-            <li>Substituição possível <b>até a validação das listas + sorteio</b></li>
-            <li><b>Após o sorteio: nenhuma substituição</b> ❌</li>
-          </ul>
-        </div>
-
-        <div class="mini-card">
-          <h3>🎲 Sorteio</h3>
-          <ul>
-            <li><b>Sexta, 27/02</b> entre <b>12h00 e 13h00</b></li>
-            <li>Quadros com <b>2 a 8 cabeças de chave</b> (ranking de referência de fevereiro)</li>
-          </ul>
-        </div>
-
-        <div class="mini-card">
-          <h3>🏁 Formato das partidas</h3>
-          <ul>
-            <li>Fórmula esportiva adaptada conforme as inscrições (multi-jogos / grupos / misto)</li>
-            <li>Cada dupla joga <b>2 a 5 partidas</b></li>
-            <li><b>Final (formato 4)</b>: 2 sets de 6 games (ponto decisivo), TB em 6-6; 3º set = super TB 10</li>
-            <li><b>Demais partidas (formato 6)</b>: 2 sets de 4 games (ponto decisivo), TB em 3-3; 3º set = super TB 10</li>
-            <li>Descanso alvo: <b>30 min</b> (pode ser reduzido com acordo + decisão do árbitro geral)</li>
-          </ul>
-        </div>
-
-        <div class="mini-card">
-          <h3>⏰ Convocação / atrasos / pagamento</h3>
-          <ul>
-            <li>Convocação a partir de <b>14h45</b> (início das partidas <b>15h00</b>)</li>
-            <li>Sanções por atraso: <b>5 min = 1 game</b> • <b>10 min = 2 games</b> • <b>15 min = WO</b></li>
-            <li>Pagamento confirmado pelo árbitro geral: via <b>SumUp</b> ou no local (dinheiro)</li>
-            <li>Documentos que podem ser solicitados: identidade + comprovante de licença + atestado (se jovem com autorização de categoria)</li>
-          </ul>
-        </div>
-
-        <div class="mini-card">
-          <h3>🏅 Pontos / organização</h3>
-          <ul>
-            <li>Pontos BT250: Campeão <b>250</b> • Vice <b>175</b> • 3º <b>140</b> • 4º <b>105</b> • 5º <b>88</b> • 6º <b>76</b> • 7º <b>65</b> • 8º <b>52</b></li>
-            <li>Comitê do torneio: <b>Jules Parisis</b>, <b>Quentin Savoyen</b>, <b>Mélanie Freitas</b></li>
-            <li>Árbitro geral: <b>Enzo Horvath</b></li>
-          </ul>
-        </div>
-
-        <div class="mini-card">
-          <h3>🌦️ Diversos</h3>
-          <ul>
-            <li>Força maior: adaptação / suspensão / cancelamento possível; <b>reembolso</b> em caso de cancelamento</li>
-            <li>Direito de imagem: fotos/vídeos possíveis para comunicação do clube</li>
-            <li>Seguro: via licença FFT; pertences pessoais sob responsabilidade do jogador</li>
-            <li>Fair-play: comportamento antidesportivo → advertência / penalidade / desclassificação</li>
-          </ul>
-        </div>
-
       </div>
-    </div>
+    </section>
 
-  </section>
+    <section class="section">
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">Règlement</h2>
+            <p class="panel-text">
+              Placeholder public. Le système est prêt pour une future intégration du règlement complet, des points essentiels et des documents officiels.
+            </p>
+          </div>
+          <div class="panel-tag">Placeholder</div>
+        </div>
 
-</main>
+        <div class="note">
+          Cette page est volontairement en mode simple pour rendre le site fonctionnel tout de suite, tout en restant facile à faire évoluer ensuite.
+        </div>
 
-<script>
-  (function(){
-    const fr = document.getElementById('langFR');
-    const pt = document.getElementById('langPT');
-    const btnFR = document.getElementById('btnFR');
-    const btnPT = document.getElementById('btnPT');
+        <div class="placeholder-grid">
+          <div class="placeholder-card">
+            <h3 class="placeholder-title">📄 Document officiel</h3>
+            <p class="placeholder-text">
+              Ici pourra être ajouté un lien vers le règlement officiel du tournoi, au format PDF ou sur une page dédiée.
+            </p>
+          </div>
 
-    function showFR(){
-      fr.style.display = 'block';
-      pt.style.display = 'none';
-      document.documentElement.lang = 'fr';
-      try{ localStorage.setItem("reglement_openbt_lang", "fr"); }catch(e){}
-    }
-    function showPT(){
-      fr.style.display = 'none';
-      pt.style.display = 'block';
-      document.documentElement.lang = 'pt-BR';
-      try{ localStorage.setItem("reglement_openbt_lang", "pt"); }catch(e){}
-    }
+          <div class="placeholder-card">
+            <h3 class="placeholder-title">🎾 Format de jeu</h3>
+            <p class="placeholder-text">
+              Cette zone pourra détailler le format des matchs, le système de tableaux, les éventuels poules et les règles particulières retenues.
+            </p>
+          </div>
 
-    btnFR.addEventListener('click', showFR);
-    btnPT.addEventListener('click', showPT);
+          <div class="placeholder-card">
+            <h3 class="placeholder-title">⏱️ Organisation</h3>
+            <p class="placeholder-text">
+              On pourra y intégrer ensuite les horaires de convocation, les règles de présence, les délais, les forfaits et les validations.
+            </p>
+          </div>
 
-    let saved = "fr";
-    try{ saved = localStorage.getItem("reglement_openbt_lang") || "fr"; }catch(e){}
-    saved === "pt" ? showPT() : showFR();
-  })();
-</script>
+          <div class="placeholder-card">
+            <h3 class="placeholder-title">⚖️ Points importants</h3>
+            <p class="placeholder-text">
+              Cette zone pourra mettre en avant les éléments essentiels à lire rapidement avant le tournoi : équipement, arbitrage, comportement et sécurité.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
 
 </body>
 </html>
