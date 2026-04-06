@@ -1,447 +1,217 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Boutique — Open BT Bricorama</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260224" />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Boutique — Open BT Bricorama</title>
 
-  <style>
-    .note{
-      border:1px solid #eee;
-      border-radius:14px;
-      padding:14px;
-      background:#fff;
-      line-height:1.55;
-    }
-    .small{ font-size:14px; }
+<link rel="stylesheet" href="../assets/css/main.css?v=20260406-open-boutique-v1"/>
 
-    /* =========================
-       Subtabs (2 boutons)
-    ========================== */
-    .subtabs{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-      margin-top:10px;
-    }
-    .subtab{
-      appearance:none;
-      border:1px solid #ddd;
-      background:#fafafa;
-      border-radius:999px;
-      padding:10px 14px;
-      font-weight:900;
-      cursor:pointer;
-      text-align:center;
-      white-space:nowrap;
-    }
-    .subtab[aria-selected="true"]{
-      background:#fff;
-      border-color:#cfcfcf;
-      box-shadow: 0 6px 14px rgba(0,0,0,.06);
-    }
+<style>
+/* ===== SUBTABS ===== */
+.subtabs{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:10px;
+}
+.subtab{
+  border:1px solid #ddd;
+  background:#fafafa;
+  border-radius:999px;
+  padding:10px;
+  font-weight:900;
+  cursor:pointer;
+}
+.subtab[aria-selected="true"]{
+  background:#fff;
+  box-shadow:0 6px 14px rgba(0,0,0,.06);
+}
 
-    /* =========================
-       Paiements - liste (no scroll horizontal)
-    ========================== */
-    .pay-list{
-      display:grid;
-      gap:10px;
-      margin-top:12px;
-    }
+/* ===== CARDS ===== */
+.pay-list{
+  display:grid;
+  gap:10px;
+  margin-top:12px;
+}
 
-    .pay-card{
-      border:1px solid #eee;
-      border-radius:16px;
-      background:#fff;
-      padding:12px 12px;
-      box-shadow: 0 6px 16px rgba(0,0,0,.04);
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      min-width:0;
-    }
+.pay-card{
+  border-radius:16px;
+  background:#fff;
+  padding:12px;
+  box-shadow:0 6px 16px rgba(0,0,0,.05);
+}
 
-    .pay-head{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      min-width:0;
-    }
+.badge{
+  padding:6px 10px;
+  border-radius:999px;
+  font-weight:900;
+}
 
-    .pay-team{
-      font-weight:900;
-      font-size:16px;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-      min-width:0;
-    }
-
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:6px 10px;
-      border-radius:999px;
-      font-weight:900;
-      border:1px solid #eee;
-      background:#fafafa;
-      white-space:nowrap;
-      flex: 0 0 auto;
-    }
-
-    .dot{
-      width:10px;
-      height:10px;
-      border-radius:999px;
-      display:inline-block;
-      background:#bbb;
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,.12);
-    }
-    .dot.red{ background:#e74c3c; }
-    .dot.orange{ background:#f39c12; }
-    .dot.green{ background:#2ecc71; }
-
-    .players{
-      display:grid;
-      gap:8px;
-    }
-
-    .player-row{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      border:1px solid #f0f0f0;
-      background:#fbfbfb;
-      border-radius:12px;
-      padding:10px 10px;
-      min-width:0;
-    }
-
-    .player-name{
-      font-weight:800;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      white-space:nowrap;
-      min-width:0;
-    }
-
-    .player-right{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      white-space:nowrap;
-      flex: 0 0 auto;
-      font-weight:900;
-    }
-
-    .paid-ok{ color:#111; }
-    .paid-no{ color:#111; opacity:.9; }
-
-    .mutedline{
-      margin:10px 0 0;
-    }
-
-    @media (max-width: 420px){
-      .player-row{ padding:9px 9px; }
-      .pay-team{ font-size:15px; }
-      .badge{ padding:6px 9px; font-size:13px; }
-    }
-  </style>
+.dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  display:inline-block;
+}
+.dot.red{background:#e74c3c;}
+.dot.orange{background:#f39c12;}
+.dot.green{background:#2ecc71;}
+</style>
 </head>
 
 <body>
 
-<header class="topbar">
-  <div class="container">
-    <!-- Bandeau général (même style que index, via main.css) -->
-    <div class="topbar-row">
-      <div class="brand-logo">
-        <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
-      </div>
+<header class="site-header">
+  <div class="container header-inner">
 
-      <h1 class="brand-title">Open BT Bricorama</h1>
-
-      <div class="brand-logo">
-        <img src="../assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
-      </div>
+    <div class="header-logo left">
+      <img src="../assets/img/blason-suzini.png">
     </div>
 
-    <!-- Nav générale (2 lignes sur mobile : géré côté main.css / logique index) -->
-    <nav class="nav nav-step">
-      <a href="../index.html" title="Accueil" aria-label="Accueil">🏠</a>
-      <a href="reglement.html">📘 Règlement</a>
-      <a href="infos.html">ℹ️ Infos</a>
-      <a href="repas.html">🍽️ Repas</a>
-      <a href="boutique.html" aria-current="page">🛍️ Boutique</a>
-      <a href="contact.html">📩 Contact</a>
+    <div class="header-logo center">
+      <img src="../assets/img/openbt.png">
+    </div>
+
+    <div class="header-logo right">
+      <img src="../assets/img/BT500.png">
+    </div>
+
+    <nav class="header-nav">
+      <a class="nav-link" href="../index.html">🏠 Accueil</a>
+      <a class="nav-link" href="equipes.html">👥 Équipes</a>
+      <a class="nav-link" href="programmation.html">📅 Programmation</a>
+      <a class="nav-link" href="classements.html">🏆 Résultats</a>
+      <a class="nav-link" href="reglement.html">📘 Règlement</a>
+      <a class="nav-link" href="inscriptions.html">📝 Inscriptions</a>
+      <a class="nav-link primary" href="boutique.html">🛍️ Boutique</a>
+      <a class="nav-link" href="repas.html">🍽️ Repas</a>
+      <a class="nav-link" href="tirage.html">🎲 Tirage</a>
+      <a class="nav-link" href="infos.html">ℹ️ Infos</a>
+      <a class="nav-link" href="contact.html">📩 Contact</a>
     </nav>
+
   </div>
 </header>
 
 <main class="container">
 
-  <!-- Sous-onglets -->
-  <section class="card">
-    <h2 style="margin-bottom:6px;">🛒 Boutique / Paiement</h2>
+<section class="panel">
+<h2>🛒 Boutique / Paiement</h2>
 
-    <div class="subtabs" role="tablist" aria-label="Boutique / Paiements">
-      <button class="subtab" id="tabShop" type="button" aria-selected="true">🛍️ Boutique</button>
-      <button class="subtab" id="tabPaid" type="button" aria-selected="false">✅ Paiements effectués</button>
-    </div>
+<div class="subtabs">
+<button id="tabShop" class="subtab" aria-selected="true">🛍️ Boutique</button>
+<button id="tabPaid" class="subtab">✅ Paiements</button>
+</div>
 
-    <p class="muted mutedline" id="paidHint" style="display:none;">
-      Affichage en direct. Le statut “payé / pas payé” est mis à jour par l’organisation.
-    </p>
-  </section>
+</section>
 
-  <!-- ======================
-        ONGLET 1 — BOUTIQUE
-  ======================= -->
-  <section class="card" id="panelShop">
-    <div class="note">
-      <p style="margin:0 0 10px;">
-        👉 Le paiement des inscriptions à l’<b>Open BT Bricorama</b> est possible via <b>SumUp</b>.
-      <ul style="margin:0 0 10px 18px;">
-        <li>Paiement <b>par équipe : 20€</b></li>
-        <li>Paiement <b>par joueur : 10€</b></li>
-      </ul>
-      
-    </div>
+<!-- ===== BOUTIQUE ===== -->
+<section id="panelShop" class="panel">
 
-    <div class="grid" style="margin-top:12px;">
-      <a class="btn" id="btnGo"
-         href="https://tennis-club-de-suzini.sumupstore.com/produits?category=9f1abbf3-0643-4296-996c-b2b9495e716a"
-         target="_blank" rel="noopener"
-         style="font-weight:900; color:#111;">
-        🔗 Ouvrir la boutique SumUp
-      </a>
-      
-    </div>
+<p>
+Paiement via <b>SumUp</b>
+</p>
 
-    
-  </section>
+<a class="btn btn-primary"
+href="https://tennis-club-de-suzini.sumupstore.com"
+target="_blank">
+🔗 Ouvrir la boutique
+</a>
 
-  <!-- ======================
-        ONGLET 2 — PAIEMENTS
-  ======================= -->
-  <section class="card" id="panelPaid" style="display:none;">
-    <h2 style="margin:0;">✅ Paiements effectués</h2>
-    <p class="muted" style="margin:8px 0 0;">
-      Tri : <b>non payé</b> → <b>partiel</b> → <b>payé</b>.
-    </p>
+</section>
 
-    <p class="muted" id="paidStatus" style="margin:10px 0 0;">Chargement…</p>
+<!-- ===== PAIEMENTS ===== -->
+<section id="panelPaid" class="panel" style="display:none;">
 
-    <div id="payList" class="pay-list" aria-label="Liste des paiements"></div>
-  </section>
+<h2>✅ Paiements</h2>
+
+<div class="subtabs" style="margin-top:10px;">
+<button id="btnDH" class="subtab" aria-selected="true">👨 DH</button>
+<button id="btnDD" class="subtab">👩 DD</button>
+</div>
+
+<p id="status" class="muted">Chargement…</p>
+
+<div id="list" class="pay-list"></div>
+
+</section>
 
 </main>
 
 <script type="module">
-  import { db } from "../assets/js/firebase.js";
-  import {
-    collection,
-    query,
-    orderBy,
-    onSnapshot
-  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+import { db } from "../assets/js/firebase.js";
+import {
+collection,
+onSnapshot,
+query,
+orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-  // =========================
-  // CONFIG FIRESTORE
-  // =========================
-  const COL_TEAMS_DM_PUBLIC = "equipes_dh_public";
-  const COL_TEAMS_DD_PUBLIC = "equipes_dd_public";
+const COL = {
+DH:"equipes_dh_public",
+DD:"equipes_dd_public"
+};
 
-  // 1 doc / équipe (id = "dm_<teamDocId>" ou "dd_<teamDocId>")
-  // fields: p1Paid (bool), p2Paid (bool)
-  const COL_PAYMENTS = "paiements_openbt";
+let current="DH";
 
-  // =========================
-  // TABS
-  // =========================
-  const tabShop = document.getElementById("tabShop");
-  const tabPaid = document.getElementById("tabPaid");
-  const panelShop = document.getElementById("panelShop");
-  const panelPaid = document.getElementById("panelPaid");
-  const paidHint = document.getElementById("paidHint");
+const tabShop=document.getElementById("tabShop");
+const tabPaid=document.getElementById("tabPaid");
+const panelShop=document.getElementById("panelShop");
+const panelPaid=document.getElementById("panelPaid");
 
-  function showShop(){
-    tabShop.setAttribute("aria-selected","true");
-    tabPaid.setAttribute("aria-selected","false");
-    panelShop.style.display = "block";
-    panelPaid.style.display = "none";
-    paidHint.style.display = "none";
-    try{ localStorage.setItem("openbt_boutique_tab","shop"); }catch(e){}
-  }
+tabShop.onclick=()=>{
+panelShop.style.display="block";
+panelPaid.style.display="none";
+};
 
-  function showPaid(){
-    tabShop.setAttribute("aria-selected","false");
-    tabPaid.setAttribute("aria-selected","true");
-    panelShop.style.display = "none";
-    panelPaid.style.display = "block";
-    paidHint.style.display = "block";
-    try{ localStorage.setItem("openbt_boutique_tab","paid"); }catch(e){}
-  }
+tabPaid.onclick=()=>{
+panelShop.style.display="none";
+panelPaid.style.display="block";
+load();
+};
 
-  tabShop.addEventListener("click", showShop);
-  tabPaid.addEventListener("click", showPaid);
+document.getElementById("btnDH").onclick=()=>{
+current="DH";
+load();
+};
 
-  try{
-    const saved = localStorage.getItem("openbt_boutique_tab");
-    if(saved === "paid") showPaid(); else showShop();
-  }catch(e){
-    showShop();
-  }
+document.getElementById("btnDD").onclick=()=>{
+current="DD";
+load();
+};
 
-  // =========================
-  // UI PAIEMENTS
-  // =========================
-  const payList = document.getElementById("payList");
-  const paidStatus = document.getElementById("paidStatus");
+function load(){
+const list=document.getElementById("list");
+const status=document.getElementById("status");
 
-  function esc(s){
-    return (s ?? "").toString()
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;");
-  }
+status.textContent="Chargement…";
 
-  function statusDotClass(paidCount){
-    if(paidCount >= 2) return "green";
-    if(paidCount === 1) return "orange";
-    return "red";
-  }
+const q=query(collection(db,COL[current]),orderBy("createdAt","asc"));
 
-  function statusLabel(paidCount){
-    return paidCount >= 2 ? "Payé"
-      : paidCount === 1 ? "Partiel"
-      : "Non payé";
-  }
+onSnapshot(q,(snap)=>{
+const arr=[];
 
-  function paidIcon(isPaid){
-    return isPaid ? "✅" : "❌";
-  }
+snap.forEach(d=>{
+const x=d.data();
+arr.push({
+team:x.teamName,
+p1:x.p1FirstName,
+p2:x.p2FirstName
+});
+});
 
-  // =========================
-  // DATA (DM + DD + PAYMENTS)
-  // =========================
-  let snapDM = null;
-  let snapDD = null;
-  let snapPay = null;
+status.textContent="🟢 En direct";
 
-  function rebuild(){
-    if(!snapDM || !snapDD || !snapPay){
-      paidStatus.textContent = "Chargement…";
-      return;
-    }
+list.innerHTML=arr.map(t=>`
+<div class="pay-card">
+<b>${t.team}</b><br>
+${t.p1} / ${t.p2}
+</div>
+`).join("");
 
-    // Build payments map
-    const payMap = new Map(); // id -> {p1Paid, p2Paid}
-    snapPay.forEach(d=>{
-      const x = d.data() || {};
-      payMap.set(d.id, {
-        p1Paid: x.p1Paid === true,
-        p2Paid: x.p2Paid === true
-      });
-    });
-
-    // Build teams list (DM + DD)
-    const teams = [];
-
-    function feed(prefix, snap){
-      snap.forEach(d=>{
-        const x = d.data() || {};
-        const teamName = (x.teamName || "").trim();
-        const p1 = (x.p1FirstName || "").trim();
-        const p2 = (x.p2FirstName || "").trim();
-        if(!teamName) return;
-
-        const payId = `${prefix}_${d.id}`;
-        const pay = payMap.get(payId) || { p1Paid:false, p2Paid:false }; // default = non payé
-
-        const paidCount = (pay.p1Paid?1:0) + (pay.p2Paid?1:0);
-
-        teams.push({
-          payId,
-          cat: prefix, // "dm" | "dd"
-          teamName,
-          p1,
-          p2,
-          p1Paid: pay.p1Paid,
-          p2Paid: pay.p2Paid,
-          paidCount
-        });
-      });
-    }
-
-    feed("dm", snapDM);
-    feed("dd", snapDD);
-
-    // Sort: non payé (0) -> partiel (1) -> payé (2)
-    teams.sort((a,b)=>{
-      if(a.paidCount !== b.paidCount) return a.paidCount - b.paidCount;
-      // secondaire : nom équipe
-      return (a.teamName||"").localeCompare((b.teamName||""), "fr");
-    });
-
-    paidStatus.textContent = `🟢 En direct — ${teams.length} équipe(s)`;
-
-    if(teams.length === 0){
-      payList.innerHTML = `<p class="muted" style="margin:0;">Aucune équipe pour le moment.</p>`;
-      return;
-    }
-
-    payList.innerHTML = teams.map(t=>{
-      const dot = statusDotClass(t.paidCount);
-      const label = statusLabel(t.paidCount);
-
-      const p1Name = t.p1 || "—";
-      const p2Name = t.p2 || "—";
-
-      return `
-        <div class="pay-card">
-          <div class="pay-head">
-            <div class="pay-team">${esc(t.teamName)}</div>
-            <div class="badge" title="${esc(label)}">
-              <span class="dot ${dot}"></span>
-              ${esc(label)}
-            </div>
-          </div>
-
-          <div class="players">
-            <div class="player-row">
-              <div class="player-name">${esc(p1Name)}</div>
-              <div class="player-right ${t.p1Paid ? "paid-ok" : "paid-no"}">
-                ${paidIcon(t.p1Paid)}
-              </div>
-            </div>
-
-            <div class="player-row">
-              <div class="player-name">${esc(p2Name)}</div>
-              <div class="player-right ${t.p2Paid ? "paid-ok" : "paid-no"}">
-                ${paidIcon(t.p2Paid)}
-              </div>
-            </div>
-          </div>
-        </div>
-      `;
-    }).join("");
-  }
-
-  // Snapshots
-  const qDM = query(collection(db, COL_TEAMS_DM_PUBLIC), orderBy("createdAt","asc"));
-  const qDD = query(collection(db, COL_TEAMS_DD_PUBLIC), orderBy("createdAt","asc"));
-  const qPay = query(collection(db, COL_PAYMENTS), orderBy("updatedAt","desc"));
-
-  onSnapshot(qDM, (s)=>{ snapDM = s; rebuild(); }, (e)=>{ console.error(e); paidStatus.textContent="🔴 Erreur de connexion (DM)"; });
-  onSnapshot(qDD, (s)=>{ snapDD = s; rebuild(); }, (e)=>{ console.error(e); paidStatus.textContent="🔴 Erreur de connexion (DD)"; });
-  onSnapshot(qPay, (s)=>{ snapPay = s; rebuild(); }, (e)=>{ console.error(e); paidStatus.textContent="🔴 Erreur de connexion (paiements)"; });
-
+});
+}
 </script>
 
 </body>
