@@ -1,218 +1,1072 @@
 <!doctype html>
 <html lang="fr">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Boutique — Open BT Bricorama</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Boutique — Open BT Bricorama</title>
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260406-open-boutique-v2" />
 
-<link rel="stylesheet" href="../assets/css/main.css?v=20260406-open-boutique-v1"/>
+  <style>
+    :root{
+      --bg: #f4f1ea;
+      --card: rgba(255,255,255,.92);
+      --card-strong: rgba(255,255,255,.96);
+      --text: #17212b;
+      --muted: #667085;
+      --border: rgba(16,24,40,.08);
+      --shadow: 0 16px 40px rgba(16,24,40,.10);
 
-<style>
-/* ===== SUBTABS ===== */
-.subtabs{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-top:10px;
-}
-.subtab{
-  border:1px solid #ddd;
-  background:#fafafa;
-  border-radius:999px;
-  padding:10px;
-  font-weight:900;
-  cursor:pointer;
-}
-.subtab[aria-selected="true"]{
-  background:#fff;
-  box-shadow:0 6px 14px rgba(0,0,0,.06);
-}
+      --yellow: #ffd400;
+      --yellow-dark: #efc000;
+      --sun-orange: #ff8a2a;
+      --sun-red: #d94b2b;
+      --sun-pink: #d94f7a;
+      --violet: #6b2bd9;
+      --night: #0f1e35;
+      --deep-blue: #183b68;
+      --sea: #1e6fa8;
+      --green: #1f7a3a;
+      --dark: #111827;
 
-/* ===== CARDS ===== */
-.pay-list{
-  display:grid;
-  gap:10px;
-  margin-top:12px;
-}
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
 
-.pay-card{
-  border-radius:16px;
-  background:#fff;
-  padding:12px;
-  box-shadow:0 6px 16px rgba(0,0,0,.05);
-}
+      --container: 1180px;
 
-.badge{
-  padding:6px 10px;
-  border-radius:999px;
-  font-weight:900;
-}
+      --header-h: 146px;
+    }
 
-.dot{
-  width:10px;
-  height:10px;
-  border-radius:50%;
-  display:inline-block;
-}
-.dot.red{background:#e74c3c;}
-.dot.orange{background:#f39c12;}
-.dot.green{background:#2ecc71;}
-</style>
+    *{ box-sizing:border-box; }
+
+    html{ scroll-behavior:smooth; }
+
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 20% 0%, rgba(255,202,64,.18), transparent 20%),
+        radial-gradient(circle at 80% 10%, rgba(217,79,122,.14), transparent 24%),
+        linear-gradient(180deg, #f6f2ea 0%, #f3f0eb 100%);
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    img{
+      display:block;
+      max-width:100%;
+    }
+
+    .container{
+      width:min(var(--container), calc(100% - 28px));
+      margin:0 auto;
+    }
+
+    /* =========================
+       HEADER UNIQUE
+    ========================= */
+    .site-header{
+      position:fixed;
+      top:0;
+      left:0;
+      right:0;
+      z-index:1000;
+      background:linear-gradient(135deg, var(--yellow), #ffe25d 52%, var(--yellow-dark));
+      border-bottom:1px solid rgba(0,0,0,.06);
+      box-shadow:0 10px 24px rgba(255,212,0,.22);
+    }
+
+    .header-inner{
+      min-height:var(--header-h);
+      display:grid;
+      grid-template-columns:70px 1fr 70px;
+      grid-template-rows:auto auto;
+      align-items:center;
+      gap:10px 18px;
+      padding:10px 0 12px;
+    }
+
+    .header-logo{
+      width:70px;
+      height:70px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .header-logo img{
+      max-width:100%;
+      max-height:100%;
+      object-fit:contain;
+      filter:drop-shadow(0 6px 10px rgba(0,0,0,.14));
+    }
+
+    .header-logo.left{
+      grid-column:1;
+      grid-row:1;
+      justify-self:start;
+    }
+
+    .header-logo.center{
+      grid-column:2;
+      grid-row:1;
+      justify-self:center;
+      width:min(320px, 100%);
+      height:70px;
+    }
+
+    .header-logo.right{
+      grid-column:3;
+      grid-row:1;
+      justify-self:end;
+    }
+
+    .header-logo.center img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+    }
+
+    .header-nav-wrap{
+      grid-column:1 / 4;
+      grid-row:2;
+      position:relative;
+    }
+
+    .header-nav-wrap::before,
+    .header-nav-wrap::after{
+      position:absolute;
+      top:50%;
+      transform:translateY(-50%);
+      z-index:3;
+      width:34px;
+      height:46px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:18px;
+      font-weight:1000;
+      color:rgba(23,33,43,.58);
+      pointer-events:none;
+    }
+
+    .header-nav-wrap::before{
+      content:"‹";
+      left:0;
+      background:linear-gradient(90deg, rgba(255,221,58,.92) 0%, rgba(255,221,58,.72) 48%, rgba(255,221,58,0) 100%);
+      border-top-left-radius:999px;
+      border-bottom-left-radius:999px;
+    }
+
+    .header-nav-wrap::after{
+      content:"›";
+      right:0;
+      background:linear-gradient(270deg, rgba(255,221,58,.92) 0%, rgba(255,221,58,.72) 48%, rgba(255,221,58,0) 100%);
+      border-top-right-radius:999px;
+      border-bottom-right-radius:999px;
+    }
+
+    .header-nav{
+      display:flex;
+      align-items:center;
+      justify-content:flex-start;
+      gap:10px;
+      overflow-x:auto;
+      -webkit-overflow-scrolling:touch;
+      scrollbar-width:none;
+      padding:2px 34px 0;
+      scroll-padding-left:34px;
+      scroll-padding-right:34px;
+    }
+
+    .header-nav::-webkit-scrollbar{
+      display:none;
+    }
+
+    .nav-link{
+      flex:0 0 auto;
+      min-height:42px;
+      padding:10px 18px;
+      border-radius:999px;
+      background:linear-gradient(180deg, rgba(255,255,255,.96), rgba(255,255,255,.82));
+      border:1px solid rgba(255,255,255,.55);
+      color:#344054;
+      font-size:14px;
+      font-weight:900;
+      white-space:nowrap;
+      box-shadow:
+        0 8px 18px rgba(0,0,0,.10),
+        inset 0 1px 0 rgba(255,255,255,.7);
+      transition:transform .16s ease, box-shadow .16s ease, background .16s ease;
+    }
+
+    .nav-link:hover{
+      transform:translateY(-1px);
+      box-shadow:
+        0 10px 20px rgba(0,0,0,.12),
+        inset 0 1px 0 rgba(255,255,255,.7);
+    }
+
+    .nav-link.primary{
+      background:linear-gradient(180deg, #2ea44f, #1f7a3a);
+      color:#fff;
+      border-color:rgba(0,0,0,.06);
+      box-shadow:
+        0 10px 18px rgba(31,122,58,.24),
+        inset 0 1px 0 rgba(255,255,255,.18);
+    }
+
+    /* =========================
+       MAIN
+    ========================= */
+    main{
+      padding-top:calc(var(--header-h) + 24px);
+      padding-bottom:40px;
+    }
+
+    .section{
+      margin-top:22px;
+    }
+
+    .hero{
+      position:relative;
+      overflow:hidden;
+      border-radius:32px;
+      padding:28px 22px 24px;
+      color:#fff;
+      box-shadow:
+        0 20px 44px rgba(16,24,40,.16),
+        inset 0 0 0 1px rgba(255,255,255,.06);
+      background:
+        radial-gradient(circle at 50% 68%, rgba(255,212,0,.40), transparent 18%),
+        radial-gradient(circle at 30% 18%, rgba(255,138,42,.55), transparent 22%),
+        radial-gradient(circle at 78% 22%, rgba(217,79,122,.44), transparent 20%),
+        linear-gradient(180deg, #24132e 0%, #6c2c2f 32%, #e1782d 68%, #f7b257 100%);
+    }
+
+    .hero::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 50% 100%, rgba(0,0,0,.28), transparent 32%),
+        linear-gradient(180deg, rgba(7,16,32,.08), rgba(7,16,32,.18));
+      pointer-events:none;
+    }
+
+    .hero-inner{
+      position:relative;
+      z-index:1;
+      display:grid;
+      gap:18px;
+    }
+
+    .hero-topline{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:center;
+    }
+
+    .hero-pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:9px 14px;
+      border-radius:999px;
+      background:rgba(255,255,255,.14);
+      color:#fff6d8;
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.02em;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);
+      backdrop-filter:blur(8px);
+    }
+
+    .hero-content{
+      text-align:center;
+      max-width:900px;
+      margin:0 auto;
+    }
+
+    .hero-title{
+      margin:0;
+      font-size:clamp(30px, 5vw, 54px);
+      line-height:1;
+      letter-spacing:-0.04em;
+      font-weight:900;
+      text-shadow:0 10px 24px rgba(0,0,0,.20);
+    }
+
+    .hero-sub{
+      margin:12px auto 0;
+      max-width:760px;
+      font-size:16px;
+      line-height:1.55;
+      color:rgba(255,255,255,.95);
+      font-weight:600;
+    }
+
+    .panel{
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.35);
+      border-radius:var(--radius-xl);
+      box-shadow:var(--shadow);
+      padding:20px;
+    }
+
+    .panel-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      margin-bottom:16px;
+    }
+
+    .panel-title{
+      margin:0;
+      font-size:28px;
+      line-height:1.05;
+      letter-spacing:-0.03em;
+      color:#1c2430;
+    }
+
+    .panel-text{
+      margin:8px 0 0;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.55;
+    }
+
+    .panel-tag{
+      flex-shrink:0;
+      padding:8px 13px;
+      border-radius:999px;
+      background:#eef2f6;
+      color:#344054;
+      font-size:12px;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+    }
+
+    .subtabs{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    .subtab{
+      appearance:none;
+      border:1px solid #ddd;
+      background:#fafafa;
+      border-radius:999px;
+      padding:10px 14px;
+      font-weight:900;
+      cursor:pointer;
+      text-align:center;
+      white-space:nowrap;
+    }
+
+    .subtab[aria-selected="true"]{
+      background:#fff;
+      border-color:#cfcfcf;
+      box-shadow:0 6px 14px rgba(0,0,0,.06);
+    }
+
+    .switches{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .switch-btn{
+      appearance:none;
+      border:1px solid rgba(16,24,40,.10);
+      background:#fff;
+      border-radius:999px;
+      min-height:50px;
+      padding:12px 14px;
+      font-weight:900;
+      font-size:15px;
+      color:#1c2430;
+      cursor:pointer;
+      transition:all .18s ease;
+      box-shadow:0 8px 16px rgba(16,24,40,.04);
+    }
+
+    .switch-btn[aria-selected="true"]{
+      background:linear-gradient(180deg, #2ea44f, #1f7a3a);
+      color:#fff;
+      border-color:#1f7a3a;
+      box-shadow:0 12px 22px rgba(31,122,58,.20);
+    }
+
+    .note{
+      border:1px solid #eee;
+      border-radius:16px;
+      padding:14px;
+      background:#fff;
+      line-height:1.6;
+    }
+
+    .small{ font-size:14px; }
+
+    .pay-top{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      align-items:flex-end;
+      justify-content:space-between;
+      margin-top:10px;
+    }
+
+    .pay-list{
+      display:grid;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .pay-card{
+      border:1px solid #eee;
+      border-radius:16px;
+      background:#fff;
+      padding:12px 12px;
+      box-shadow:0 6px 16px rgba(0,0,0,.04);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      min-width:0;
+    }
+
+    .pay-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      min-width:0;
+    }
+
+    .pay-team{
+      font-weight:900;
+      font-size:16px;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      min-width:0;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      font-weight:900;
+      border:1px solid #eee;
+      background:#fafafa;
+      white-space:nowrap;
+      flex:0 0 auto;
+    }
+
+    .dot{
+      width:10px;
+      height:10px;
+      border-radius:999px;
+      display:inline-block;
+      background:#bbb;
+      box-shadow:inset 0 0 0 1px rgba(0,0,0,.12);
+    }
+
+    .dot.red{ background:#e74c3c; }
+    .dot.orange{ background:#f39c12; }
+    .dot.green{ background:#2ecc71; }
+
+    .players{
+      display:grid;
+      gap:8px;
+    }
+
+    .player-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border:1px solid #f0f0f0;
+      background:#fbfbfb;
+      border-radius:12px;
+      padding:10px 10px;
+      min-width:0;
+    }
+
+    .player-name{
+      font-weight:800;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      min-width:0;
+    }
+
+    .player-right{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      white-space:nowrap;
+      flex:0 0 auto;
+      font-weight:900;
+      color:#111;
+    }
+
+    .mutedline{ margin:10px 0 0; }
+
+    .pay-section-title{
+      margin:12px 0 0;
+      font-weight:1000;
+    }
+
+    .pay-section-sub{
+      margin:6px 0 0;
+    }
+
+    .status-box{
+      margin-top:10px;
+      padding:14px 16px;
+      border-radius:18px;
+      background:#f8fafc;
+      border:1px solid rgba(16,24,40,.06);
+      color:#475467;
+      font-size:14px;
+      line-height:1.5;
+    }
+
+    .btn{
+      appearance:none;
+      border:none;
+      min-height:56px;
+      border-radius:18px;
+      padding:14px 18px;
+      font-size:16px;
+      font-weight:900;
+      cursor:pointer;
+      transition:transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+    }
+
+    .btn:hover{
+      transform:translateY(-1px);
+    }
+
+    .btn-primary{
+      background:linear-gradient(135deg, #ffd400, #ffea73);
+      color:#111;
+      box-shadow:0 12px 22px rgba(0,0,0,.10);
+    }
+
+    .muted{
+      color:var(--muted);
+    }
+
+    @media (max-width: 420px){
+      .pay-team{ font-size:15px; }
+      .badge{ padding:6px 9px; font-size:13px; }
+    }
+
+    @media (min-width: 760px){
+      :root{
+        --header-h: 158px;
+      }
+
+      .header-inner{
+        grid-template-columns:90px 1fr 90px;
+        gap:12px 22px;
+      }
+
+      .header-logo{
+        width:90px;
+        height:90px;
+      }
+
+      .header-logo.center{
+        height:78px;
+        width:min(420px, 100%);
+      }
+
+      .header-nav-wrap::before,
+      .header-nav-wrap::after{
+        width:42px;
+        height:50px;
+        font-size:20px;
+      }
+
+      .header-nav{
+        padding-left:42px;
+        padding-right:42px;
+        justify-content:center;
+      }
+
+      .switches{
+        grid-template-columns:1fr 1fr;
+      }
+
+      .panel{
+        padding:24px;
+      }
+    }
+  </style>
 </head>
-
 <body>
 
-<header class="site-header">
-  <div class="container header-inner">
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="header-logo left">
+        <img src="../assets/img/blason-suzini.png" alt="Blason Suzini">
+      </div>
 
-    <div class="header-logo left">
-      <img src="../assets/img/blason-suzini.png">
+      <div class="header-logo center">
+        <img src="../assets/img/openbt.png" alt="Open BT Bricorama">
+      </div>
+
+      <div class="header-logo right">
+        <img src="../assets/img/BT500.png" alt="BT500">
+      </div>
+
+      <div class="header-nav-wrap">
+        <nav class="header-nav">
+          <a class="nav-link" href="../index.html">🏠 Accueil</a>
+          <a class="nav-link" href="equipes.html">👥 Équipes</a>
+          <a class="nav-link" href="programmation.html">📅 Programmation</a>
+          <a class="nav-link" href="classements.html">🏆 Résultats</a>
+          <a class="nav-link" href="reglement.html">📘 Règlement</a>
+          <a class="nav-link" href="inscriptions.html">📝 Inscriptions</a>
+          <a class="nav-link primary" href="boutique.html">🛍️ Boutique</a>
+          <a class="nav-link" href="repas.html">🍽️ Repas</a>
+          <a class="nav-link" href="tirage.html">🎲 Tirage</a>
+          <a class="nav-link" href="infos.html">ℹ️ Infos</a>
+          <a class="nav-link" href="contact.html">📩 Contact</a>
+        </nav>
+      </div>
     </div>
+  </header>
 
-    <div class="header-logo center">
-      <img src="../assets/img/openbt.png">
-    </div>
+  <main class="container">
 
-    <div class="header-logo right">
-      <img src="../assets/img/BT500.png">
-    </div>
+    <section class="section">
+      <div class="hero">
+        <div class="hero-inner">
+          <div class="hero-topline">
+            <span class="hero-pill">Open BT Bricorama</span>
+            <span class="hero-pill">🛍️ Boutique</span>
+            <span class="hero-pill">BT500</span>
+          </div>
 
-    <nav class="header-nav">
-      <a class="nav-link" href="../index.html">🏠 Accueil</a>
-      <a class="nav-link" href="equipes.html">👥 Équipes</a>
-      <a class="nav-link" href="programmation.html">📅 Programmation</a>
-      <a class="nav-link" href="classements.html">🏆 Résultats</a>
-      <a class="nav-link" href="reglement.html">📘 Règlement</a>
-      <a class="nav-link" href="inscriptions.html">📝 Inscriptions</a>
-      <a class="nav-link primary" href="boutique.html">🛍️ Boutique</a>
-      <a class="nav-link" href="repas.html">🍽️ Repas</a>
-      <a class="nav-link" href="tirage.html">🎲 Tirage</a>
-      <a class="nav-link" href="infos.html">ℹ️ Infos</a>
-      <a class="nav-link" href="contact.html">📩 Contact</a>
-    </nav>
+          <div class="hero-content">
+            <h1 class="hero-title">Boutique / Paiement</h1>
+            <p class="hero-sub">
+              Retrouvez ici le lien de paiement de l’Open BT Bricorama ainsi qu’un suivi des paiements
+              pour les tableaux <strong>Double Messieurs</strong> et <strong>Double Dames</strong>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
 
-  </div>
-</header>
+    <section class="section">
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">Boutique / Paiements</h2>
+            <p class="panel-text">
+              Paiement via SumUp et consultation du suivi des paiements.
+            </p>
+          </div>
+          <div class="panel-tag">Open</div>
+        </div>
 
-<main class="container">
+        <div class="subtabs" role="tablist" aria-label="Boutique / Paiements">
+          <button class="subtab" id="tabShop" type="button" aria-selected="true">🛍️ Boutique</button>
+          <button class="subtab" id="tabPaid" type="button" aria-selected="false">✅ Paiements</button>
+        </div>
 
-<section class="panel">
-<h2>🛒 Boutique / Paiement</h2>
+        <p class="muted mutedline" id="paidHint" style="display:none;">
+          Affichage en direct. Le statut affiché reprend la vérification faite par l’organisation.
+        </p>
+      </div>
+    </section>
 
-<div class="subtabs">
-<button id="tabShop" class="subtab" aria-selected="true">🛍️ Boutique</button>
-<button id="tabPaid" class="subtab">✅ Paiements</button>
-</div>
+    <!-- ======================
+          ONGLET 1 — BOUTIQUE
+    ======================= -->
+    <section class="section" id="panelShop">
+      <div class="panel">
+        <div class="note">
+          <p style="margin:0 0 10px;">
+            Paiement des inscriptions via <b>SumUp</b> (ouverture via le bouton ci-dessous).
+          </p>
+          <ul style="margin:0 0 10px 18px;">
+            <li>Paiement possible <b>par équipe : 20€</b></li>
+            <li>ou <b>par personne : 10€</b></li>
+          </ul>
+          <p class="muted small" style="margin:0;">
+            Astuce : vérifiez avant que votre partenaire n'a pas déjà réglé 😜
+          </p>
+        </div>
 
-</section>
+        <div style="margin-top:12px;">
+          <a
+            class="btn btn-primary"
+            id="btnGo"
+            href="https://tennis-club-de-suzini.sumupstore.com"
+            target="_blank"
+            rel="noopener"
+            style="width:100%;"
+          >
+            🔗 Ouvrir la boutique SumUp
+          </a>
+        </div>
+      </div>
+    </section>
 
-<!-- ===== BOUTIQUE ===== -->
-<section id="panelShop" class="panel">
+    <!-- ======================
+          ONGLET 2 — PAIEMENTS
+    ======================= -->
+    <section class="section" id="panelPaid" style="display:none;">
+      <div class="panel">
+        <h2 style="margin:0;">✅ Paiements effectués</h2>
+        <p class="muted" style="margin:8px 0 0;">
+          Tri : <b>non payé</b> → <b>à vérifier</b> → <b>payé</b>.
+        </p>
 
-<p>
-Paiement via <b>SumUp</b>
-</p>
+        <div class="switches" role="tablist" aria-label="Choix du tableau" style="margin-top:12px;">
+          <button class="switch-btn" id="btnDH" type="button" aria-selected="true">👨 Double Messieurs</button>
+          <button class="switch-btn" id="btnDD" type="button" aria-selected="false">👩 Double Dames</button>
+        </div>
 
-<a class="btn btn-primary"
-href="https://tennis-club-de-suzini.sumupstore.com"
-target="_blank">
-🔗 Ouvrir la boutique
-</a>
+        <div class="status-box" id="paidStatus">Chargement…</div>
+        <div id="payList" class="pay-list" aria-label="Liste des paiements"></div>
+      </div>
+    </section>
 
-</section>
+  </main>
 
-<!-- ===== PAIEMENTS ===== -->
-<section id="panelPaid" class="panel" style="display:none;">
+  <script type="module">
+    import { db } from "../assets/js/firebase.js";
+    import {
+      collection,
+      query,
+      orderBy,
+      onSnapshot
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-<h2>✅ Paiements</h2>
+    const TEAM_COLLECTION_BY_CAT = {
+      DH: "equipes_dh_public",
+      DD: "equipes_dd_public"
+    };
 
-<div class="subtabs" style="margin-top:10px;">
-<button id="btnDH" class="subtab" aria-selected="true">👨 DH</button>
-<button id="btnDD" class="subtab">👩 DD</button>
-</div>
+    function verifCollectionName(cat){
+      return cat === "DD" ? "verifications_dd" : "verifications_dh";
+    }
 
-<p id="status" class="muted">Chargement…</p>
+    const tabShop = document.getElementById("tabShop");
+    const tabPaid = document.getElementById("tabPaid");
+    const panelShop = document.getElementById("panelShop");
+    const panelPaid = document.getElementById("panelPaid");
+    const paidHint = document.getElementById("paidHint");
 
-<div id="list" class="pay-list"></div>
+    const btnDH = document.getElementById("btnDH");
+    const btnDD = document.getElementById("btnDD");
 
-</section>
+    const payList = document.getElementById("payList");
+    const paidStatus = document.getElementById("paidStatus");
 
-</main>
+    let currentCat = "DH";
+    let snapTeams = null;
+    let snapVerif = null;
+    let unsubTeams = null;
+    let unsubVerif = null;
 
-<script type="module">
-import { db } from "../assets/js/firebase.js";
-import {
-collection,
-onSnapshot,
-query,
-orderBy
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+    function showShop(){
+      tabShop.setAttribute("aria-selected","true");
+      tabPaid.setAttribute("aria-selected","false");
+      panelShop.style.display = "block";
+      panelPaid.style.display = "none";
+      paidHint.style.display = "none";
+      stopSubs();
+      try{ localStorage.setItem("open_boutique_tab","shop"); }catch(e){}
+    }
 
-const COL = {
-DH:"equipes_dh_public",
-DD:"equipes_dd_public"
-};
+    function showPaid(){
+      tabShop.setAttribute("aria-selected","false");
+      tabPaid.setAttribute("aria-selected","true");
+      panelShop.style.display = "none";
+      panelPaid.style.display = "block";
+      paidHint.style.display = "block";
+      try{ localStorage.setItem("open_boutique_tab","paid"); }catch(e){}
+      startSubs(currentCat);
+    }
 
-let current="DH";
+    tabShop.addEventListener("click", showShop);
+    tabPaid.addEventListener("click", showPaid);
 
-const tabShop=document.getElementById("tabShop");
-const tabPaid=document.getElementById("tabPaid");
-const panelShop=document.getElementById("panelShop");
-const panelPaid=document.getElementById("panelPaid");
+    function updateCatButtons(){
+      btnDH.setAttribute("aria-selected", currentCat === "DH" ? "true" : "false");
+      btnDD.setAttribute("aria-selected", currentCat === "DD" ? "true" : "false");
+    }
 
-tabShop.onclick=()=>{
-panelShop.style.display="block";
-panelPaid.style.display="none";
-};
+    btnDH.addEventListener("click", ()=>{
+      currentCat = "DH";
+      updateCatButtons();
+      try{ localStorage.setItem("open_boutique_cat", currentCat); }catch(e){}
+      if(panelPaid.style.display !== "none") startSubs(currentCat);
+    });
 
-tabPaid.onclick=()=>{
-panelShop.style.display="none";
-panelPaid.style.display="block";
-load();
-};
+    btnDD.addEventListener("click", ()=>{
+      currentCat = "DD";
+      updateCatButtons();
+      try{ localStorage.setItem("open_boutique_cat", currentCat); }catch(e){}
+      if(panelPaid.style.display !== "none") startSubs(currentCat);
+    });
 
-document.getElementById("btnDH").onclick=()=>{
-current="DH";
-load();
-};
+    function esc(s){
+      return (s ?? "").toString()
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;");
+    }
 
-document.getElementById("btnDD").onclick=()=>{
-current="DD";
-load();
-};
+    function playerStatusCode(statusValue){
+      if(statusValue === "ok") return 2;
+      if(statusValue === "nok") return 1;
+      return 0;
+    }
 
-function load(){
-const list=document.getElementById("list");
-const status=document.getElementById("status");
+    function statusDotClass(teamStatus){
+      if(teamStatus >= 2) return "green";
+      if(teamStatus === 1) return "orange";
+      return "red";
+    }
 
-status.textContent="Chargement…";
+    function statusLabel(teamStatus){
+      if(teamStatus >= 2) return "Payé";
+      if(teamStatus === 1) return "À vérifier";
+      return "Non payé";
+    }
 
-const q=query(collection(db,COL[current]),orderBy("createdAt","asc"));
+    function playerIcon(statusValue){
+      if(statusValue === "ok") return "✅";
+      if(statusValue === "nok") return "⚠️";
+      return "❌";
+    }
 
-onSnapshot(q,(snap)=>{
-const arr=[];
+    function playerLabel(statusValue){
+      if(statusValue === "ok") return "Payé";
+      if(statusValue === "nok") return "À vérifier";
+      return "Non payé";
+    }
 
-snap.forEach(d=>{
-const x=d.data();
-arr.push({
-team:x.teamName,
-p1:x.p1FirstName,
-p2:x.p2FirstName
-});
-});
+    function teamSortValue(p1Status, p2Status){
+      const a = playerStatusCode(p1Status);
+      const b = playerStatusCode(p2Status);
+      return Math.min(a, b);
+    }
 
-status.textContent="🟢 En direct";
+    function stopSubs(){
+      if(unsubTeams){ unsubTeams(); unsubTeams = null; }
+      if(unsubVerif){ unsubVerif(); unsubVerif = null; }
+      snapTeams = null;
+      snapVerif = null;
+    }
 
-list.innerHTML=arr.map(t=>`
-<div class="pay-card">
-<b>${t.team}</b><br>
-${t.p1} / ${t.p2}
-</div>
-`).join("");
+    function startSubs(cat){
+      stopSubs();
 
-});
-}
-</script>
+      const teamsCol = TEAM_COLLECTION_BY_CAT[cat];
+      if(!teamsCol){
+        paidStatus.textContent = "Catégorie inconnue.";
+        return;
+      }
+
+      paidStatus.textContent = "Chargement…";
+      payList.innerHTML = "";
+
+      const qTeams = query(collection(db, teamsCol), orderBy("createdAt","asc"));
+      const qVerif = query(collection(db, verifCollectionName(cat)));
+
+      unsubTeams = onSnapshot(
+        qTeams,
+        (s)=>{
+          snapTeams = s;
+          rebuild(cat);
+        },
+        (e)=>{
+          console.error(e);
+          paidStatus.textContent = "🔴 Erreur équipes";
+        }
+      );
+
+      unsubVerif = onSnapshot(
+        qVerif,
+        (s)=>{
+          snapVerif = s;
+          rebuild(cat);
+        },
+        (e)=>{
+          console.error(e);
+          snapVerif = null;
+          rebuild(cat);
+        }
+      );
+    }
+
+    function renderSection(title, subtitle, arr){
+      const header = `
+        <div style="margin-top:6px;">
+          <div class="pay-section-title">${esc(title)}</div>
+          ${subtitle ? `<p class="muted pay-section-sub">${esc(subtitle)}</p>` : ``}
+        </div>
+      `;
+
+      if(!arr.length){
+        return header + `<p class="muted" style="margin:0;">Aucune équipe.</p>`;
+      }
+
+      const cards = arr.map(t=>{
+        const dot = statusDotClass(t.teamStatus);
+        const teamLabel = statusLabel(t.teamStatus);
+
+        const p1Name = t.p1 || "—";
+        const p2Name = t.p2 || "—";
+
+        return `
+          <div class="pay-card">
+            <div class="pay-head">
+              <div class="pay-team">${esc(t.teamName)}</div>
+              <div class="badge" title="${esc(teamLabel)}">
+                <span class="dot ${dot}"></span>
+                ${esc(teamLabel)}
+              </div>
+            </div>
+
+            <div class="players">
+              <div class="player-row">
+                <div class="player-name">${esc(p1Name)}</div>
+                <div class="player-right" title="${esc(playerLabel(t.p1PaymentStatus))}">
+                  ${playerIcon(t.p1PaymentStatus)}
+                </div>
+              </div>
+
+              <div class="player-row">
+                <div class="player-name">${esc(p2Name)}</div>
+                <div class="player-right" title="${esc(playerLabel(t.p2PaymentStatus))}">
+                  ${playerIcon(t.p2PaymentStatus)}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      return header + cards;
+    }
+
+    function rebuild(cat){
+      if(!snapTeams){
+        paidStatus.textContent = "Chargement…";
+        return;
+      }
+
+      const verifMap = new Map();
+      if(snapVerif){
+        snapVerif.forEach(d=>{
+          const x = d.data() || {};
+          verifMap.set(d.id, {
+            p1PaymentStatus: x?.p1?.payment || "nv",
+            p2PaymentStatus: x?.p2?.payment || "nv"
+          });
+        });
+      }
+
+      const mainTeams = [];
+      const waitTeams = [];
+
+      snapTeams.forEach(d=>{
+        const x = d.data() || {};
+        const teamName = (x.teamName || "").trim();
+        const p1 = (x.p1FirstName || "").trim();
+        const p2 = (x.p2FirstName || "").trim();
+        if(!teamName) return;
+
+        const list = (x.list || "main").toString();
+        const verif = verifMap.get(d.id) || {
+          p1PaymentStatus: "nv",
+          p2PaymentStatus: "nv"
+        };
+
+        const teamStatus = teamSortValue(verif.p1PaymentStatus, verif.p2PaymentStatus);
+
+        const rec = {
+          teamDocId: d.id,
+          teamName,
+          p1,
+          p2,
+          p1PaymentStatus: verif.p1PaymentStatus,
+          p2PaymentStatus: verif.p2PaymentStatus,
+          teamStatus,
+          list
+        };
+
+        if(list === "wait") waitTeams.push(rec);
+        else mainTeams.push(rec);
+      });
+
+      function sortArr(arr){
+        arr.sort((a,b)=>{
+          if(a.teamStatus !== b.teamStatus) return a.teamStatus - b.teamStatus;
+          return (a.teamName || "").localeCompare((b.teamName || ""), "fr");
+        });
+      }
+
+      sortArr(mainTeams);
+      sortArr(waitTeams);
+
+      const total = mainTeams.length + waitTeams.length;
+      paidStatus.textContent = `🟢 En direct — ${total} équipe(s) — ${cat === "DH" ? "Double Messieurs" : "Double Dames"}`;
+
+      if(total === 0){
+        payList.innerHTML = `<p class="muted" style="margin:0;">Aucune équipe pour le moment.</p>`;
+        return;
+      }
+
+      payList.innerHTML = [
+        renderSection("✅ Tableau principal", "Équipes du tableau principal.", mainTeams),
+        renderSection("⏳ Liste d’attente", "Équipes en attente (affichées après le tableau principal).", waitTeams)
+      ].join("");
+    }
+
+    try{
+      const savedCat = localStorage.getItem("open_boutique_cat");
+      if(savedCat === "DD") currentCat = "DD";
+    }catch(e){}
+
+    updateCatButtons();
+
+    try{
+      const saved = localStorage.getItem("open_boutique_tab");
+      if(saved === "paid") showPaid();
+      else showShop();
+    }catch(e){
+      showShop();
+    }
+  </script>
 
 </body>
 </html>
