@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Inscriptions — Open BT Bricorama</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260406-open-inscriptions-v2" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260408-open-inscriptions-v3" />
 
   <style>
     :root{
@@ -34,7 +34,6 @@
       --radius-sm: 14px;
 
       --container: 1180px;
-
       --header-h: 146px;
     }
 
@@ -721,7 +720,6 @@
       const category = form.querySelector('input[name="category"]:checked')?.value || "";
 
       return {
-        createdAt: serverTimestamp(),
         cat: category,
         teamName: (form.teamName.value || "").trim(),
 
@@ -760,19 +758,39 @@
           throw new Error("Catégorie invalide.");
         }
 
-        const ref = await addDoc(collection(db, COL_PRIVATE[data.cat]), data);
-
-        await setDoc(doc(db, COL_PUBLIC[data.cat], ref.id), {
+        const privatePayload = {
           createdAt: serverTimestamp(),
-          cat: data.cat,
+          teamName: data.teamName,
+
+          p1FirstName: data.p1FirstName,
+          p1LastName:  data.p1LastName,
+          p1Licence:   data.p1Licence,
+          p1Phone:     data.p1Phone,
+
+          p2FirstName: data.p2FirstName,
+          p2LastName:  data.p2LastName,
+          p2Licence:   data.p2Licence,
+          p2Phone:     data.p2Phone
+        };
+
+        const ref = await addDoc(
+          collection(db, COL_PRIVATE[data.cat]),
+          privatePayload
+        );
+
+        const publicPayload = {
+          createdAt: serverTimestamp(),
           teamName: data.teamName,
           p1FirstName: data.p1FirstName,
-          p1LastName: data.p1LastName,
           p2FirstName: data.p2FirstName,
-          p2LastName: data.p2LastName,
           list: "main",
           stby: false
-        });
+        };
+
+        await setDoc(
+          doc(db, COL_PUBLIC[data.cat], ref.id),
+          publicPayload
+        );
 
         form.reset();
         setStatus("✅ Inscription enregistrée !");
