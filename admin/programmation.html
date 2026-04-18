@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin — Programmation — Open BT Bricorama</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260418-open-admin-programmation-dual-v1" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260418-open-admin-programmation-dual-v2" />
 
   <style>
     .nav a[aria-current="page"],
@@ -68,6 +68,7 @@
 
     .pill.phase-poule{ border-color:#d9e6ff; background:#f3f7ff; }
     .pill.phase-finale{ border-color:#f1dca1; background:#fff9e8; }
+    .pill.live{ border-color:#d9f2df; background:#f3fff6; }
 
     .match-grid{
       display:grid;
@@ -193,8 +194,8 @@
     <p class="muted" id="status" style="margin:0;">Chargement…</p>
 
     <div class="grid" style="margin-top:12px;">
+      <button class="btn" id="btnBuild" style="font-weight:900; color:#111;">🧠 Générer depuis le tirage</button>
       <button class="btn" id="btnLoad" style="font-weight:900; color:#111;">🔄 Charger depuis Firestore</button>
-      <button class="btn" id="btnDefault" style="font-weight:900; color:#111;">🧱 Appliquer le modèle par défaut</button>
       <button class="btn" id="btnSave" style="font-weight:900; color:#111;">💾 Sauvegarder</button>
       <button class="btn" id="btnReset" style="font-weight:900; color:#111; border-color:#f1b2b2;">🧨 Réinitialiser</button>
       <a class="btn" id="btnPublic" href="#" style="font-weight:900; color:#111; text-align:center;">👀 Vue publique</a>
@@ -226,6 +227,7 @@
   import { logout, getRoleByEmail } from "../assets/js/session.js";
   import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
   import {
+    collection, getDocs, query, orderBy,
     doc, getDoc, setDoc, serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
@@ -244,8 +246,8 @@
   const statusEl = document.getElementById("status");
   const ruleText = document.getElementById("ruleText");
 
+  const btnBuild = document.getElementById("btnBuild");
   const btnLoad = document.getElementById("btnLoad");
-  const btnDefault = document.getElementById("btnDefault");
   const btnSave = document.getElementById("btnSave");
   const btnReset = document.getElementById("btnReset");
   const btnPublic = document.getElementById("btnPublic");
@@ -263,6 +265,12 @@
       .replaceAll(">","&gt;");
   }
 
+  function toNum(v){
+    if(v === null || v === undefined || v === "") return null;
+    const n = typeof v === "number" ? v : Number(String(v).replace(",", ".").trim());
+    return Number.isFinite(n) ? n : null;
+  }
+
   function zoneText(sc){
     return sc === "dd" ? "Double Dames" : "Double Messieurs";
   }
@@ -275,125 +283,299 @@
     return doc(db, "programmations_open", sc);
   }
 
+  function DRAW_REF_DH(){
+    return doc(db, "tirages_open", "open_bricorama_dh");
+  }
+
+  function COL_PUBLIC(sc){
+    return sc === "dd" ? "equipes_dd_public" : "equipes_dh_public";
+  }
+
   function updateFilterButtons(){
     btnDH.classList.toggle("is-active", currentScope === "dh");
     btnDD.classList.toggle("is-active", currentScope === "dd");
     hintEl.textContent = `${zoneEmoji(currentScope)} Tableau sélectionné : ${zoneText(currentScope)}.`;
   }
 
-  function defaultProgramDH(){
-    return {
-      scope: "dh",
-      title: "Double Messieurs",
-      matches: [
-        {
-          id: "dh_p1",
-          phase: "poule",
-          phaseLabel: "Poule Tortues",
-          time: "15:00",
-          court: "Terrain Hommes 1",
-          label: "Match 1",
-          teamA: "Tortues 1",
-          teamB: "Tortues 2"
-        },
-        {
-          id: "dh_p2",
-          phase: "poule",
-          phaseLabel: "Poule Ara",
-          time: "15:00",
-          court: "Terrain Hommes 2",
-          label: "Match 1",
-          teamA: "Ara 1",
-          teamB: "Ara 2"
-        },
-        {
-          id: "dh_p3",
-          phase: "poule",
-          phaseLabel: "Poule Tortues",
-          time: "15:50",
-          court: "Terrain Hommes 1",
-          label: "Match 2",
-          teamA: "Tortues 1",
-          teamB: "Tortues 3"
-        },
-        {
-          id: "dh_p4",
-          phase: "poule",
-          phaseLabel: "Poule Ara",
-          time: "15:50",
-          court: "Terrain Hommes 2",
-          label: "Match 2",
-          teamA: "Ara 1",
-          teamB: "Ara 3"
-        },
-        {
-          id: "dh_p5",
-          phase: "poule",
-          phaseLabel: "Poule Tortues",
-          time: "16:40",
-          court: "Terrain Hommes 1",
-          label: "Match 3",
-          teamA: "Tortues 2",
-          teamB: "Tortues 3"
-        },
-        {
-          id: "dh_p6",
-          phase: "poule",
-          phaseLabel: "Poule Ara",
-          time: "16:40",
-          court: "Terrain Hommes 2",
-          label: "Match 3",
-          teamA: "Ara 2",
-          teamB: "Ara 3"
-        },
-        {
-          id: "dh_f1",
-          phase: "finale",
-          phaseLabel: "Phase finale",
-          time: "19:00",
-          court: "Manon",
-          label: "Demi-finale 1",
-          teamA: "1er Tortues",
-          teamB: "2e Ara"
-        },
-        {
-          id: "dh_f2",
-          phase: "finale",
-          phaseLabel: "Phase finale",
-          time: "19:50",
-          court: "Manon",
-          label: "Demi-finale 2",
-          teamA: "1er Ara",
-          teamB: "2e Tortues"
-        },
-        {
-          id: "dh_f3",
-          phase: "finale",
-          phaseLabel: "Phase finale",
-          time: "20:40",
-          court: "Manon",
-          label: "Petite finale",
-          teamA: "Perdant DF1",
-          teamB: "Perdant DF2"
-        },
-        {
-          id: "dh_f4",
-          phase: "finale",
-          phaseLabel: "Phase finale",
-          time: "21:30",
-          court: "Manon",
-          label: "Finale",
-          teamA: "Vainqueur DF1",
-          teamB: "Vainqueur DF2"
-        }
-      ]
-    };
+  function teamRank(row){
+    const a = toNum(row?.p1Rank);
+    const b = toNum(row?.p2Rank);
+    if(a === null || b === null) return Number.POSITIVE_INFINITY;
+    return a + b;
   }
 
-  function defaultProgramDD(){
+  function sortedMainTeams(rows){
+    return rows
+      .filter(r => r.list !== "wait" && r.stby !== true)
+      .sort((a,b)=>{
+        const ar = teamRank(a);
+        const br = teamRank(b);
+        if(ar !== br) return ar - br;
+        return (a.createdAtMs||0) - (b.createdAtMs||0);
+      });
+  }
+
+  function parseToken(token){
+    const s = String(token || "");
+    if(s.startsWith("POOLA:")) return { type:"poolA", value:s.slice(6) };
+    if(s.startsWith("POOLB:")) return { type:"poolB", value:s.slice(6) };
+    return { type:"unknown", value:s };
+  }
+
+  function findTeamById(rows, id){
+    return rows.find(x => x.id === id) || null;
+  }
+
+  async function loadTeams(sc){
+    const snap = await getDocs(query(collection(db, COL_PUBLIC(sc)), orderBy("createdAt","asc")));
+    const rows = [];
+    snap.forEach(d => {
+      const x = d.data() || {};
+      rows.push({
+        id: d.id,
+        createdAtMs: x.createdAt?.toMillis ? x.createdAt.toMillis() : 0,
+        teamName: x.teamName || "",
+        p1FirstName: x.p1FirstName || "",
+        p2FirstName: x.p2FirstName || "",
+        p1Rank: x.p1Rank ?? null,
+        p2Rank: x.p2Rank ?? null,
+        list: x.list || null,
+        stby: x.stby === true
+      });
+    });
+    return rows;
+  }
+
+  async function loadDrawDH(){
+    const snap = await getDoc(DRAW_REF_DH());
+    return snap.exists() ? (snap.data() || {}) : null;
+  }
+
+  function buildPoolsFromDrawDH(teams, draw){
+    const ranked = sortedMainTeams(teams);
+    const seed1 = ranked[0] || null;
+    const seed2 = ranked[1] || null;
+
+    if(!seed1 || !seed2){
+      throw new Error("Impossible de déterminer TS1 et TS2.");
+    }
+
+    const poolA = [seed1];
+    const poolB = [seed2];
+
+    const revealed = Number(draw?.revealed || 0);
+    const order = Array.isArray(draw?.order) ? draw.order.slice(0, revealed) : [];
+
+    if(order.length < 4){
+      throw new Error("Le tirage messieurs n’est pas encore complètement révélé.");
+    }
+
+    for(const token of order){
+      const p = parseToken(token);
+
+      if(p.type === "poolA"){
+        const t = findTeamById(ranked, p.value);
+        if(t && !poolA.some(x => x.id === t.id) && !poolB.some(x => x.id === t.id)){
+          poolA.push(t);
+        }
+      }
+
+      if(p.type === "poolB"){
+        const t = findTeamById(ranked, p.value);
+        if(t && !poolA.some(x => x.id === t.id) && !poolB.some(x => x.id === t.id)){
+          poolB.push(t);
+        }
+      }
+    }
+
+    if(poolA.length !== 3 || poolB.length !== 3){
+      throw new Error("Les poules messieurs ne sont pas complètes.");
+    }
+
+    return { poolA, poolB };
+  }
+
+  function buildPoolDDFromRanking(teams){
+    const ranked = sortedMainTeams(teams).slice(0, 4);
+    if(ranked.length < 4){
+      throw new Error("Il faut 4 équipes dames classées pour générer la programmation.");
+    }
+    return ranked;
+  }
+
+  function defaultFinalsDH(){
+    return [
+      {
+        id: "dh_f1",
+        phase: "finale",
+        phaseLabel: "Phase finale",
+        time: "19:00",
+        court: "Manon",
+        label: "Demi-finale 1",
+        teamA: "1er Tortues",
+        teamB: "2e Ara"
+      },
+      {
+        id: "dh_f2",
+        phase: "finale",
+        phaseLabel: "Phase finale",
+        time: "19:50",
+        court: "Manon",
+        label: "Demi-finale 2",
+        teamA: "1er Ara",
+        teamB: "2e Tortues"
+      },
+      {
+        id: "dh_f3",
+        phase: "finale",
+        phaseLabel: "Phase finale",
+        time: "20:40",
+        court: "Manon",
+        label: "Petite finale",
+        teamA: "Perdant DF1",
+        teamB: "Perdant DF2"
+      },
+      {
+        id: "dh_f4",
+        phase: "finale",
+        phaseLabel: "Phase finale",
+        time: "21:30",
+        court: "Manon",
+        label: "Finale",
+        teamA: "Vainqueur DF1",
+        teamB: "Vainqueur DF2"
+      }
+    ];
+  }
+
+  function defaultFinalsDD(){
+    return [
+      {
+        id: "dd_f1",
+        phase: "finale",
+        phaseLabel: "Phase finale",
+        time: "19:00",
+        court: "Lisa",
+        label: "Demi-finale 1",
+        teamA: "1re poule",
+        teamB: "4e poule"
+      },
+      {
+        id: "dd_f2",
+        phase: "finale",
+        phaseLabel: "Phase finale",
+        time: "19:50",
+        court: "Lisa",
+        label: "Demi-finale 2",
+        teamA: "2e poule",
+        teamB: "3e poule"
+      },
+      {
+        id: "dd_f3",
+        phase: "finale",
+        phaseLabel: "Phase finale",
+        time: "20:40",
+        court: "Lisa",
+        label: "Petite finale",
+        teamA: "Perdante DF1",
+        teamB: "Perdante DF2"
+      },
+      {
+        id: "dd_f4",
+        phase: "finale",
+        phaseLabel: "Phase finale",
+        time: "21:30",
+        court: "Lisa",
+        label: "Finale",
+        teamA: "Vainqueure DF1",
+        teamB: "Vainqueure DF2"
+      }
+    ];
+  }
+
+  async function buildProgramFromSources(sc){
+    const teams = await loadTeams(sc);
+
+    if(sc === "dh"){
+      const draw = await loadDrawDH();
+      const pools = buildPoolsFromDrawDH(teams, draw);
+
+      return {
+        scope: "dh",
+        title: "Double Messieurs",
+        sourceMode: "tirage",
+        matches: [
+          {
+            id: "dh_p1",
+            phase: "poule",
+            phaseLabel: "Poule Tortues",
+            time: "15:00",
+            court: "Terrain Hommes 1",
+            label: "Match 1",
+            teamA: pools.poolA[0].teamName,
+            teamB: pools.poolA[1].teamName
+          },
+          {
+            id: "dh_p2",
+            phase: "poule",
+            phaseLabel: "Poule Ara",
+            time: "15:00",
+            court: "Terrain Hommes 2",
+            label: "Match 1",
+            teamA: pools.poolB[0].teamName,
+            teamB: pools.poolB[1].teamName
+          },
+          {
+            id: "dh_p3",
+            phase: "poule",
+            phaseLabel: "Poule Tortues",
+            time: "15:50",
+            court: "Terrain Hommes 1",
+            label: "Match 2",
+            teamA: pools.poolA[0].teamName,
+            teamB: pools.poolA[2].teamName
+          },
+          {
+            id: "dh_p4",
+            phase: "poule",
+            phaseLabel: "Poule Ara",
+            time: "15:50",
+            court: "Terrain Hommes 2",
+            label: "Match 2",
+            teamA: pools.poolB[0].teamName,
+            teamB: pools.poolB[2].teamName
+          },
+          {
+            id: "dh_p5",
+            phase: "poule",
+            phaseLabel: "Poule Tortues",
+            time: "16:40",
+            court: "Terrain Hommes 1",
+            label: "Match 3",
+            teamA: pools.poolA[1].teamName,
+            teamB: pools.poolA[2].teamName
+          },
+          {
+            id: "dh_p6",
+            phase: "poule",
+            phaseLabel: "Poule Ara",
+            time: "16:40",
+            court: "Terrain Hommes 2",
+            label: "Match 3",
+            teamA: pools.poolB[1].teamName,
+            teamB: pools.poolB[2].teamName
+          },
+          ...defaultFinalsDH()
+        ]
+      };
+    }
+
+    const pool = buildPoolDDFromRanking(teams);
+
     return {
       scope: "dd",
       title: "Double Dames",
+      sourceMode: "classement",
       matches: [
         {
           id: "dd_p1",
@@ -402,8 +584,8 @@
           time: "15:00",
           court: "Terrain Dames 1",
           label: "Match 1",
-          teamA: "1re équipe",
-          teamB: "2e équipe"
+          teamA: pool[0].teamName,
+          teamB: pool[1].teamName
         },
         {
           id: "dd_p2",
@@ -412,8 +594,8 @@
           time: "15:00",
           court: "Terrain Dames 2",
           label: "Match 2",
-          teamA: "3e équipe",
-          teamB: "4e équipe"
+          teamA: pool[2].teamName,
+          teamB: pool[3].teamName
         },
         {
           id: "dd_p3",
@@ -422,8 +604,8 @@
           time: "15:50",
           court: "Terrain Dames 1",
           label: "Match 3",
-          teamA: "1re équipe",
-          teamB: "3e équipe"
+          teamA: pool[0].teamName,
+          teamB: pool[2].teamName
         },
         {
           id: "dd_p4",
@@ -432,8 +614,8 @@
           time: "15:50",
           court: "Terrain Dames 2",
           label: "Match 4",
-          teamA: "2e équipe",
-          teamB: "4e équipe"
+          teamA: pool[1].teamName,
+          teamB: pool[3].teamName
         },
         {
           id: "dd_p5",
@@ -442,8 +624,8 @@
           time: "16:40",
           court: "Terrain Dames 1",
           label: "Match 5",
-          teamA: "1re équipe",
-          teamB: "4e équipe"
+          teamA: pool[0].teamName,
+          teamB: pool[3].teamName
         },
         {
           id: "dd_p6",
@@ -452,55 +634,12 @@
           time: "16:40",
           court: "Terrain Dames 2",
           label: "Match 6",
-          teamA: "2e équipe",
-          teamB: "3e équipe"
+          teamA: pool[1].teamName,
+          teamB: pool[2].teamName
         },
-        {
-          id: "dd_f1",
-          phase: "finale",
-          phaseLabel: "Phase finale",
-          time: "19:00",
-          court: "Lisa",
-          label: "Demi-finale 1",
-          teamA: "1re poule",
-          teamB: "4e poule"
-        },
-        {
-          id: "dd_f2",
-          phase: "finale",
-          phaseLabel: "Phase finale",
-          time: "19:50",
-          court: "Lisa",
-          label: "Demi-finale 2",
-          teamA: "2e poule",
-          teamB: "3e poule"
-        },
-        {
-          id: "dd_f3",
-          phase: "finale",
-          phaseLabel: "Phase finale",
-          time: "20:40",
-          court: "Lisa",
-          label: "Petite finale",
-          teamA: "Perdante DF1",
-          teamB: "Perdante DF2"
-        },
-        {
-          id: "dd_f4",
-          phase: "finale",
-          phaseLabel: "Phase finale",
-          time: "21:30",
-          court: "Lisa",
-          label: "Finale",
-          teamA: "Vainqueure DF1",
-          teamB: "Vainqueure DF2"
-        }
+        ...defaultFinalsDD()
       ]
     };
-  }
-
-  function getDefaultProgram(sc){
-    return sc === "dd" ? defaultProgramDD() : defaultProgramDH();
   }
 
   function renderMatchCard(m){
@@ -549,32 +688,48 @@
       ? finals.map(renderMatchCard).join("")
       : `<div class="muted">Aucun match de phase finale.</div>`;
 
+    const sourceText = program?.sourceMode === "tirage"
+      ? "tirage messieurs"
+      : (program?.sourceMode === "classement" ? "classement des équipes" : "source inconnue");
+
     ruleText.innerHTML =
       currentScope === "dh"
-        ? `Format <b>Double Messieurs</b> : poules à <b>15h00 / 15h50 / 16h40</b> sur 2 terrains hommes, puis phases finales à partir de <b>19h00</b> sur le court <b>Manon</b> avec 4 créneaux : 19h00 / 19h50 / 20h40 / 21h30.`
-        : `Format <b>Double Dames</b> : poule unique à <b>15h00 / 15h50 / 16h40</b> sur 2 terrains dames, puis phases finales à partir de <b>19h00</b> sur le court <b>Lisa</b> avec 4 créneaux : 19h00 / 19h50 / 20h40 / 21h30.`;
+        ? `Format <b>Double Messieurs</b> : programmation générée depuis le <b>tirage</b>.<br>
+           Poules à <b>15h00 / 15h50 / 16h40</b> sur 2 terrains hommes.<br>
+           Phases finales à partir de <b>19h00</b> sur <b>Manon</b> : 19h00 / 19h50 / 20h40 / 21h30.`
+        : `Format <b>Double Dames</b> : programmation générée depuis le <b>classement des équipes</b>.<br>
+           Poule unique à <b>15h00 / 15h50 / 16h40</b> sur 2 terrains dames.<br>
+           Phases finales à partir de <b>19h00</b> sur <b>Lisa</b> : 19h00 / 19h50 / 20h40 / 21h30.`;
 
-    statusEl.textContent = `✅ Programmation ${zoneText(currentScope)} prête à être modifiée ou sauvegardée.`;
+    statusEl.innerHTML = `✅ Programmation ${zoneText(currentScope)} chargée. <span class="pill live">Source : ${esc(sourceText)}</span>`;
   }
 
   async function loadProgram(sc){
     const snap = await getDoc(DOC_REF(sc));
     if(snap.exists()){
       program = snap.data() || null;
-    } else {
-      program = getDefaultProgram(sc);
+      renderCurrent();
+      return;
     }
+
+    program = await buildProgramFromSources(sc);
+    renderCurrent();
+  }
+
+  async function rebuildProgram(sc){
+    program = await buildProgramFromSources(sc);
     renderCurrent();
   }
 
   async function saveProgram(sc){
     if(!program){
-      program = getDefaultProgram(sc);
+      program = await buildProgramFromSources(sc);
     }
 
     await setDoc(DOC_REF(sc), {
       scope: sc,
       title: program.title || zoneText(sc),
+      sourceMode: program.sourceMode || null,
       matches: Array.isArray(program.matches) ? program.matches : [],
       updatedAt: serverTimestamp()
     }, { merge:true });
@@ -582,11 +737,11 @@
     statusEl.textContent = `💾 Programmation ${zoneText(sc)} sauvegardée.`;
   }
 
-  function resetProgram(sc){
-    const ok = confirm(`Réinitialiser la programmation ${zoneText(sc)} avec le modèle par défaut ?`);
+  async function resetProgram(sc){
+    const ok = confirm(`Réinitialiser la programmation ${zoneText(sc)} depuis ses sources ?`);
     if(!ok) return;
 
-    program = getDefaultProgram(sc);
+    program = await buildProgramFromSources(sc);
     renderCurrent();
   }
 
@@ -629,7 +784,7 @@
     renderCurrent();
   }
 
-  panel.addEventListener("click", async (e) => {
+  panel.addEventListener("click", (e) => {
     const btn = e.target.closest("button[data-act]");
     if(!btn) return;
 
@@ -641,25 +796,44 @@
     }
   });
 
-  btnLoad.onclick = async (e)=>{
+  btnBuild.onclick = async (e)=>{
     e.preventDefault();
-    await loadProgram(currentScope);
+    try{
+      await rebuildProgram(currentScope);
+    }catch(err){
+      console.error(err);
+      alert(err?.message || "Impossible de générer la programmation.");
+    }
   };
 
-  btnDefault.onclick = (e)=>{
+  btnLoad.onclick = async (e)=>{
     e.preventDefault();
-    program = getDefaultProgram(currentScope);
-    renderCurrent();
+    try{
+      await loadProgram(currentScope);
+    }catch(err){
+      console.error(err);
+      alert(err?.message || "Impossible de charger la programmation.");
+    }
   };
 
   btnSave.onclick = async (e)=>{
     e.preventDefault();
-    await saveProgram(currentScope);
+    try{
+      await saveProgram(currentScope);
+    }catch(err){
+      console.error(err);
+      alert(err?.message || "Impossible de sauvegarder.");
+    }
   };
 
   btnReset.onclick = async (e)=>{
     e.preventDefault();
-    resetProgram(currentScope);
+    try{
+      await resetProgram(currentScope);
+    }catch(err){
+      console.error(err);
+      alert(err?.message || "Impossible de réinitialiser.");
+    }
   };
 
   btnPublic.onclick = (e)=>{
@@ -671,14 +845,24 @@
     currentScope = "dh";
     updateFilterButtons();
     try{ history.replaceState(null, "", "programmation.html?scope=dh"); }catch(e){}
-    await loadProgram(currentScope);
+    try{
+      await loadProgram(currentScope);
+    }catch(err){
+      console.error(err);
+      alert(err?.message || "Impossible de charger DH.");
+    }
   };
 
   btnDD.onclick = async ()=>{
     currentScope = "dd";
     updateFilterButtons();
     try{ history.replaceState(null, "", "programmation.html?scope=dd"); }catch(e){}
-    await loadProgram(currentScope);
+    try{
+      await loadProgram(currentScope);
+    }catch(err){
+      console.error(err);
+      alert(err?.message || "Impossible de charger DD.");
+    }
   };
 
   function showDenied(){
