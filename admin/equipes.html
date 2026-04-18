@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin — Équipes — Open BT Bricorama</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260227-open-admin-equipes-cards" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260418-open-admin-equipes-dual-v1" />
 </head>
 
 <body>
@@ -27,9 +27,12 @@
       </div>
     </div>
 
-    <!-- ✅ Nav haut (public + logout) -->
     <nav class="nav">
       <a href="../index.html">🏠 Accueil public</a>
+      <a href="equipes.html" aria-current="page">👥 Équipes</a>
+      <a href="tirage.html">🎲 Tirage</a>
+      <a href="programmation.html">🗓️ Programmation</a>
+      <a href="resultats.html">✅ Résultats</a>
       <a href="#" id="btnLogout">🚪 Déconnexion</a>
     </nav>
   </div>
@@ -42,31 +45,19 @@
     <p class="muted" style="margin:0;">Cette page est réservée aux administrateurs.</p>
   </section>
 
-  <!-- ✅ Zone -->
   <section class="card" id="adminZone" style="display:none;">
-    <h2 style="margin:0 0 10px;">🧭 Zone</h2>
+    <h2 style="margin:0 0 10px;">🎾 Tableau</h2>
 
-    <div class="field">
-      <label for="scope">Choisir</label>
-      <select id="scope">
-        <option value="general">🌐 Général</option>
-        <option value="dh">🎾 DH (Double Hommes)</option>
-        <option value="dd">🎾 DD (Double Dames)</option>
-      </select>
+    <div class="grid" style="margin-top:10px;" id="filters">
+      <button class="btn is-filter" id="btnDH" type="button">👨 Double Messieurs</button>
+      <button class="btn is-filter" id="btnDD" type="button">👩 Double Dames</button>
     </div>
 
-    <div class="grid" style="margin-top:10px;" id="tabs"></div>
-    <p class="muted" id="hint" style="margin-top:10px;"></p>
-  </section>
-
-  <section class="card" id="panelNeedScope" style="display:none;">
-    <h2 style="margin:0 0 8px;">ℹ️ Choisir DH ou DD</h2>
-    <p class="muted" style="margin:0;">
-      Sélectionne <b>DH</b> ou <b>DD</b> dans “Zone” pour gérer les équipes.
+    <p class="muted" id="hint" style="margin-top:10px;">
+      Chargement…
     </p>
   </section>
 
-  <!-- Résumé -->
   <section class="card" id="panelSummary" style="display:none;">
     <h2>📌 Résumé</h2>
     <p class="muted" style="margin:0;" id="counts">
@@ -75,7 +66,6 @@
     <p class="muted" id="status" style="margin-top:8px;">Connexion…</p>
   </section>
 
-  <!-- ✅ Liste mobile-first -->
   <section class="card" id="panelList" style="display:none;">
     <h2 style="margin-bottom:10px;">👥 Équipes (admin)</h2>
 
@@ -88,14 +78,13 @@
     <div id="list" style="display:grid; gap:12px;"></div>
 
     <p class="muted" style="margin-top:10px;">
-      ✅ Mobile friendly : pas de tableau, tout se replie / s’étire sans scroll horizontal.
+      ✅ Une seule page admin pour DH et DD, avec bascule instantanée.
     </p>
   </section>
 
 </main>
 
 <style>
-  /* ===== Onglet actif (nav + tabs) ===== */
   .nav a[aria-current="page"],
   .btn.is-active{
     background: rgba(17,17,17,.10);
@@ -104,7 +93,10 @@
     font-weight: 1000 !important;
   }
 
-  /* Cards */
+  .is-filter{
+    font-weight:1000;
+  }
+
   .team-card{
     border:1px solid #eee;
     border-radius:16px;
@@ -152,8 +144,8 @@
   .pill.wait{ border-color:#ffe1a6; background:#fff8e6; }
   .pill.stby{ border-color:#ffd37a; background:#fff7e6; }
   .pill.rank{ border-color:#d9e6ff; background:#f3f7ff; }
+  .pill.cat{ border-color:#e4dbff; background:#f7f3ff; }
 
-  /* Player lines */
   .player{
     display:grid;
     gap:6px;
@@ -162,6 +154,7 @@
     border-radius:14px;
     background:#fcfcfc;
   }
+
   .player-title{
     display:flex;
     align-items:baseline;
@@ -170,12 +163,14 @@
     flex-wrap:wrap;
   }
   .player-title b{ font-weight:1000; }
+
   .player-meta{
     display:flex;
     gap:8px;
-    flex-wrap:wrap;      /* ✅ wrap => jamais de scroll horizontal */
+    flex-wrap:wrap;
     line-height:1.25;
   }
+
   .kv{
     display:inline-flex;
     gap:6px;
@@ -189,12 +184,12 @@
   .kv .k{ color:#666; font-weight:800; }
   .kv .v{ font-weight:1000; }
 
-  /* Actions */
   .actions{
     display:flex;
     gap:8px;
-    flex-wrap:wrap;      /* ✅ wrap */
+    flex-wrap:wrap;
   }
+
   .btnx{
     padding:9px 12px;
     border-radius:999px;
@@ -205,6 +200,7 @@
     color:#111;
   }
   .btnx:hover{ background:#f5f5f5; }
+
   .danger{ border-color:#f1b2b2; }
   .danger:hover{ background:#ffecec; }
 
@@ -225,39 +221,37 @@
     doc, setDoc, updateDoc, deleteDoc, serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-  // ---- scope (URL ?scope=dh|dd|general)
   const params = new URLSearchParams(location.search);
   const scopeFromUrl = (params.get("scope") || "dh").toLowerCase();
+  const currentPage = (location.pathname.split("/").pop() || "").toLowerCase();
 
-  // ---- current page (for active tab highlight)
-  const currentPage = (location.pathname.split("/").pop() || "").toLowerCase(); // ex: "equipes.html"
-
-  // ---- DOM
   const accessDenied = document.getElementById("accessDenied");
   const adminZone = document.getElementById("adminZone");
-  const scopeEl = document.getElementById("scope");
-  const tabsEl  = document.getElementById("tabs");
-  const hintEl  = document.getElementById("hint");
+  const panelSummary = document.getElementById("panelSummary");
+  const panelList = document.getElementById("panelList");
 
-  const panelNeedScope = document.getElementById("panelNeedScope");
-  const panelSummary   = document.getElementById("panelSummary");
-  const panelList      = document.getElementById("panelList");
-
+  const hintEl = document.getElementById("hint");
   const countsEl = document.getElementById("counts");
   const statusEl = document.getElementById("status");
-  const listEl   = document.getElementById("list");
+  const listEl = document.getElementById("list");
 
-  const btnRefresh  = document.getElementById("btnRefresh");
-  const btnExpand   = document.getElementById("btnExpand");
+  const btnRefresh = document.getElementById("btnRefresh");
+  const btnExpand = document.getElementById("btnExpand");
   const btnCollapse = document.getElementById("btnCollapse");
 
-  let currentScope = (scopeFromUrl === "dd" || scopeFromUrl === "general") ? scopeFromUrl : "dh";
+  const btnDH = document.getElementById("btnDH");
+  const btnDD = document.getElementById("btnDD");
+
+  let currentScope = scopeFromUrl === "dd" ? "dd" : "dh";
   let liveRows = [];
 
   function esc(s){
     return (s ?? "").toString()
-      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
   }
 
   function toNum(v){
@@ -265,14 +259,17 @@
     const n = typeof v === "number" ? v : Number(String(v).replace(",", ".").trim());
     return Number.isFinite(n) ? n : null;
   }
+
   function fmt(v){
     const t = (v ?? "").toString().trim();
     return t === "" ? "—" : t;
   }
+
   function fmtRank(v){
     const n = toNum(v);
     return n === null ? "—" : String(n);
   }
+
   function teamRank(p1, p2){
     const a = toNum(p1), b = toNum(p2);
     if(a === null || b === null) return null;
@@ -280,79 +277,27 @@
   }
 
   function zoneText(sc){
-    if(sc === "dd") return "DD";
-    if(sc === "general") return "Général";
-    return "DH";
+    return sc === "dd" ? "Double Dames" : "Double Messieurs";
+  }
+
+  function zoneEmoji(sc){
+    return sc === "dd" ? "👩" : "👨";
   }
 
   function colPublic(sc){
-    if(sc === "dd") return "equipes_dd_public";
-    if(sc === "dh") return "equipes_dh_public";
-    return null;
+    return sc === "dd" ? "equipes_dd_public" : "equipes_dh_public";
   }
+
   function colPrivate(sc){
-    if(sc === "dd") return "inscriptions_dd_private";
-    if(sc === "dh") return "inscriptions_dh_private";
-    return null;
+    return sc === "dd" ? "inscriptions_dd_private" : "inscriptions_dh_private";
   }
 
-  function setTabs(sc){
-    tabsEl.innerHTML = "";
-
-    const isActive = (href) => {
-      try{
-        const u = new URL(href, location.href);
-        const page = (u.pathname.split("/").pop() || "").toLowerCase();
-        return page === currentPage;
-      }catch(e){
-        return false;
-      }
-    };
-
-    const make = (label, href) => {
-      const a = document.createElement("a");
-      a.className = "btn";
-      a.href = href;
-      a.textContent = label;
-
-      const active = isActive(href);
-      if(active){
-        a.classList.add("is-active");
-        a.setAttribute("aria-current", "page");
-      }
-      tabsEl.appendChild(a);
-    };
-
-    if(sc === "general"){
-      hintEl.textContent = "🌐 Zone Général : accès aux pages générales.";
-      make("📰 Infos",          "index.html?scope=general");
-      make("👥 Équipes",        "equipes.html?scope=dh");            // renvoie vers DH
-      make("📝 Inscriptions",   "inscriptions.html?scope=dh");
-      make("🎲 Tirage",         "tirage.html?scope=dh");
-      make("✅ Résultats",      "resultats.html?scope=dh");
-      make("🗓️ Programmation",  "programmation.html?scope=dh");
-      return;
-    }
-
-    hintEl.textContent = `🎾 Zone ${zoneText(sc)} : gestion équipes / inscriptions / tirage / résultats / programmation.`;
-    make("👥 Équipes",        `equipes.html?scope=${encodeURIComponent(sc)}`);
-    make("📝 Inscriptions",   `inscriptions.html?scope=${encodeURIComponent(sc)}`);
-    make("🎲 Tirage",         `tirage.html?scope=${encodeURIComponent(sc)}`);
-    make("✅ Résultats",      `resultats.html?scope=${encodeURIComponent(sc)}`);
-    make("🗓️ Programmation",  `programmation.html?scope=${encodeURIComponent(sc)}`);
-    make("📰 Infos",          "index.html?scope=general");
-  }
-
-  function showPanels(sc){
-    if(sc === "general"){
-      panelNeedScope.style.display = "block";
-      panelSummary.style.display = "none";
-      panelList.style.display = "none";
-      return;
-    }
-    panelNeedScope.style.display = "none";
-    panelSummary.style.display = "block";
-    panelList.style.display = "block";
+  function updateFilterButtons(){
+    btnDH.classList.toggle("is-active", currentScope === "dh");
+    btnDD.classList.toggle("is-active", currentScope === "dd");
+    btnDH.setAttribute("aria-pressed", currentScope === "dh" ? "true" : "false");
+    btnDD.setAttribute("aria-pressed", currentScope === "dd" ? "true" : "false");
+    hintEl.textContent = `${zoneEmoji(currentScope)} Tableau sélectionné : ${zoneText(currentScope)}.`;
   }
 
   function pillList(list){
@@ -397,7 +342,7 @@
 
     const c = computeCounts(rows);
     countsEl.innerHTML =
-      `Total : <b>${c.total}</b> — MAIN : <b>${c.main}</b> — WAIT : <b>${c.wait}</b> — AUTO : <b>${c.auto}</b> — STBY : <b>${c.stby}</b>`;
+      `${zoneEmoji(currentScope)} <b>${zoneText(currentScope)}</b> — Total : <b>${c.total}</b> — MAIN : <b>${c.main}</b> — WAIT : <b>${c.wait}</b> — AUTO : <b>${c.auto}</b> — STBY : <b>${c.stby}</b>`;
 
     listEl.innerHTML = rows.length ? rows.map((r, i) => {
       const tr = teamRank(r.p1Rank, r.p2Rank);
@@ -414,6 +359,7 @@
             </div>
 
             <div class="badges">
+              <span class="pill cat">${zoneEmoji(currentScope)} ${esc(zoneText(currentScope))}</span>
               ${pillList(r.list)}
               ${pillStby(r.stby)}
             </div>
@@ -449,13 +395,12 @@
           </details>
         </div>
       `;
-    }).join("") : `<div class="muted">Aucune équipe.</div>`;
+    }).join("") : `<div class="muted">Aucune équipe dans ${esc(zoneText(currentScope))}.</div>`;
   }
 
   async function fetchMerged(sc){
     const priv = colPrivate(sc);
     const pub  = colPublic(sc);
-    if(!priv || !pub) return [];
 
     statusEl.textContent = "Chargement…";
 
@@ -499,32 +444,23 @@
   }
 
   async function refresh(){
-    if(currentScope === "general"){
-      statusEl.textContent = "—";
-      listEl.innerHTML = "";
-      countsEl.textContent = "—";
-      return;
-    }
-
     try{
       const rows = await fetchMerged(currentScope);
       render(rows);
       statusEl.textContent = `✅ OK — ${zoneText(currentScope)}`;
     }catch(err){
       console.error(err);
-      statusEl.textContent = "❌ Erreur (voir console)";
+      statusEl.textContent = `❌ Erreur ${zoneText(currentScope)} (voir console)`;
     }
   }
 
   async function patchPublic(sc, id, patch){
     const pub = colPublic(sc);
-    if(!pub) return;
     await setDoc(doc(db, pub, id), { ...patch, updatedAt: serverTimestamp() }, { merge:true });
   }
 
   async function patchPrivate(sc, id, patch){
     const priv = colPrivate(sc);
-    if(!priv) return;
     await updateDoc(doc(db, priv, id), patch);
   }
 
@@ -532,7 +468,6 @@
     const teamName = prompt("Nom d’équipe :", row.teamName || "");
     if(teamName === null) return;
 
-    // P1
     const p1LastName  = prompt("J1 — Nom :", row.p1LastName || "");
     if(p1LastName === null) return;
     const p1FirstName = prompt("J1 — Prénom :", row.p1FirstName || "");
@@ -542,7 +477,6 @@
     const p1Phone     = prompt("J1 — Téléphone :", row.p1Phone || "");
     if(p1Phone === null) return;
 
-    // P2
     const p2LastName  = prompt("J2 — Nom :", row.p2LastName || "");
     if(p2LastName === null) return;
     const p2FirstName = prompt("J2 — Prénom :", row.p2FirstName || "");
@@ -593,18 +527,16 @@
 
     const priv = colPrivate(sc);
     const pub  = colPublic(sc);
-    if(priv) await deleteDoc(doc(db, priv, id));
-    if(pub)  await deleteDoc(doc(db, pub, id));
+
+    await deleteDoc(doc(db, priv, id));
+    await deleteDoc(doc(db, pub, id));
   }
 
-  // Actions list
   listEl.addEventListener("click", async (e) => {
     const btn = e.target.closest("button[data-act]");
     if(!btn) return;
 
     const sc = currentScope;
-    if(sc === "general") return;
-
     const act = btn.dataset.act;
     const id  = btn.dataset.id;
 
@@ -628,34 +560,39 @@
     }
   });
 
-  // Expand/collapse all details
   btnExpand.onclick = ()=> document.querySelectorAll("details").forEach(d => d.open = true);
   btnCollapse.onclick = ()=> document.querySelectorAll("details").forEach(d => d.open = false);
   btnRefresh.onclick = async ()=> { await refresh(); };
 
+  btnDH.onclick = async ()=>{
+    currentScope = "dh";
+    updateFilterButtons();
+    try{ history.replaceState(null, "", "equipes.html?scope=dh"); }catch(e){}
+    await refresh();
+  };
+
+  btnDD.onclick = async ()=>{
+    currentScope = "dd";
+    updateFilterButtons();
+    try{ history.replaceState(null, "", "equipes.html?scope=dd"); }catch(e){}
+    await refresh();
+  };
+
   function showDenied(){
     accessDenied.style.display = "block";
     adminZone.style.display = "none";
-    panelNeedScope.style.display = "none";
     panelSummary.style.display = "none";
     panelList.style.display = "none";
   }
 
-  function showAdmin(sc){
+  function showAdmin(){
     accessDenied.style.display = "none";
     adminZone.style.display = "block";
-
-    scopeEl.value = sc;
-    setTabs(sc);
-    showPanels(sc);
-
-    scopeEl.onchange = ()=>{
-      const next = scopeEl.value || "general";
-      window.location.href = `equipes.html?scope=${encodeURIComponent(next)}`;
-    };
+    panelSummary.style.display = "block";
+    panelList.style.display = "block";
+    updateFilterButtons();
   }
 
-  // Guard admin (Open)
   onAuthStateChanged(auth, async (user)=>{
     if(!user){ showDenied(); return; }
 
@@ -663,21 +600,14 @@
       const role = await getRoleByEmail(user.email);
       if(role !== "admin"){ showDenied(); return; }
 
-      showAdmin(currentScope);
-
-      if(currentScope !== "general"){
-        await refresh();
-      } else {
-        statusEl.textContent = "—";
-        countsEl.textContent = "—";
-      }
+      showAdmin();
+      await refresh();
     }catch(err){
       console.error(err);
       showDenied();
     }
   });
 
-  // Logout
   document.getElementById("btnLogout").onclick = async (e)=>{
     e.preventDefault();
     await logout();
