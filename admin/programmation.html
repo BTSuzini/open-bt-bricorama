@@ -3,133 +3,137 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Admin — Programmation (Open BT)</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260228-admin-open-prog-v3-dd-seedlast" />
+  <title>Admin — Programmation — Open BT Bricorama</title>
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260418-open-admin-programmation-dual-v1" />
 
   <style>
     .nav a[aria-current="page"],
     .btn.is-active{
-      background: rgba(17,17,17,.10) !important;
-      border-color: rgba(17,17,17,.25) !important;
+      background: rgba(17,17,17,.10);
+      border-color: rgba(17,17,17,.25);
       box-shadow: 0 10px 22px rgba(0,0,0,.10);
       font-weight: 1000 !important;
     }
 
-    .match-list{ display:flex; flex-direction:column; gap:14px; }
-
-    .match-card{
-      border-radius:18px;
-      border:2px solid rgba(0,0,0,.06);
-      padding:14px;
+    .program-card{
+      border:1px solid #eee;
+      border-radius:16px;
       background:#fff;
-      box-shadow:0 1px 0 rgba(0,0,0,.03);
-    }
-    .match-card.courtA{ background:#FFF6D6; border-color:rgba(255, 196, 0, .35); }
-    .match-card.courtB{ background:#FFE6EA; border-color:rgba(255, 0, 60, .25); }
-    .match-card.block{ background:#F3F6FF; border-color:rgba(60, 110, 255, .20); }
-
-    .match-head{
-      display:flex;
-      align-items:center;
+      box-shadow:0 8px 18px rgba(0,0,0,.04);
+      padding:12px;
+      display:grid;
       gap:10px;
-      min-width:0;
     }
-    .m-slot{
-      font-size:12px;
-      font-weight:900;
-      opacity:.75;
-      white-space:nowrap;
+
+    .program-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
     }
-    .m-time{
-      font-size:13px;
-      font-weight:950;
-      white-space:nowrap;
-      letter-spacing:.2px;
-    }
-    .m-court{
-      font-size:13px;
-      font-weight:400;
-      font-style:italic;
-      opacity:.95;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      min-width:0;
-      flex:1;
-    }
-    .m-tag{
-      font-size:11px;
+
+    .program-title{
       font-weight:1000;
-      white-space:nowrap;
-      border:1px solid rgba(0,0,0,.12);
-      border-radius:999px;
-      padding:6px 10px;
-      opacity:.95;
-      flex:0 0 auto;
+      line-height:1.15;
+      word-break:break-word;
     }
+
+    .program-sub{
+      color:#666;
+      font-size:13px;
+      line-height:1.35;
+      margin-top:4px;
+    }
+
+    .badges{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:12px;
+      border:1px solid #eee;
+      background:#fafafa;
+      color:#333;
+      white-space:nowrap;
+      font-weight:900;
+    }
+
+    .pill.phase-poule{ border-color:#d9e6ff; background:#f3f7ff; }
+    .pill.phase-finale{ border-color:#f1dca1; background:#fff9e8; }
+
+    .match-grid{
+      display:grid;
+      gap:10px;
+    }
+
+    .team-box{
+      border:1px solid #f1f1f1;
+      border-radius:14px;
+      background:#fcfcfc;
+      padding:10px;
+      font-weight:900;
+      line-height:1.25;
+    }
+
+    .kv-wrap{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      line-height:1.25;
+    }
+
+    .kv{
+      display:inline-flex;
+      gap:6px;
+      padding:4px 10px;
+      border-radius:999px;
+      border:1px solid #eee;
+      background:#fff;
+      font-size:12px;
+      white-space:nowrap;
+    }
+
+    .kv .k{ color:#666; font-weight:800; }
+    .kv .v{ font-weight:1000; }
 
     .actions{
       display:flex;
       gap:8px;
-      align-items:center;
-      white-space:nowrap;
+      flex-wrap:wrap;
     }
+
     .btnx{
-      padding:8px 10px;
-      border-radius:10px;
+      padding:9px 12px;
+      border-radius:999px;
       border:1px solid #ddd;
       background:#fff;
       cursor:pointer;
-      font-weight:950;
+      font-weight:1000;
+      color:#111;
     }
     .btnx:hover{ background:#f5f5f5; }
-    .btnx:disabled{ opacity:.5; cursor:not-allowed; }
 
-    .team-row{
-      margin-top:10px;
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:6px;
-    }
-    .team-title{
-      font-size:15px;
-      font-weight:950;
-      line-height:1.15;
-      white-space:normal;
-      overflow-wrap:anywhere;
-    }
-    .team-sub{
-      font-size:13px;
-      font-weight:800;
-      opacity:.85;
-      white-space:normal;
-      overflow-wrap:anywhere;
-      line-height:1.25;
-    }
-    .vs-line{
-      margin:10px 0 6px;
-      text-align:center;
-      font-weight:950;
-      letter-spacing:2px;
-      opacity:.55;
-      font-size:12px;
-    }
+    .danger{ border-color:#f1b2b2; }
+    .danger:hover{ background:#ffecec; }
 
-    .toolbar{
+    .section-block{
       display:grid;
-      grid-template-columns: 1fr;
-      gap:10px;
+      gap:12px;
       margin-top:12px;
     }
-    @media (min-width: 860px){
-      .toolbar{ grid-template-columns: 1fr 1fr; }
-    }
 
-    .hint{
-      margin-top:10px;
-      font-size:12px;
-      opacity:.85;
-      line-height:1.35;
+    .section-title{
+      font-size:18px;
+      font-weight:1000;
+      margin:0;
     }
   </style>
 </head>
@@ -156,13 +160,10 @@
 
     <nav class="nav">
       <a href="../index.html">🏠 Accueil public</a>
-
-      <a href="equipes.html?scope=dh">👥 Équipes</a>
-      <a href="inscriptions.html?scope=dh">📝 Inscriptions</a>
-      <a href="tirage.html?scope=dh">🎲 Tirage</a>
-      <a href="resultats.html?scope=dh">✅ Résultats</a>
-      <a href="programmation.html?scope=dh" aria-current="page">🗓️ Programmation</a>
-
+      <a href="equipes.html">👥 Équipes</a>
+      <a href="tirage.html">🎲 Tirage</a>
+      <a href="programmation.html" aria-current="page">🗓️ Programmation</a>
+      <a href="resultats.html">✅ Résultats</a>
       <a href="#" id="btnLogout">🚪 Déconnexion</a>
     </nav>
   </div>
@@ -176,55 +177,46 @@
   </section>
 
   <section class="card" id="adminZone" style="display:none;">
-    <h2 style="margin:0 0 10px;">🧭 Administration — Programmation</h2>
-    <p class="muted" id="liveStatus" style="margin:0;">Chargement…</p>
+    <h2 style="margin:0 0 10px;">🎾 Tableau</h2>
 
-    <div class="toolbar">
-      <div class="card" style="margin:0;">
-        <h3 style="margin:0 0 8px;">🎾 Doubles Hommes (DH)</h3>
-        <div class="grid" style="margin-top:10px;">
-          <button class="btn" id="btnGenDH" style="font-weight:950; color:#111;">🧩 Générer DH</button>
-          <button class="btn" id="btnResetDH" style="font-weight:950; color:#111;">🧨 Réinitialiser DH</button>
-        </div>
-        <p class="hint muted">
-          Génère la programmation DH depuis le tirage (<b>tirages_open/dh</b>) à <b>partir de 15h15</b>, sur <b>1 terrain (A)</b>.<br>
-          Réinitialiser = vide totalement la programmation DH (ordre + terrain).
-        </p>
-      </div>
-
-      <div class="card" style="margin:0;">
-        <h3 style="margin:0 0 8px;">🎾 Doubles Dames (DD)</h3>
-        <div class="grid" style="margin-top:10px;">
-          <button class="btn" id="btnGenDD" style="font-weight:950; color:#111;">🧩 Générer DD</button>
-          <button class="btn" id="btnResetDD" style="font-weight:950; color:#111;">🧨 Réinitialiser DD</button>
-        </div>
-        <p class="hint muted">
-          Génère la poule DD avec <b>toutes les équipes “classées”</b> (liste principale + ranks) et impose <b>#1 vs #2 en dernier</b>, à <b>partir de 15h15</b>, sur <b>1 terrain (B)</b>.<br>
-          Réinitialiser = vide totalement la programmation DD.
-        </p>
-      </div>
+    <div class="grid" style="margin-top:10px;">
+      <button class="btn" id="btnDH" type="button">👨 Double Messieurs</button>
+      <button class="btn" id="btnDD" type="button">👩 Double Dames</button>
     </div>
 
-    <div class="grid" style="margin-top:12px;" id="tabs">
-      <button class="btn is-active" id="tabDH" style="font-weight:950;">🕒 Chrono DH</button>
-      <button class="btn" id="tabDD" style="font-weight:950;">🕒 Chrono DD</button>
+    <p class="muted" id="hint" style="margin-top:10px;">Chargement…</p>
+  </section>
+
+  <section class="card" id="adminUI" style="display:none;">
+    <h2 style="margin:0 0 10px;">🗓️ Programmation — contrôle admin</h2>
+
+    <p class="muted" id="status" style="margin:0;">Chargement…</p>
+
+    <div class="grid" style="margin-top:12px;">
+      <button class="btn" id="btnLoad" style="font-weight:900; color:#111;">🔄 Charger depuis Firestore</button>
+      <button class="btn" id="btnDefault" style="font-weight:900; color:#111;">🧱 Appliquer le modèle par défaut</button>
+      <button class="btn" id="btnSave" style="font-weight:900; color:#111;">💾 Sauvegarder</button>
+      <button class="btn" id="btnReset" style="font-weight:900; color:#111; border-color:#f1b2b2;">🧨 Réinitialiser</button>
+      <a class="btn" id="btnPublic" href="#" style="font-weight:900; color:#111; text-align:center;">👀 Vue publique</a>
     </div>
 
-    <p class="muted" id="editHint" style="margin-top:10px;">
-      💡 ↑ ↓ échangent les <b>créneaux</b> (heure). 🐝/🌶️ change le <b>terrain</b> sans changer l’heure.
+    <p class="muted" id="ruleText" style="margin-top:10px;">
+      Chargement…
     </p>
   </section>
 
-  <section class="card" id="panelDH" style="display:none;">
-    <h2 style="margin:0 0 10px;">🗓️ Ordre chronologique — DH</h2>
-    <p class="muted" id="dhStatus" style="margin:0;">—</p>
-    <div id="dhList" style="margin-top:12px;"></div>
-  </section>
+  <section class="card" id="panel" style="display:none;">
+    <h2 style="margin:0 0 10px;">📋 Matchs programmés</h2>
 
-  <section class="card" id="panelDD" style="display:none;">
-    <h2 style="margin:0 0 10px;">🗓️ Ordre chronologique — DD</h2>
-    <p class="muted" id="ddStatus" style="margin:0;">—</p>
-    <div id="ddList" style="margin-top:12px;"></div>
+    <div class="section-block">
+      <h3 class="section-title">🏖️ Phase de poules</h3>
+      <div id="poolMatches" style="display:grid; gap:12px;"></div>
+    </div>
+
+    <div class="section-block">
+      <h3 class="section-title">🌙 Phases finales</h3>
+      <div id="finalMatches" style="display:grid; gap:12px;"></div>
+    </div>
   </section>
 
 </main>
@@ -234,861 +226,502 @@
   import { logout, getRoleByEmail } from "../assets/js/session.js";
   import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
   import {
-    doc, getDoc, setDoc, updateDoc, onSnapshot, serverTimestamp,
-    collection, query, orderBy
+    doc, getDoc, setDoc, serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-  // ============================================================
-  // CONFIG
-  // ============================================================
-  const START_TIME = "15:15";
+  const params = new URLSearchParams(location.search);
+  const scopeFromUrl = (params.get("scope") || "dh").toLowerCase();
 
-  const MATCH_MIN = 50;          // 5 warmup + 45 match
-  const ROTATION_MIN = 5;        // standard rotation
-  const REST_AFTER_END_MIN = 30; // pause if team replays
-  const MIN_GAP_SAME_TEAM_START = MATCH_MIN + REST_AFTER_END_MIN; // 80 min between 2 starts
-
-  const COURTS_DEFAULT = {
-    A: "court Manon Queen Bee",
-    B: "court Lisa de Los Pimentos"
-  };
-
-  const MAX_MAIN = 10; // liste principale
-
-  // ============================================================
-  // DOM
-  // ============================================================
   const accessDenied = document.getElementById("accessDenied");
   const adminZone = document.getElementById("adminZone");
-  const liveStatus = document.getElementById("liveStatus");
+  const adminUI = document.getElementById("adminUI");
+  const panel = document.getElementById("panel");
 
-  const tabDH = document.getElementById("tabDH");
-  const tabDD = document.getElementById("tabDD");
-  const panelDH = document.getElementById("panelDH");
-  const panelDD = document.getElementById("panelDD");
+  const btnDH = document.getElementById("btnDH");
+  const btnDD = document.getElementById("btnDD");
 
-  const dhStatus = document.getElementById("dhStatus");
-  const ddStatus = document.getElementById("ddStatus");
-  const dhList = document.getElementById("dhList");
-  const ddList = document.getElementById("ddList");
+  const hintEl = document.getElementById("hint");
+  const statusEl = document.getElementById("status");
+  const ruleText = document.getElementById("ruleText");
 
-  const btnGenDH = document.getElementById("btnGenDH");
-  const btnResetDH = document.getElementById("btnResetDH");
-  const btnGenDD = document.getElementById("btnGenDD");
-  const btnResetDD = document.getElementById("btnResetDD");
+  const btnLoad = document.getElementById("btnLoad");
+  const btnDefault = document.getElementById("btnDefault");
+  const btnSave = document.getElementById("btnSave");
+  const btnReset = document.getElementById("btnReset");
+  const btnPublic = document.getElementById("btnPublic");
 
-  // ============================================================
-  // FIRESTORE REFS
-  // ============================================================
-  const refDrawDH = () => doc(db, "tirages_open", "dh");
-  const refProgDH = () => doc(db, "programmations_open", "dh");
-  const refProgDD = () => doc(db, "programmations_open", "dd");
-  const qDDTeams  = () => query(collection(db, "equipes_dd_public"), orderBy("createdAt", "asc"));
+  const poolMatchesEl = document.getElementById("poolMatches");
+  const finalMatchesEl = document.getElementById("finalMatches");
 
-  // ============================================================
-  // STATE
-  // ============================================================
-  let dhDraw = null;
-  let ddTeams = [];
-  let progDH = null;
-  let progDD = null;
+  let currentScope = scopeFromUrl === "dd" ? "dd" : "dh";
+  let program = null;
 
-  let unsubDraw = null;
-  let unsubDD = null;
-  let unsubProgDH = null;
-  let unsubProgDD = null;
-
-  // ============================================================
-  // UTILS
-  // ============================================================
   function esc(s){
     return (s ?? "").toString()
       .replaceAll("&","&amp;")
       .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;");
+      .replaceAll(">","&gt;");
   }
 
-  function parseHHMM(hhmm){
-    const m = /^(\d{1,2}):(\d{2})$/.exec((hhmm||"").trim());
-    if(!m) return 0;
-    return Number(m[1])*60 + Number(m[2]);
-  }
-  function fmtHHMM(mins){
-    const h = Math.floor(mins/60);
-    const m = mins%60;
-    return String(h).padStart(2,"0") + ":" + String(m).padStart(2,"0");
+  function zoneText(sc){
+    return sc === "dd" ? "Double Dames" : "Double Messieurs";
   }
 
-  function toNum(v){
-    if(v === null || v === undefined || v === "") return null;
-    const n = typeof v === "number" ? v : Number(String(v).replace(",", ".").trim());
-    return Number.isFinite(n) ? n : null;
+  function zoneEmoji(sc){
+    return sc === "dd" ? "👩" : "👨";
   }
 
-  function teamRank(t){
-    const a = toNum(t?.p1Rank);
-    const b = toNum(t?.p2Rank);
-    if(a === null || b === null) return null;
-    return a + b;
+  function DOC_REF(sc){
+    return doc(db, "programmations_open", sc);
   }
 
-  function teamIdOf(t){
-    if(!t) return "—";
-    return (t.id || t.teamId || t.teamName || (t.p1FirstName + "_" + t.p2FirstName) || "team").toString();
+  function updateFilterButtons(){
+    btnDH.classList.toggle("is-active", currentScope === "dh");
+    btnDD.classList.toggle("is-active", currentScope === "dd");
+    hintEl.textContent = `${zoneEmoji(currentScope)} Tableau sélectionné : ${zoneText(currentScope)}.`;
   }
 
-  function teamTitle(t){ return (t?.teamName || "Équipe").toString(); }
-  function teamSub(t){
-    const p1 = (t?.p1FirstName || "").toString().trim();
-    const p2 = (t?.p2FirstName || "").toString().trim();
-    if(!p1 && !p2) return "";
-    return `${p1}${p1 && p2 ? " • " : ""}${p2}`;
-  }
-
-  function courtLabel(courts, key){
-    const name = courts?.[key] || key || "—";
-    const emo = (key === "A") ? "🐝" : (key === "B" ? "🌶️" : "🎾");
-    return `${emo} ${name} ${emo}`;
-  }
-  function courtClass(key){
-    return (key === "A") ? "courtA" : (key === "B" ? "courtB" : "");
-  }
-
-  // ============================================================
-  // DH POOLS from draw
-  // ============================================================
-  function computeDhPools(draw){
-    const teams = Array.isArray(draw?.teams) ? draw.teams : [];
-    const byId = new Map(teams.map(t => [t.id, t]));
-
-    const seed1 = draw?.seed1 || null;
-    const seed2 = draw?.seed2 || null;
-
-    const order = Array.isArray(draw?.order) ? draw.order : [];
-    const revealed = Number(draw?.revealed || 0);
-    const revealedIds = order.slice(0, revealed);
-    const revealedTeams = revealedIds.map(id => byId.get(id)).filter(Boolean);
-
-    const montjoly = [];
-    const kourou   = [];
-
-    if(seed1) montjoly.push(seed1);
-    if(seed2) kourou.push(seed2);
-
-    for(let i=0;i<revealedTeams.length;i++){
-      const t = revealedTeams[i];
-      if(i === 0) montjoly.push(t);
-      else if(i === 1) kourou.push(t);
-      else {
-        const j = i - 2;
-        (j % 2 === 0 ? montjoly : kourou).push(t);
-      }
-    }
-
-    return { montjoly, kourou, revealed, total: (teams.length||0) };
-  }
-
-  // ============================================================
-  // DD — LISTE PRINCIPALE + "CLASSÉES"
-  // - même logique que ta page dd/equipes (main list)
-  // - "classées" = main list + ranks présents + pas stby
-  // ============================================================
-  function computeDdMainList(rows){
-    const all = [...rows].sort((a,b)=> (a.createdAtMs||0) - (b.createdAtMs||0));
-    const forcedMain = all.filter(r => r.list === "main");
-    const auto       = all.filter(r => !r.list);
-
-    const main = [];
-    const used = new Set();
-
-    for(const r of forcedMain){
-      if(!used.has(r.id)){ main.push(r); used.add(r.id); }
-    }
-    for(const r of auto){
-      if(main.length >= MAX_MAIN) break;
-      if(!used.has(r.id)){ main.push(r); used.add(r.id); }
-    }
-    return main;
-  }
-
-  function computeDdRankedAll(rows){
-    const main = computeDdMainList(rows);
-
-    const ranked = main
-      .filter(r => !r.stby)
-      .filter(r => teamRank(r) !== null);
-
-    ranked.sort((a,b)=>{
-      const aa = teamRank(a);
-      const bb = teamRank(b);
-      if(aa !== bb) return aa - bb; // meilleur (plus petit) = tête de série
-      return (a.createdAtMs||0) - (b.createdAtMs||0);
-    });
-
-    return ranked;
-  }
-
-  // ============================================================
-  // MATCH GENERATORS
-  // ============================================================
-  function rr3Matches(poolName, teams3){
-    const [t1,t2,t3] = teams3;
-    if(!t1 || !t2 || !t3) return [];
-    return [
-      { kind:"match", cat:"DH", stage:`Poule ${poolName} (M1)`, A:t1, B:t3 },
-      { kind:"match", cat:"DH", stage:`Poule ${poolName} (M2)`, A:t2, B:t3 },
-      { kind:"match", cat:"DH", stage:`Poule ${poolName} (M3)`, A:t1, B:t2, isLast:true },
-    ];
-  }
-
-  // ✅ Round-robin N équipes, avec contrainte: #1 vs #2 en dernier
-  function rrMatchesSeedLast(label, teams){
-    const out = [];
-    const n = teams.length;
-    if(n < 2) return out;
-
-    // indices tête de série: 0 et 1 (déjà triées par teamRank asc)
-    const iSeedA = 0;
-    const iSeedB = 1;
-
-    // génère tous les matchs sauf seed1 vs seed2
-    for(let i=0;i<n;i++){
-      for(let j=i+1;j<n;j++){
-        const isSeedMatch = (i === iSeedA && j === iSeedB);
-        if(isSeedMatch) continue;
-        out.push({
-          kind:"match",
-          cat:"DD",
-          stage:`${label} (M${out.length+1})`,
-          A: teams[i],
-          B: teams[j],
-        });
-      }
-    }
-
-    // ajoute seed1 vs seed2 en dernier
-    out.push({
-      kind:"match",
-      cat:"DD",
-      stage:`${label} (M${out.length+1}) — 🔥 #1 vs #2`,
-      A: teams[iSeedA],
-      B: teams[iSeedB],
-      isLast:true
-    });
-
-    return out;
-  }
-
-  function P(name){
-    return { id:name, teamName:name, p1FirstName:"", p2FirstName:"" };
-  }
-
-  // ============================================================
-  // SCHEDULER (rest + rotation)
-  // ============================================================
-  function scheduleWithConstraints(plans, startMin, courtsKeys){
-    const keys = Array.isArray(courtsKeys) ? courtsKeys : ["A","B"];
-    const courtAvail = new Map(keys.map(k => [k, startMin]));
-    const teamLastStart = new Map();
-
-    function minStartForTeams(m){
-      if(m.kind !== "match") return startMin;
-      const aId = teamIdOf(m.A);
-      const bId = teamIdOf(m.B);
-
-      const aLast = teamLastStart.get(aId);
-      const bLast = teamLastStart.get(bId);
-
-      const aOk = (aLast === undefined) ? startMin : (aLast + MIN_GAP_SAME_TEAM_START);
-      const bOk = (bLast === undefined) ? startMin : (bLast + MIN_GAP_SAME_TEAM_START);
-
-      return Math.max(aOk, bOk);
-    }
-
-    const out = [];
-    for(const p of plans){
-      const c = p.courtKey || keys[0] || "A";
-      const cOk = courtAvail.get(c) ?? startMin;
-
-      const tOk = (p.kind === "match") ? minStartForTeams(p) : startMin;
-      const forced = Number.isFinite(p.forceMinStart) ? Number(p.forceMinStart) : startMin;
-      const start = Math.max(cOk, tOk, forced);
-
-      if(p.kind === "match"){
-        courtAvail.set(c, start + MATCH_MIN + ROTATION_MIN);
-        teamLastStart.set(teamIdOf(p.A), start);
-        teamLastStart.set(teamIdOf(p.B), start);
-      } else if(p.kind === "block"){
-        const dur = Number(p.durationMin || 0);
-        courtAvail.set(c, start + Math.max(0, dur));
-      } else {
-        courtAvail.set(c, start);
-      }
-
-      out.push({ ...p, timeMin: start, time: fmtHHMM(start) });
-    }
-
-    out.sort((a,b)=>{
-      if(a.timeMin !== b.timeMin) return a.timeMin - b.timeMin;
-      return (a.courtKey||"").localeCompare(b.courtKey||"");
-    });
-
-    return out;
-  }
-
-  // ============================================================
-  // BUILD PROGRAMMATIONS
-  // ============================================================
-  function buildProgDHFromDraw(draw){
-    const pools = computeDhPools(draw);
-    const mont = pools.montjoly.slice(0,3);
-    const kou  = pools.kourou.slice(0,3);
-
-    const montMatches = rr3Matches("Montjoly", mont);
-    const kouMatches  = rr3Matches("Kourou", kou);
-
-    const planPools = [
-      ...montMatches.map(m => ({ ...m, courtKey:"A" })),
-      ...kouMatches.map(m  => ({ ...m, courtKey:"A" })),
-    ];
-
-    const startMin = parseHHMM(START_TIME);
-    const scheduledPools = scheduleWithConstraints(planPools, startMin, ["A"]);
-
-    const lastPool = scheduledPools
-      .filter(x => x.kind==="match" && x.cat==="DH" && /\(M3\)/.test(x.stage))
-      .sort((a,b)=>a.timeMin-b.timeMin)
-      .at(-1);
-
-    const lastPoolStart = lastPool ? lastPool.timeMin : startMin;
-    const sfEarliest = lastPoolStart + MIN_GAP_SAME_TEAM_START;
-
-    const finalsPlan = [
-      { kind:"block", cat:"DH", stage:"⏳ Pause / attente (hypothèse défavorable)", courtKey:"A", title:"⏳ Pause / attente", note:"On garantit 30 min de repos après le dernier match de poule avant la 1/2", durationMin:0, forceMinStart: sfEarliest },
-      { kind:"match", cat:"DH", stage:"Demi-finale 1", courtKey:"A", A:P("1er Montjoly"), B:P("2e Kourou") },
-      { kind:"match", cat:"DH", stage:"Demi-finale 2", courtKey:"A", A:P("1er Kourou"),  B:P("2e Montjoly") },
-      { kind:"match", cat:"DH", stage:"Match 5e place", courtKey:"A", A:P("3e Montjoly"),  B:P("3e Kourou") },
-      { kind:"match", cat:"DH", stage:"Petite finale (3e place)", courtKey:"A", A:P("Perdant SF1"), B:P("Perdant SF2") },
-      { kind:"match", cat:"DH", stage:"Finale", courtKey:"A", A:P("Gagnant SF1"), B:P("Gagnant SF2") },
-    ];
-
-    const scheduledAll = scheduleWithConstraints([...scheduledPools, ...finalsPlan], startMin, ["A"]);
-
-    const slots = scheduledAll.map((x, idx)=>({
-      slot: idx+1,
-      time: x.time,
-      court: "A",
-      note: x.kind === "block" ? (x.note || "") : ""
-    }));
-
-    const matches = {};
-    const schedule = {};
-
-    scheduledAll.forEach((x, idx)=>{
-      const mid = `DH${String(idx+1).padStart(2,"0")}`;
-      matches[mid] = {
-        id: mid,
-        kind: x.kind,
-        cat: "DH",
-        stage: x.stage || "",
-        A: x.A || null,
-        B: x.B || null,
-        title: x.title || "",
-        note: x.note || ""
-      };
-      schedule[mid] = { slot: idx+1, court: "A" };
-    });
-
+  function defaultProgramDH(){
     return {
-      formatVersion: 2,
-      cat: "DH",
-      updatedAt: serverTimestamp(),
-      createdAt: serverTimestamp(),
-      courts: { ...COURTS_DEFAULT },
-      meta: {
-        startTime: START_TIME,
-        mode: "singleCourt",
-        fixedCourt: "A",
-        timing: { MATCH_MIN, ROTATION_MIN, REST_AFTER_END_MIN, MIN_GAP_SAME_TEAM_START }
-      },
-      slots,
-      matches,
-      schedule,
-      source: { drawDoc: "tirages_open/dh", drawUpdatedAt: draw?.updatedAt || null }
-    };
-  }
-
-  function buildProgDDFromTeams(rows){
-    const ranked = computeDdRankedAll(rows);
-
-    if(ranked.length < 3){
-      throw new Error("Pas assez d’équipes DD classées (min 3) dans la liste principale (MAIN + ranks).");
-    }
-    if(ranked.length < 2){
-      throw new Error("Il faut au moins 2 équipes classées pour imposer #1 vs #2 en dernier.");
-    }
-
-    // ✅ Round robin avec contrainte seed1 vs seed2 dernier
-    const ddMatches = rrMatchesSeedLast("Poule DD", ranked);
-
-    // ✅ DD sur 1 terrain (B)
-    const startMin = parseHHMM(START_TIME);
-    const plan = ddMatches.map(m => ({ ...m, courtKey:"B" }));
-    const scheduled = scheduleWithConstraints(plan, startMin, ["B"]);
-
-    const slots = scheduled.map((x, idx)=>({
-      slot: idx+1,
-      time: x.time,
-      court: "B",
-      note: ""
-    }));
-
-    const matches = {};
-    const schedule = {};
-
-    scheduled.forEach((x, idx)=>{
-      const mid = `DD${String(idx+1).padStart(2,"0")}`;
-      matches[mid] = {
-        id: mid,
-        kind: "match",
-        cat: "DD",
-        stage: x.stage || "",
-        A: x.A || null,
-        B: x.B || null,
-        isLast: x.isLast === true
-      };
-      schedule[mid] = { slot: idx+1, court: "B" };
-    });
-
-    return {
-      formatVersion: 2,
-      cat: "DD",
-      updatedAt: serverTimestamp(),
-      createdAt: serverTimestamp(),
-      courts: { ...COURTS_DEFAULT },
-      meta: {
-        startTime: START_TIME,
-        mode: "singleCourt",
-        fixedCourt: "B",
-        timing: { MATCH_MIN, ROTATION_MIN, REST_AFTER_END_MIN, MIN_GAP_SAME_TEAM_START },
-        dd: {
-          rankedCount: ranked.length,
-          lastMatchRule: "#1 vs #2"
+      scope: "dh",
+      title: "Double Messieurs",
+      matches: [
+        {
+          id: "dh_p1",
+          phase: "poule",
+          phaseLabel: "Poule Tortues",
+          time: "15:00",
+          court: "Terrain Hommes 1",
+          label: "Match 1",
+          teamA: "Tortues 1",
+          teamB: "Tortues 2"
+        },
+        {
+          id: "dh_p2",
+          phase: "poule",
+          phaseLabel: "Poule Ara",
+          time: "15:00",
+          court: "Terrain Hommes 2",
+          label: "Match 1",
+          teamA: "Ara 1",
+          teamB: "Ara 2"
+        },
+        {
+          id: "dh_p3",
+          phase: "poule",
+          phaseLabel: "Poule Tortues",
+          time: "15:50",
+          court: "Terrain Hommes 1",
+          label: "Match 2",
+          teamA: "Tortues 1",
+          teamB: "Tortues 3"
+        },
+        {
+          id: "dh_p4",
+          phase: "poule",
+          phaseLabel: "Poule Ara",
+          time: "15:50",
+          court: "Terrain Hommes 2",
+          label: "Match 2",
+          teamA: "Ara 1",
+          teamB: "Ara 3"
+        },
+        {
+          id: "dh_p5",
+          phase: "poule",
+          phaseLabel: "Poule Tortues",
+          time: "16:40",
+          court: "Terrain Hommes 1",
+          label: "Match 3",
+          teamA: "Tortues 2",
+          teamB: "Tortues 3"
+        },
+        {
+          id: "dh_p6",
+          phase: "poule",
+          phaseLabel: "Poule Ara",
+          time: "16:40",
+          court: "Terrain Hommes 2",
+          label: "Match 3",
+          teamA: "Ara 2",
+          teamB: "Ara 3"
+        },
+        {
+          id: "dh_f1",
+          phase: "finale",
+          phaseLabel: "Phase finale",
+          time: "19:00",
+          court: "Manon",
+          label: "Demi-finale 1",
+          teamA: "1er Tortues",
+          teamB: "2e Ara"
+        },
+        {
+          id: "dh_f2",
+          phase: "finale",
+          phaseLabel: "Phase finale",
+          time: "19:50",
+          court: "Manon",
+          label: "Demi-finale 2",
+          teamA: "1er Ara",
+          teamB: "2e Tortues"
+        },
+        {
+          id: "dh_f3",
+          phase: "finale",
+          phaseLabel: "Phase finale",
+          time: "20:40",
+          court: "Manon",
+          label: "Petite finale",
+          teamA: "Perdant DF1",
+          teamB: "Perdant DF2"
+        },
+        {
+          id: "dh_f4",
+          phase: "finale",
+          phaseLabel: "Phase finale",
+          time: "21:30",
+          court: "Manon",
+          label: "Finale",
+          teamA: "Vainqueur DF1",
+          teamB: "Vainqueur DF2"
         }
-      },
-      slots,
-      matches,
-      schedule,
-      source: { ddCollection: "equipes_dd_public", ddRule: "main+rankedOnly" }
+      ]
     };
   }
 
-  // ============================================================
-  // RENDER LISTS (admin)
-  // ============================================================
-  function normalizeEntry(entry, slotObj){
-    if(typeof entry === "number"){
-      const slot = Number(entry);
-      const court = slotObj?.court || "A";
-      return { slot, court };
-    }
-    if(entry && typeof entry === "object"){
-      const slot = Number(entry.slot);
-      const court = entry.court || slotObj?.court || "A";
-      return { slot, court };
-    }
-    const fallbackSlot = Number(slotObj?.slot || 1);
-    return { slot: fallbackSlot, court: slotObj?.court || "A" };
+  function defaultProgramDD(){
+    return {
+      scope: "dd",
+      title: "Double Dames",
+      matches: [
+        {
+          id: "dd_p1",
+          phase: "poule",
+          phaseLabel: "Poule unique",
+          time: "15:00",
+          court: "Terrain Dames 1",
+          label: "Match 1",
+          teamA: "1re équipe",
+          teamB: "2e équipe"
+        },
+        {
+          id: "dd_p2",
+          phase: "poule",
+          phaseLabel: "Poule unique",
+          time: "15:00",
+          court: "Terrain Dames 2",
+          label: "Match 2",
+          teamA: "3e équipe",
+          teamB: "4e équipe"
+        },
+        {
+          id: "dd_p3",
+          phase: "poule",
+          phaseLabel: "Poule unique",
+          time: "15:50",
+          court: "Terrain Dames 1",
+          label: "Match 3",
+          teamA: "1re équipe",
+          teamB: "3e équipe"
+        },
+        {
+          id: "dd_p4",
+          phase: "poule",
+          phaseLabel: "Poule unique",
+          time: "15:50",
+          court: "Terrain Dames 2",
+          label: "Match 4",
+          teamA: "2e équipe",
+          teamB: "4e équipe"
+        },
+        {
+          id: "dd_p5",
+          phase: "poule",
+          phaseLabel: "Poule unique",
+          time: "16:40",
+          court: "Terrain Dames 1",
+          label: "Match 5",
+          teamA: "1re équipe",
+          teamB: "4e équipe"
+        },
+        {
+          id: "dd_p6",
+          phase: "poule",
+          phaseLabel: "Poule unique",
+          time: "16:40",
+          court: "Terrain Dames 2",
+          label: "Match 6",
+          teamA: "2e équipe",
+          teamB: "3e équipe"
+        },
+        {
+          id: "dd_f1",
+          phase: "finale",
+          phaseLabel: "Phase finale",
+          time: "19:00",
+          court: "Lisa",
+          label: "Demi-finale 1",
+          teamA: "1re poule",
+          teamB: "4e poule"
+        },
+        {
+          id: "dd_f2",
+          phase: "finale",
+          phaseLabel: "Phase finale",
+          time: "19:50",
+          court: "Lisa",
+          label: "Demi-finale 2",
+          teamA: "2e poule",
+          teamB: "3e poule"
+        },
+        {
+          id: "dd_f3",
+          phase: "finale",
+          phaseLabel: "Phase finale",
+          time: "20:40",
+          court: "Lisa",
+          label: "Petite finale",
+          teamA: "Perdante DF1",
+          teamB: "Perdante DF2"
+        },
+        {
+          id: "dd_f4",
+          phase: "finale",
+          phaseLabel: "Phase finale",
+          time: "21:30",
+          court: "Lisa",
+          label: "Finale",
+          teamA: "Vainqueure DF1",
+          teamB: "Vainqueure DF2"
+        }
+      ]
+    };
   }
 
-  function matchCardAdmin({ prog, slotObj, mid, entry }){
-    const m = prog?.matches?.[mid];
-    if(!m) return "";
+  function getDefaultProgram(sc){
+    return sc === "dd" ? defaultProgramDD() : defaultProgramDH();
+  }
 
-    const norm = normalizeEntry(entry, slotObj);
-    const courtKey = norm.court;
-    const courts = prog?.courts || COURTS_DEFAULT;
-
-    if(m.kind === "block"){
-      return `
-        <div class="match-card block">
-          <div class="match-head">
-            <div class="m-slot">#${esc(slotObj.slot)} · ${esc(mid)}</div>
-            <div class="m-time">${esc(slotObj.time)}</div>
-            <div class="m-court">${esc(courtLabel(courts, courtKey))}</div>
-            <div class="m-tag">⏳ Bloc</div>
-            <div class="actions">
-              <button class="btnx" data-act="court" data-mid="${esc(mid)}" title="Changer de terrain">${courtKey === "A" ? "🐝" : "🌶️"}</button>
-              <button class="btnx" data-act="up" data-slot="${esc(slotObj.slot)}" ${slotObj.slot<=1 ? "disabled":""}>↑</button>
-              <button class="btnx" data-act="down" data-slot="${esc(slotObj.slot)}" ${slotObj.slot>=prog.slots.length ? "disabled":""}>↓</button>
-            </div>
-          </div>
-          <div class="team-row">
-            <div class="team-title">${esc(m.title || m.stage || "Bloc")}</div>
-            ${m.note ? `<div class="team-sub muted">${esc(m.note)}</div>` : ``}
-          </div>
-        </div>
-      `;
-    }
-
-    const A = m.A || null;
-    const B = m.B || null;
+  function renderMatchCard(m){
+    const phaseCls = m.phase === "finale" ? "phase-finale" : "phase-poule";
 
     return `
-      <div class="match-card ${esc(courtClass(courtKey))}">
-        <div class="match-head">
-          <div class="m-slot">#${esc(slotObj.slot)} · ${esc(mid)}</div>
-          <div class="m-time">${esc(slotObj.time)}</div>
-          <div class="m-court">${esc(courtLabel(courts, courtKey))}</div>
-          <div class="m-tag">${esc(m.cat)} · ${esc(m.stage || "")}</div>
+      <div class="program-card" data-id="${esc(m.id)}">
+        <div class="program-head">
+          <div>
+            <div class="program-title">${esc(m.label || "Match")}</div>
+            <div class="program-sub">${esc(m.phaseLabel || "")}</div>
+          </div>
 
-          <div class="actions">
-            <button class="btnx" data-act="court" data-mid="${esc(mid)}" title="Changer de terrain">${courtKey === "A" ? "🐝" : "🌶️"}</button>
-            <button class="btnx" data-act="up" data-slot="${esc(slotObj.slot)}" ${slotObj.slot<=1 ? "disabled":""}>↑</button>
-            <button class="btnx" data-act="down" data-slot="${esc(slotObj.slot)}" ${slotObj.slot>=prog.slots.length ? "disabled":""}>↓</button>
+          <div class="badges">
+            <span class="pill ${phaseCls}">${esc(m.phase || "")}</span>
           </div>
         </div>
 
-        <div class="team-row">
-          <div class="team-title">${esc(teamTitle(A))}</div>
-          <div class="team-sub muted">${esc(teamSub(A))}</div>
+        <div class="kv-wrap">
+          <span class="kv"><span class="k">Heure</span><span class="v">${esc(m.time || "—")}</span></span>
+          <span class="kv"><span class="k">Terrain</span><span class="v">${esc(m.court || "—")}</span></span>
         </div>
 
-        <div class="vs-line">VS</div>
+        <div class="match-grid">
+          <div class="team-box">${esc(m.teamA || "—")}</div>
+          <div class="team-box">${esc(m.teamB || "—")}</div>
+        </div>
 
-        <div class="team-row">
-          <div class="team-title">${esc(teamTitle(B))}</div>
-          <div class="team-sub muted">${esc(teamSub(B))}</div>
+        <div class="actions">
+          <button class="btnx" data-act="edit" data-id="${esc(m.id)}">✏️ Modifier</button>
         </div>
       </div>
     `;
   }
 
-  function renderProgInto(prog, box, statusEl){
-    if(!prog || !prog.slots || !prog.matches || !prog.schedule){
-      box.innerHTML = `<p class="muted" style="margin:0;">Aucune programmation. Génère-la ci-dessus.</p>`;
-      statusEl.textContent = "—";
-      return;
-    }
+  function renderCurrent(){
+    const matches = Array.isArray(program?.matches) ? program.matches : [];
+    const pools = matches.filter(m => m.phase === "poule");
+    const finals = matches.filter(m => m.phase === "finale");
 
-    const slots = Array.isArray(prog.slots) ? prog.slots : [];
-    const schedule = prog.schedule || {};
-    const matches = prog.matches || {};
+    poolMatchesEl.innerHTML = pools.length
+      ? pools.map(renderMatchCard).join("")
+      : `<div class="muted">Aucun match de poule.</div>`;
 
-    const slotToMatch = new Map();
-    for(const [mid, entry] of Object.entries(schedule)){
-      const slotNum = (typeof entry === "number") ? Number(entry) : Number(entry?.slot);
-      if(!Number.isFinite(slotNum)) continue;
-      if(!matches[mid]) continue;
-      if(!slotToMatch.has(slotNum)) slotToMatch.set(slotNum, mid);
-    }
+    finalMatchesEl.innerHTML = finals.length
+      ? finals.map(renderMatchCard).join("")
+      : `<div class="muted">Aucun match de phase finale.</div>`;
 
-    const cards = [];
-    for(const s of slots){
-      const mid = slotToMatch.get(Number(s.slot));
-      if(!mid) continue;
-      const entry = schedule[mid];
-      cards.push(matchCardAdmin({ prog, slotObj:s, mid, entry }));
-    }
+    ruleText.innerHTML =
+      currentScope === "dh"
+        ? `Format <b>Double Messieurs</b> : poules à <b>15h00 / 15h50 / 16h40</b> sur 2 terrains hommes, puis phases finales à partir de <b>19h00</b> sur le court <b>Manon</b> avec 4 créneaux : 19h00 / 19h50 / 20h40 / 21h30.`
+        : `Format <b>Double Dames</b> : poule unique à <b>15h00 / 15h50 / 16h40</b> sur 2 terrains dames, puis phases finales à partir de <b>19h00</b> sur le court <b>Lisa</b> avec 4 créneaux : 19h00 / 19h50 / 20h40 / 21h30.`;
 
-    box.innerHTML = cards.length
-      ? `<div class="match-list">${cards.join("")}</div>`
-      : `<p class="muted" style="margin:0;">Aucun match.</p>`;
-
-    statusEl.textContent = "✅ OK";
+    statusEl.textContent = `✅ Programmation ${zoneText(currentScope)} prête à être modifiée ou sauvegardée.`;
   }
 
-  // ============================================================
-  // EDIT ACTIONS (swap slots / toggle court)
-  // ============================================================
-  async function swapSlots(refDoc, slotA, slotB){
-    const snap = await getDoc(refDoc);
-    if(!snap.exists()) throw new Error("Programmation introuvable.");
-    const prog = snap.data() || {};
-
-    const slots = Array.isArray(prog.slots) ? prog.slots : [];
-    const schedule = prog.schedule || {};
-
-    let mA = null, mB = null;
-
-    for(const [mid, entry] of Object.entries(schedule)){
-      const slotNum = (typeof entry === "number") ? Number(entry) : Number(entry?.slot);
-      if(slotNum === Number(slotA) && !mA) mA = mid;
-      if(slotNum === Number(slotB) && !mB) mB = mid;
+  async function loadProgram(sc){
+    const snap = await getDoc(DOC_REF(sc));
+    if(snap.exists()){
+      program = snap.data() || null;
+    } else {
+      program = getDefaultProgram(sc);
     }
-
-    const newSchedule = { ...schedule };
-
-    function setEntry(mid, newSlot){
-      if(!mid) return;
-      const cur = newSchedule[mid];
-      const slotObj = slots.find(x => Number(x.slot) === Number(newSlot)) || null;
-      const norm = normalizeEntry(cur, slotObj);
-      newSchedule[mid] = { slot: Number(newSlot), court: norm.court };
-    }
-
-    setEntry(mA, slotB);
-    setEntry(mB, slotA);
-
-    await updateDoc(refDoc, { schedule: newSchedule, updatedAt: serverTimestamp() });
+    renderCurrent();
   }
 
-  async function toggleCourt(refDoc, mid){
-    const snap = await getDoc(refDoc);
-    if(!snap.exists()) throw new Error("Programmation introuvable.");
-    const prog = snap.data() || {};
-    const schedule = prog.schedule || {};
-    const slots = Array.isArray(prog.slots) ? prog.slots : [];
+  async function saveProgram(sc){
+    if(!program){
+      program = getDefaultProgram(sc);
+    }
 
-    const entry = schedule[mid];
-    const slotNum = (typeof entry === "number") ? Number(entry) : Number(entry?.slot);
-    const slotObj = slots.find(x => Number(x.slot) === slotNum) || null;
-
-    const norm = normalizeEntry(entry, slotObj);
-    const nextCourt = (norm.court === "A") ? "B" : "A";
-
-    await updateDoc(refDoc, {
-      schedule: { ...schedule, [mid]: { slot: norm.slot, court: nextCourt } },
+    await setDoc(DOC_REF(sc), {
+      scope: sc,
+      title: program.title || zoneText(sc),
+      matches: Array.isArray(program.matches) ? program.matches : [],
       updatedAt: serverTimestamp()
-    });
+    }, { merge:true });
+
+    statusEl.textContent = `💾 Programmation ${zoneText(sc)} sauvegardée.`;
   }
 
-  // ============================================================
-  // UI (tabs)
-  // ============================================================
-  function setTab(which){
-    const isDH = (which === "dh");
-    tabDH.classList.toggle("is-active", isDH);
-    tabDD.classList.toggle("is-active", !isDH);
-    panelDH.style.display = isDH ? "block" : "none";
-    panelDD.style.display = isDH ? "none" : "block";
-  }
-  tabDH.onclick = (e)=>{ e.preventDefault(); setTab("dh"); };
-  tabDD.onclick = (e)=>{ e.preventDefault(); setTab("dd"); };
-  setTab("dh");
+  function resetProgram(sc){
+    const ok = confirm(`Réinitialiser la programmation ${zoneText(sc)} avec le modèle par défaut ?`);
+    if(!ok) return;
 
-  // ============================================================
-  // BUTTONS
-  // ============================================================
-  btnGenDH.onclick = async (e)=>{
-    e.preventDefault();
-    btnGenDH.disabled = true;
-    dhStatus.textContent = "Génération…";
-    try{
-      if(!dhDraw) throw new Error("Tirage DH indisponible.");
-      const pools = computeDhPools(dhDraw);
-      if(pools.montjoly.length < 3 || pools.kourou.length < 3) throw new Error("Tirage DH incomplet (poules non complètes).");
-
-      const payload = buildProgDHFromDraw(dhDraw);
-      await setDoc(refProgDH(), payload, { merge:true });
-
-      dhStatus.textContent = "✅ DH généré.";
-    }catch(err){
-      console.error(err);
-      dhStatus.textContent = "❌ " + (err?.message || "Erreur");
-      alert("Erreur ❌\n\n" + (err?.message || "Impossible."));
-    }finally{
-      btnGenDH.disabled = false;
-    }
-  };
-
-  btnResetDH.onclick = async (e)=>{
-    e.preventDefault();
-    if(!confirm("Réinitialiser DH ?\n\nCela supprime l’ordre + les terrains DH.")) return;
-    btnResetDH.disabled = true;
-    dhStatus.textContent = "Réinitialisation…";
-    try{
-      await setDoc(refProgDH(), {
-        formatVersion: 2,
-        cat: "DH",
-        courts: { ...COURTS_DEFAULT },
-        slots: [],
-        matches: {},
-        schedule: {},
-        resetAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
-      }, { merge:true });
-      dhStatus.textContent = "✅ DH réinitialisé.";
-    }catch(err){
-      console.error(err);
-      dhStatus.textContent = "❌ " + (err?.message || "Erreur");
-      alert("Erreur ❌\n\n" + (err?.message || "Impossible."));
-    }finally{
-      btnResetDH.disabled = false;
-    }
-  };
-
-  btnGenDD.onclick = async (e)=>{
-    e.preventDefault();
-    btnGenDD.disabled = true;
-    ddStatus.textContent = "Génération…";
-    try{
-      const payload = buildProgDDFromTeams(ddTeams);
-      await setDoc(refProgDD(), payload, { merge:true });
-      ddStatus.textContent = "✅ DD généré (seed1 vs seed2 en dernier).";
-    }catch(err){
-      console.error(err);
-      ddStatus.textContent = "❌ " + (err?.message || "Erreur");
-      alert("Erreur ❌\n\n" + (err?.message || "Impossible."));
-    }finally{
-      btnGenDD.disabled = false;
-    }
-  };
-
-  btnResetDD.onclick = async (e)=>{
-    e.preventDefault();
-    if(!confirm("Réinitialiser DD ?\n\nCela supprime l’ordre + les terrains DD.")) return;
-    btnResetDD.disabled = true;
-    ddStatus.textContent = "Réinitialisation…";
-    try{
-      await setDoc(refProgDD(), {
-        formatVersion: 2,
-        cat: "DD",
-        courts: { ...COURTS_DEFAULT },
-        slots: [],
-        matches: {},
-        schedule: {},
-        resetAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
-      }, { merge:true });
-      ddStatus.textContent = "✅ DD réinitialisé.";
-    }catch(err){
-      console.error(err);
-      ddStatus.textContent = "❌ " + (err?.message || "Erreur");
-      alert("Erreur ❌\n\n" + (err?.message || "Impossible."));
-    }finally{
-      btnResetDD.disabled = false;
-    }
-  };
-
-  // ============================================================
-  // LIST CLICK (edit)
-  // ============================================================
-  function attachListHandlers(listEl, refDoc, getProg, statusEl){
-    listEl.addEventListener("click", async (e)=>{
-      const btn = e.target.closest("button[data-act]");
-      if(!btn) return;
-
-      const prog = getProg();
-      if(!prog) return;
-
-      const act = btn.dataset.act;
-
-      try{
-        statusEl.textContent = "Traitement…";
-
-        if(act === "up" || act === "down"){
-          const slot = Number(btn.dataset.slot);
-          if(!Number.isFinite(slot)) return;
-          const max = Array.isArray(prog.slots) ? prog.slots.length : 0;
-          if(act === "up" && slot > 1) await swapSlots(refDoc, slot, slot-1);
-          if(act === "down" && slot < max) await swapSlots(refDoc, slot, slot+1);
-        }
-
-        if(act === "court"){
-          const mid = btn.dataset.mid;
-          if(!mid) return;
-          await toggleCourt(refDoc, mid);
-        }
-
-        statusEl.textContent = "✅ OK";
-      }catch(err){
-        console.error(err);
-        statusEl.textContent = "❌ " + (err?.message || "Erreur");
-        alert("Erreur ❌\n\n" + (err?.message || "Impossible."));
-      }
-    });
+    program = getDefaultProgram(sc);
+    renderCurrent();
   }
 
-  attachListHandlers(dhList, refProgDH(), ()=>progDH, dhStatus);
-  attachListHandlers(ddList, refProgDD(), ()=>progDD, ddStatus);
+  function editMatch(id){
+    const matches = Array.isArray(program?.matches) ? program.matches : [];
+    const idx = matches.findIndex(m => m.id === id);
+    if(idx < 0) return;
 
-  // ============================================================
-  // AUTH + LISTENERS
-  // ============================================================
-  function stopAll(){
-    if(unsubDraw){ unsubDraw(); unsubDraw = null; }
-    if(unsubDD){ unsubDD(); unsubDD = null; }
-    if(unsubProgDH){ unsubProgDH(); unsubProgDH = null; }
-    if(unsubProgDD){ unsubProgDD(); unsubProgDD = null; }
+    const row = matches[idx];
+
+    const time = prompt("Heure :", row.time || "");
+    if(time === null) return;
+
+    const court = prompt("Terrain :", row.court || "");
+    if(court === null) return;
+
+    const label = prompt("Libellé du match :", row.label || "");
+    if(label === null) return;
+
+    const phaseLabel = prompt("Sous-libellé / phase :", row.phaseLabel || "");
+    if(phaseLabel === null) return;
+
+    const teamA = prompt("Équipe / place A :", row.teamA || "");
+    if(teamA === null) return;
+
+    const teamB = prompt("Équipe / place B :", row.teamB || "");
+    if(teamB === null) return;
+
+    matches[idx] = {
+      ...row,
+      time: String(time).trim(),
+      court: String(court).trim(),
+      label: String(label).trim(),
+      phaseLabel: String(phaseLabel).trim(),
+      teamA: String(teamA).trim(),
+      teamB: String(teamB).trim()
+    };
+
+    program.matches = matches;
+    renderCurrent();
   }
+
+  panel.addEventListener("click", async (e) => {
+    const btn = e.target.closest("button[data-act]");
+    if(!btn) return;
+
+    const act = btn.dataset.act;
+    const id = btn.dataset.id;
+
+    if(act === "edit"){
+      editMatch(id);
+    }
+  });
+
+  btnLoad.onclick = async (e)=>{
+    e.preventDefault();
+    await loadProgram(currentScope);
+  };
+
+  btnDefault.onclick = (e)=>{
+    e.preventDefault();
+    program = getDefaultProgram(currentScope);
+    renderCurrent();
+  };
+
+  btnSave.onclick = async (e)=>{
+    e.preventDefault();
+    await saveProgram(currentScope);
+  };
+
+  btnReset.onclick = async (e)=>{
+    e.preventDefault();
+    resetProgram(currentScope);
+  };
+
+  btnPublic.onclick = (e)=>{
+    e.preventDefault();
+    window.location.href = "../pages/programmation.html?scope=" + encodeURIComponent(currentScope);
+  };
+
+  btnDH.onclick = async ()=>{
+    currentScope = "dh";
+    updateFilterButtons();
+    try{ history.replaceState(null, "", "programmation.html?scope=dh"); }catch(e){}
+    await loadProgram(currentScope);
+  };
+
+  btnDD.onclick = async ()=>{
+    currentScope = "dd";
+    updateFilterButtons();
+    try{ history.replaceState(null, "", "programmation.html?scope=dd"); }catch(e){}
+    await loadProgram(currentScope);
+  };
 
   function showDenied(){
     accessDenied.style.display = "block";
     adminZone.style.display = "none";
-    panelDH.style.display = "none";
-    panelDD.style.display = "none";
-    stopAll();
+    adminUI.style.display = "none";
+    panel.style.display = "none";
   }
 
   function showAdmin(){
     accessDenied.style.display = "none";
     adminZone.style.display = "block";
-    panelDH.style.display = "block";
-    panelDD.style.display = "none";
-    setTab("dh");
-
-    liveStatus.textContent = "🟢 En direct (tirage + équipes + programmations)";
-
-    unsubDraw = onSnapshot(refDrawDH(), (snap)=>{
-      dhDraw = snap.exists() ? (snap.data() || {}) : null;
-    }, (err)=>{ console.error(err); });
-
-    unsubDD = onSnapshot(qDDTeams(), (snap)=>{
-      const rows = [];
-      snap.forEach(d=>{
-        const x = d.data() || {};
-        rows.push({
-          id: d.id,
-          teamName: x.teamName || "",
-          p1FirstName: x.p1FirstName || "",
-          p2FirstName: x.p2FirstName || "",
-          createdAtMs: x.createdAt?.toMillis ? x.createdAt.toMillis() : 0,
-          list: x.list || null,
-          stby: x.stby === true,
-          p1Rank: x.p1Rank ?? null,
-          p2Rank: x.p2Rank ?? null
-        });
-      });
-      ddTeams = rows;
-    }, (err)=>{ console.error(err); });
-
-    unsubProgDH = onSnapshot(refProgDH(), (snap)=>{
-      progDH = snap.exists() ? (snap.data() || {}) : null;
-      renderProgInto(progDH, dhList, dhStatus);
-    }, (err)=>{
-      console.error(err);
-      dhStatus.textContent = `❌ Erreur Firestore (DH) : ${err?.code || ""} ${err?.message || ""}`.trim();
-    });
-
-    unsubProgDD = onSnapshot(refProgDD(), (snap)=>{
-      progDD = snap.exists() ? (snap.data() || {}) : null;
-      renderProgInto(progDD, ddList, ddStatus);
-    }, (err)=>{
-      console.error(err);
-      ddStatus.textContent = `❌ Erreur Firestore (DD) : ${err?.code || ""} ${err?.message || ""}`.trim();
-    });
+    adminUI.style.display = "block";
+    panel.style.display = "block";
+    updateFilterButtons();
   }
+
+  onAuthStateChanged(auth, async (user)=>{
+    if(!user){
+      showDenied();
+      return;
+    }
+
+    try{
+      const role = await getRoleByEmail(user.email);
+      if(role !== "admin"){
+        showDenied();
+        return;
+      }
+
+      showAdmin();
+      await loadProgram(currentScope);
+    }catch(err){
+      console.error(err);
+      showDenied();
+    }
+  });
 
   document.getElementById("btnLogout").onclick = async (e)=>{
     e.preventDefault();
     await logout();
     window.location.href = "../index.html";
   };
-
-  onAuthStateChanged(auth, async (user)=>{
-    if(!user){ showDenied(); return; }
-
-    try{
-      const role = await getRoleByEmail(user.email);
-      if(role !== "admin"){ showDenied(); return; }
-      showAdmin();
-    }catch(err){
-      console.error(err);
-      showDenied();
-    }
-  });
 </script>
 
 </body>
