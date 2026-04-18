@@ -1,13 +1,20 @@
 <!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Admin — Tirage Open BT</title>
-
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260227-open-admin-tirage" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin — Tirage — Open BT Bricorama</title>
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260418-open-admin-tirage-dual-v1" />
 
   <style>
+    .nav a[aria-current="page"],
+    .btn.is-active{
+      background: rgba(17,17,17,.10);
+      border-color: rgba(17,17,17,.25);
+      box-shadow: 0 10px 22px rgba(0,0,0,.10);
+      font-weight: 1000 !important;
+    }
+
     .roulette-wheel{
       height:68px;
       border-radius:14px;
@@ -19,7 +26,10 @@
       font-size:18px;
       letter-spacing:.2px;
       background:linear-gradient(180deg,#fff,#fafafa);
+      text-align:center;
+      padding:0 10px;
     }
+
     .pill{
       display:inline-block;
       padding:4px 10px;
@@ -30,214 +40,253 @@
       white-space:nowrap;
       font-weight:900;
     }
-    .pill.ok{ border-color:#d9e6ff; background:#f3f7ff; }
-    .pill.warn{ border-color:#ffd37a; background:#fff7e6; }
 
-    .two-col{
+    .pill.seed{
+      background:#fff9e8;
+      border-color:#f1dca1;
+    }
+
+    .pool-grid{
       display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:12px;
-    }
-    @media (max-width: 720px){
-      .two-col{ grid-template-columns: 1fr; }
+      gap:10px;
+      grid-template-columns: repeat(2, minmax(0,1fr));
     }
 
-    .list{
-      display:grid;
-      gap:8px;
-      margin-top:10px;
+    .pool-grid.single{
+      grid-template-columns: 1fr;
     }
 
-    .rowcard{
+    .pool-card{
       border:1px solid #eee;
       border-radius:14px;
       background:#fff;
-      padding:12px;
-      box-shadow:0 6px 16px rgba(0,0,0,.04);
+      padding:10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,.03);
     }
 
-    .rowline{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      align-items:flex-start;
-    }
-    .rmain{ min-width:0; }
-    .rtitle{
+    .pool-title{
+      font-size:12px;
       font-weight:1000;
+      opacity:.7;
+      margin-bottom:8px;
+      letter-spacing:.3px;
+    }
+
+    .pool-list{
+      display:grid;
+      gap:8px;
+    }
+
+    .pool-slot{
+      border:1px solid #f0f0f0;
+      border-radius:10px;
+      background:#fafafa;
+      padding:8px 10px;
+      font-weight:900;
+      font-size:14px;
       line-height:1.2;
+      min-width:0;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
     }
-    .rsub{
-      margin-top:6px;
-      font-size:12px;
-      opacity:.8;
-      line-height:1.35;
+
+    .pool-slot.empty{
+      background:#f7fbff;
+      border-color:#d9ebfb;
+      color:#444;
+      font-style:italic;
     }
 
-    .tag{
-      border:1px solid rgba(0,0,0,.12);
-      border-radius:999px;
-      padding:5px 9px;
-      font-size:11px;
-      font-weight:1000;
-      white-space:nowrap;
-      opacity:.9;
-      flex:0 0 auto;
+    .pool-slot.seed{
+      background:#fff9e8;
+      border-color:#f1dca1;
     }
 
-    .state{
-      display:flex;
+    .item-list{
+      display:grid;
       gap:8px;
-      flex-wrap:wrap;
+    }
+
+    .item-card{
+      border:1px solid #eee;
+      border-radius:14px;
+      background:#fff;
+      padding:10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,.03);
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
       align-items:center;
-      margin-top:10px;
+    }
+
+    @media (max-width: 640px){
+      .pool-grid{
+        grid-template-columns:1fr;
+      }
     }
   </style>
 </head>
 
 <body>
 
-<div id="adminHeader"></div>
+<header class="topbar">
+  <div class="container">
+    <div class="topbar-row">
+      <div class="brand-logo">
+        <img src="../assets/img/logo-suzini.png" alt="Logo Suzini">
+      </div>
+
+      <div class="brand-title" style="display:flex;align-items:center;justify-content:center;">
+        <div style="font-weight:1000; letter-spacing:.2px;">
+          🛠️ Admin — Open BT Bricorama
+        </div>
+      </div>
+
+      <div class="brand-logo">
+        <img src="../assets/img/logo-openbt.png" alt="Logo Open BT Bricorama">
+      </div>
+    </div>
+
+    <nav class="nav">
+      <a href="../index.html">🏠 Accueil public</a>
+      <a href="equipes.html">👥 Équipes</a>
+      <a href="tirage.html" aria-current="page">🎲 Tirage</a>
+      <a href="programmation.html">🗓️ Programmation</a>
+      <a href="resultats.html">✅ Résultats</a>
+      <a href="#" id="btnLogout">🚪 Déconnexion</a>
+    </nav>
+  </div>
+</header>
 
 <main class="container">
-  <div id="adminZone"></div>
 
   <section class="card" id="accessDenied" style="display:none;">
     <h2 style="margin:0 0 8px;">⛔ Accès refusé</h2>
     <p class="muted" style="margin:0;">Cette page est réservée aux administrateurs.</p>
   </section>
 
-  <section class="card" id="pageContent" style="display:none;">
-    <h2 style="margin:0 0 10px;">🎲 Tirage — Open BT Bricorama</h2>
-    <p class="muted" id="hint" style="margin:0;">—</p>
+  <section class="card" id="adminZone" style="display:none;">
+    <h2 style="margin:0 0 10px;">🎾 Tableau</h2>
 
-    <div class="state">
-      <span class="pill" id="statePill">État: —</span>
-      <span class="pill ok" id="pubPill" style="display:none;">🌍 Publié</span>
-      <span class="pill" id="countPill">Équipes: —</span>
+    <div class="grid" style="margin-top:10px;">
+      <button class="btn" id="btnDH" type="button">👨 Double Messieurs</button>
+      <button class="btn" id="btnDD" type="button">👩 Double Dames</button>
     </div>
 
-    <hr class="sep"/>
+    <p class="muted" id="hint" style="margin-top:10px;">Chargement…</p>
+  </section>
 
-    <div class="grid">
-      <button class="btn" id="btnLoad" style="font-weight:900; color:#111;">📥 Charger équipes (liste principale)</button>
+  <section class="card" id="adminUI" style="display:none;">
+    <h2 style="margin:0 0 10px;">🎲 Tirage / aperçu admin</h2>
+
+    <p class="muted" id="status" style="margin:0;">Chargement…</p>
+
+    <div class="grid" style="margin-top:12px;">
+      <button class="btn" id="btnLoad" style="font-weight:900; color:#111;">🔄 Charger équipes</button>
       <button class="btn" id="btnStart" style="font-weight:900; color:#111;">▶️ Lancer le tirage</button>
-      <button class="btn" id="btnNext" style="font-weight:900; color:#111;">🎰 Tirer la prochaine équipe</button>
-      <button class="btn" id="btnPublish" style="font-weight:900; color:#111;">✅ Publier</button>
+      <button class="btn" id="btnNext" style="font-weight:900; color:#111;">🎰 Tirage suivant</button>
+      <button class="btn" id="btnValidate" style="font-weight:900; color:#111;">✅ Valider</button>
       <button class="btn" id="btnReset" style="font-weight:900; color:#111; border-color:#f1b2b2;">🧨 Réinitialiser</button>
       <a class="btn" id="btnPublic" href="#" style="font-weight:900; color:#111; text-align:center;">👀 Vue publique</a>
     </div>
 
-    <p class="muted" id="status" style="margin-top:12px; margin-bottom:0;">En attente…</p>
-
-    <hr class="sep" style="margin-top:14px;" />
-
-    <div class="two-col">
-      <section class="card" style="margin:0;">
-        <h3 style="margin:0 0 8px;">🏷️ Têtes de série</h3>
-        <div class="list" id="seedsBox"></div>
-      </section>
-
-      <section class="card" style="margin:0;">
-        <h3 style="margin:0 0 8px;">🎩 Chapeaux</h3>
-        <div class="list" id="hatsBox"></div>
-      </section>
-    </div>
-
-    <div class="two-col" style="margin-top:12px;">
-      <section class="card" style="margin:0;">
-        <h3 style="margin:0 0 8px;">🎰 Roulette</h3>
-        <div class="roulette-wheel" id="wheel">—</div>
-        <div class="muted" id="wheelSub" style="margin-top:8px;">—</div>
-      </section>
-
-      <section class="card" style="margin:0;">
-        <h3 style="margin:0 0 8px;">📌 Équipes tirées</h3>
-        <div class="list" id="revealedBox"></div>
-      </section>
-    </div>
-
-    <div class="two-col" style="margin-top:12px;">
-      <section class="card" style="margin:0;">
-        <h3 style="margin:0 0 8px;">🏖️ Poule Montjoly</h3>
-        <div class="list" id="montjolyBox"></div>
-      </section>
-
-      <section class="card" style="margin:0;">
-        <h3 style="margin:0 0 8px;">🚀 Poule Kourou</h3>
-        <div class="list" id="kourouBox"></div>
-      </section>
-    </div>
-
-    <p class="muted" style="margin-top:12px;">
-      Règles Open (poules) :
-      <b>TS1 → Montjoly</b>, <b>TS2 → Kourou</b> •
-      équipes <b>#3 et #4</b> = chapeau 1 (tirage : 1ère → Montjoly, l’autre → Kourou) •
-      reste = chapeau 2 (placement alterné Montjoly/Kourou dans l’ordre de tirage).
+    <p class="muted" id="ruleText" style="margin-top:10px;">
+      Chargement…
     </p>
-
   </section>
+
+  <section class="card" id="panel" style="display:none;">
+    <h2 style="margin:0 0 10px;">📌 Aperçu</h2>
+
+    <div style="margin-top:12px;">
+      <div style="font-weight:1000; margin-bottom:8px;">🎰 Roulette (admin)</div>
+      <div class="roulette-wheel" id="wheel">—</div>
+      <div class="muted" id="wheelSub" style="margin-top:8px;">—</div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <div style="font-weight:1000; margin-bottom:8px;">🏖️ Poules</div>
+      <div class="pool-grid" id="poolGrid">
+        <div class="pool-card">
+          <div class="pool-title" id="poolATitle">Poule Tortues</div>
+          <div id="poolAList" class="pool-list"></div>
+        </div>
+        <div class="pool-card" id="poolBCard">
+          <div class="pool-title" id="poolBTitle">Poule Ara</div>
+          <div id="poolBList" class="pool-list"></div>
+        </div>
+      </div>
+      <p class="muted" id="poolInfo" style="margin:10px 0 0;">En attente.</p>
+    </div>
+
+    <div style="margin-top:12px;">
+      <div style="font-weight:1000; margin-bottom:8px;">📥 Urne / restant à placer</div>
+      <div id="remainingList" class="item-list"></div>
+    </div>
+
+    <div style="margin-top:12px;">
+      <div style="font-weight:1000; margin-bottom:8px;">📌 Déjà révélés</div>
+      <div id="revealedList" class="item-list"></div>
+    </div>
+  </section>
+
 </main>
 
 <script type="module">
-  import { renderAdminShell } from "../assets/js/admin-shell.js";
   import { auth, db } from "../assets/js/firebase.js";
-  import { getRoleByEmail } from "../assets/js/session.js";
-
+  import { logout, getRoleByEmail } from "../assets/js/session.js";
   import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
   import {
     collection, getDocs, query, orderBy,
-    doc, getDoc, setDoc, updateDoc, onSnapshot,
-    serverTimestamp
+    doc, getDoc, setDoc, updateDoc, serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-  // Shell admin (menu)
-  renderAdminShell({ active:"tirage", basePath:".." });
+  const params = new URLSearchParams(location.search);
+  const scopeFromUrl = (params.get("scope") || "dh").toLowerCase();
 
-  // ---- DOM
   const accessDenied = document.getElementById("accessDenied");
-  const pageContent  = document.getElementById("pageContent");
+  const adminZone = document.getElementById("adminZone");
+  const adminUI = document.getElementById("adminUI");
+  const panel = document.getElementById("panel");
 
-  const hint      = document.getElementById("hint");
-  const statusEl  = document.getElementById("status");
-  const statePill = document.getElementById("statePill");
-  const pubPill   = document.getElementById("pubPill");
-  const countPill = document.getElementById("countPill");
+  const btnDH = document.getElementById("btnDH");
+  const btnDD = document.getElementById("btnDD");
 
-  const btnLoad   = document.getElementById("btnLoad");
-  const btnStart  = document.getElementById("btnStart");
-  const btnNext   = document.getElementById("btnNext");
-  const btnPublish= document.getElementById("btnPublish");
-  const btnReset  = document.getElementById("btnReset");
+  const hintEl = document.getElementById("hint");
+  const statusEl = document.getElementById("status");
+  const ruleText = document.getElementById("ruleText");
+
+  const btnLoad = document.getElementById("btnLoad");
+  const btnStart = document.getElementById("btnStart");
+  const btnNext = document.getElementById("btnNext");
+  const btnValidate = document.getElementById("btnValidate");
+  const btnReset = document.getElementById("btnReset");
   const btnPublic = document.getElementById("btnPublic");
 
-  const seedsBox    = document.getElementById("seedsBox");
-  const hatsBox     = document.getElementById("hatsBox");
-  const revealedBox = document.getElementById("revealedBox");
-  const montjolyBox = document.getElementById("montjolyBox");
-  const kourouBox   = document.getElementById("kourouBox");
-
-  const wheel    = document.getElementById("wheel");
+  const wheel = document.getElementById("wheel");
   const wheelSub = document.getElementById("wheelSub");
 
-  // ---- scope (dh/dd)
-  const params = new URLSearchParams(location.search);
-  const scope  = (params.get("scope") || "").toLowerCase(); // "dh" | "dd"
+  const poolGrid = document.getElementById("poolGrid");
+  const poolATitle = document.getElementById("poolATitle");
+  const poolBTitle = document.getElementById("poolBTitle");
+  const poolAList = document.getElementById("poolAList");
+  const poolBCard = document.getElementById("poolBCard");
+  const poolBList = document.getElementById("poolBList");
+  const poolInfo = document.getElementById("poolInfo");
 
-  function isScopeOk(){ return scope === "dh" || scope === "dd"; }
-  function teamsColName(){
-    if(scope === "dh") return "equipes_dh_public";
-    if(scope === "dd") return "equipes_dd_public";
-    return null;
-  }
-  function drawRef(){ return doc(db, "tirages_open", scope); }
+  const remainingList = document.getElementById("remainingList");
+  const revealedList = document.getElementById("revealedList");
+
+  let currentScope = scopeFromUrl === "dd" ? "dd" : "dh";
+  let cachedTeams = [];
+  let drawDH = null;
 
   function esc(s){
     return (s ?? "").toString()
-      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;");
   }
 
   function toNum(v){
@@ -255,35 +304,367 @@
 
   function teamLabel(t){
     if(!t) return "—";
-    const tn = t.teamName || "Équipe";
-    const p1 = t.p1FirstName || "?";
-    const p2 = t.p2FirstName || "?";
-    return `${tn} (${p1} / ${p2})`;
+    return `${t.teamName || "Équipe"} (${t.p1FirstName || "?"} / ${t.p2FirstName || "?"})`;
   }
 
-  function rowHtml(title, sub, tag){
+  function teamNameOnly(t){
+    return (t && t.teamName) ? t.teamName : "—";
+  }
+
+  function zoneText(sc){
+    return sc === "dd" ? "Double Dames" : "Double Messieurs";
+  }
+
+  function zoneEmoji(sc){
+    return sc === "dd" ? "👩" : "👨";
+  }
+
+  function updateFilterButtons(){
+    btnDH.classList.toggle("is-active", currentScope === "dh");
+    btnDD.classList.toggle("is-active", currentScope === "dd");
+    hintEl.textContent = `${zoneEmoji(currentScope)} Tableau sélectionné : ${zoneText(currentScope)}.`;
+  }
+
+  function DRAW_REF_DH(){
+    return doc(db, "tirages_open", "open_bricorama_dh");
+  }
+
+  function COL_PUBLIC(sc){
+    return sc === "dd" ? "equipes_dd_public" : "equipes_dh_public";
+  }
+
+  function sortedMainTeams(rows){
+    return rows
+      .filter(r => r.list !== "wait" && r.stby !== true)
+      .sort((a,b)=>{
+        const ar = teamRank(a);
+        const br = teamRank(b);
+        if(ar !== br) return ar - br;
+        return (a.createdAtMs||0) - (b.createdAtMs||0);
+      });
+  }
+
+  function parseToken(token){
+    const s = String(token || "");
+    if(s.startsWith("POOLA:")) return { type:"poolA", value:s.slice(6) };
+    if(s.startsWith("POOLB:")) return { type:"poolB", value:s.slice(6) };
+    return { type:"unknown", value:s };
+  }
+
+  function findTeamById(rows, id){
+    return rows.find(x => x.id === id) || null;
+  }
+
+  function drawReadyDH(d){
+    return !!(d && Array.isArray(d.order) && d.order.length > 0);
+  }
+
+  function remainingItemsDH(d){
+    const order = Array.isArray(d?.order) ? d.order : [];
+    const revealed = Number(d?.revealed || 0);
+    return order.slice(revealed);
+  }
+
+  function revealedItemsDH(d){
+    const order = Array.isArray(d?.order) ? d.order : [];
+    const revealed = Number(d?.revealed || 0);
+    return order.slice(0, revealed);
+  }
+
+  function buildDHState(){
+    const ranked = sortedMainTeams(cachedTeams);
+    const seed1 = ranked[0] || null;
+    const seed2 = ranked[1] || null;
+
+    const state = {
+      ranked,
+      seed1,
+      seed2,
+      poolA: seed1 ? [seed1] : [],
+      poolB: seed2 ? [seed2] : []
+    };
+
+    const tokens = revealedItemsDH(drawDH);
+
+    for(const token of tokens){
+      const p = parseToken(token);
+
+      if(p.type === "poolA"){
+        const t = findTeamById(ranked, p.value);
+        if(t && !state.poolA.some(x => x.id === t.id) && !state.poolB.some(x => x.id === t.id)){
+          state.poolA.push(t);
+        }
+      }
+
+      if(p.type === "poolB"){
+        const t = findTeamById(ranked, p.value);
+        if(t && !state.poolA.some(x => x.id === t.id) && !state.poolB.some(x => x.id === t.id)){
+          state.poolB.push(t);
+        }
+      }
+    }
+
+    return state;
+  }
+
+  function poolSlotHtml(team, index, opts = {}){
+    if(!team){
+      return `<div class="pool-slot empty">Place ${index + 1} en attente</div>`;
+    }
+    const cls = opts.seed ? "pool-slot seed" : "pool-slot";
+    const suffix = opts.seedLabel ? ` — ${esc(opts.seedLabel)}` : "";
+    return `<div class="${cls}">${esc(teamNameOnly(team))}${suffix}</div>`;
+  }
+
+  function itemCardHtml(text, badge){
     return `
-      <div class="rowcard">
-        <div class="rowline">
-          <div class="rmain">
-            <div class="rtitle">${esc(title)}</div>
-            <div class="rsub muted">${sub ? esc(sub) : ""}</div>
-          </div>
-          ${tag ? `<div class="tag">${esc(tag)}</div>` : ``}
-        </div>
+      <div class="item-card">
+        <div><b>${esc(text)}</b></div>
+        <span class="pill">${esc(badge)}</span>
       </div>
     `;
   }
 
-  function stateText(st){
-    if(st === "idle") return "Prêt (urne)";
-    if(st === "running") return "En cours";
-    if(st === "pending_validation") return "Fini (à publier)";
-    if(st === "published") return "Publié";
-    return "Non initialisé";
+  function tokenLabelDH(token){
+    const ranked = sortedMainTeams(cachedTeams);
+    const p = parseToken(token);
+
+    if(p.type === "poolA"){
+      return `Poule Tortues → ${teamLabel(findTeamById(ranked, p.value))}`;
+    }
+    if(p.type === "poolB"){
+      return `Poule Ara → ${teamLabel(findTeamById(ranked, p.value))}`;
+    }
+    return String(token);
   }
 
-  // ---- roulette animation (comme challenge)
+  function renderDH(){
+    poolGrid.classList.remove("single");
+    poolATitle.textContent = "Poule Tortues";
+    poolBTitle.textContent = "Poule Ara";
+    poolBCard.style.display = "block";
+
+    ruleText.innerHTML =
+      `Règle Open BT Bricorama — <b>Double Messieurs</b> :<br>
+      TS1 (meilleure équipe classée) en <b>Tortues 1</b>.<br>
+      TS2 en <b>Ara 1</b>.<br>
+      Les 4 autres équipes sont ensuite tirées dans l’ordre : <b>Tortues 2</b>, <b>Ara 2</b>, <b>Tortues 3</b>, <b>Ara 3</b>.`;
+
+    const state = buildDHState();
+
+    poolAList.innerHTML = [
+      poolSlotHtml(state.poolA[0], 0, { seed:true, seedLabel:"TS1" }),
+      poolSlotHtml(state.poolA[1], 1),
+      poolSlotHtml(state.poolA[2], 2)
+    ].join("");
+
+    poolBList.innerHTML = [
+      poolSlotHtml(state.poolB[0], 0, { seed:true, seedLabel:"TS2" }),
+      poolSlotHtml(state.poolB[1], 1),
+      poolSlotHtml(state.poolB[2], 2)
+    ].join("");
+
+    const rem = drawReadyDH(drawDH) ? remainingItemsDH(drawDH) : [];
+    const rev = drawReadyDH(drawDH) ? revealedItemsDH(drawDH) : [];
+
+    remainingList.innerHTML = rem.length
+      ? rem.map(tok => itemCardHtml(tokenLabelDH(tok), "urne")).join("")
+      : `<div class="muted">—</div>`;
+
+    revealedList.innerHTML = rev.length
+      ? rev.map((tok, i) => itemCardHtml(`#${i+1} — ${tokenLabelDH(tok)}`, "tiré")).join("")
+      : `<div class="muted">En attente…</div>`;
+
+    const totalRanked = state.ranked.length;
+    const placed = state.poolA.length + state.poolB.length;
+
+    if(totalRanked < 2){
+      poolInfo.textContent = "Pas assez d’équipes classées pour définir TS1 et TS2.";
+    } else if(!drawReadyDH(drawDH)){
+      poolInfo.textContent = "Têtes de série prêtes. Clique sur “Charger équipes”, puis lance le tirage.";
+    } else if(placed < Math.min(totalRanked, 6)){
+      poolInfo.textContent = `Répartition en cours… (${placed}/${Math.min(totalRanked, 6)} équipes placées)`;
+    } else {
+      poolInfo.textContent = "✅ Poules Tortues et Ara définies.";
+    }
+  }
+
+  function renderDD(){
+    poolGrid.classList.add("single");
+    poolATitle.textContent = "Poule unique";
+    poolBCard.style.display = "none";
+
+    ruleText.innerHTML =
+      `Règle Open BT Bricorama — <b>Double Dames</b> :<br>
+      pas de tirage. La poule unique est affichée directement selon l’ordre du classement des équipes.`;
+
+    const ranked = sortedMainTeams(cachedTeams).slice(0, 4);
+
+    poolAList.innerHTML = [
+      poolSlotHtml(ranked[0], 0),
+      poolSlotHtml(ranked[1], 1),
+      poolSlotHtml(ranked[2], 2),
+      poolSlotHtml(ranked[3], 3)
+    ].join("");
+
+    poolBList.innerHTML = "";
+    remainingList.innerHTML = `<div class="muted">Aucune urne chez les dames.</div>`;
+    revealedList.innerHTML = `<div class="muted">Aucun tirage chez les dames.</div>`;
+    poolInfo.textContent = ranked.length
+      ? `✅ Poule Dames affichée selon le classement (${ranked.length} équipe(s) visible(s)).`
+      : "Aucune équipe dames disponible pour le moment.";
+  }
+
+  function setButtons(){
+    if(currentScope === "dd"){
+      btnLoad.disabled = false;
+      btnStart.disabled = true;
+      btnNext.disabled = true;
+      btnValidate.disabled = true;
+      btnReset.disabled = true;
+      return;
+    }
+
+    const st = drawDH?.status || "idle";
+    const ready = drawReadyDH(drawDH);
+    const total = Array.isArray(drawDH?.order) ? drawDH.order.length : 0;
+    const revealed = Number(drawDH?.revealed || 0);
+
+    btnLoad.disabled = false;
+    btnStart.disabled = !ready || st === "running" || st === "pending_validation" || st === "validated";
+    btnNext.disabled = !(st === "running") || revealed >= total;
+    btnValidate.disabled = !(st === "pending_validation");
+    btnReset.disabled = false;
+  }
+
+  function renderCurrent(){
+    if(currentScope === "dh"){
+      renderDH();
+
+      if(drawDH?.status === "running"){
+        statusEl.textContent = "▶️ Tirage messieurs en cours.";
+      } else if(drawDH?.status === "pending_validation"){
+        statusEl.textContent = "🏁 Tirage messieurs fini — en attente de validation.";
+      } else if(drawDH?.status === "validated"){
+        statusEl.textContent = "✅ Tirage messieurs validé.";
+      } else if(drawReadyDH(drawDH)){
+        statusEl.textContent = "✅ Tirage messieurs prêt.";
+      } else {
+        statusEl.textContent = "ℹ️ Clique sur “Charger équipes” pour préparer le tirage messieurs.";
+      }
+    } else {
+      renderDD();
+      statusEl.textContent = "📋 Chez les dames, pas de tirage : affichage direct selon le classement.";
+    }
+
+    setButtons();
+  }
+
+  async function loadTeams(sc){
+    const snap = await getDocs(query(collection(db, COL_PUBLIC(sc)), orderBy("createdAt","asc")));
+    const rows = [];
+    snap.forEach(d => {
+      const x = d.data() || {};
+      rows.push({
+        id: d.id,
+        createdAtMs: x.createdAt?.toMillis ? x.createdAt.toMillis() : 0,
+        teamName: x.teamName || "",
+        p1FirstName: x.p1FirstName || "",
+        p2FirstName: x.p2FirstName || "",
+        p1Rank: x.p1Rank ?? null,
+        p2Rank: x.p2Rank ?? null,
+        list: x.list || null,
+        stby: x.stby === true
+      });
+    });
+    return rows;
+  }
+
+  function randomShuffle(arr){
+    const a = arr.slice();
+    const rand = (n)=>{
+      const u = new Uint32Array(1);
+      crypto.getRandomValues(u);
+      return u[0] % n;
+    };
+    for(let i = a.length - 1; i > 0; i--){
+      const j = rand(i + 1);
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  async function readDrawDH(){
+    const snap = await getDoc(DRAW_REF_DH());
+    drawDH = snap.exists() ? (snap.data() || {}) : null;
+    return drawDH;
+  }
+
+  async function prepareDHDraw(){
+    cachedTeams = await loadTeams("dh");
+    const ranked = sortedMainTeams(cachedTeams);
+
+    if(ranked.length < 6){
+      alert(`Il faut 6 équipes minimum sur la liste principale DH. Actuellement : ${ranked.length}.`);
+      renderCurrent();
+      return;
+    }
+
+    const poolTeams = ranked.slice(2, 6);
+    const shuffled = randomShuffle(poolTeams);
+
+    const order = [
+      `POOLA:${shuffled[0].id}`,
+      `POOLB:${shuffled[1].id}`,
+      `POOLA:${shuffled[2].id}`,
+      `POOLB:${shuffled[3].id}`
+    ];
+
+    await setDoc(DRAW_REF_DH(), {
+      scope: "open_bricorama_dh",
+      status: "idle",
+      order,
+      revealed: 0,
+      revealedAtMs: [],
+      updatedAt: serverTimestamp(),
+      validatedAt: null
+    }, { merge:true });
+
+    await readDrawDH();
+    wheel.textContent = "—";
+    wheelSub.textContent = "—";
+    renderCurrent();
+  }
+
+  async function loadCurrentScope(){
+    cachedTeams = await loadTeams(currentScope);
+    if(currentScope === "dh"){
+      await readDrawDH();
+    }
+    renderCurrent();
+  }
+
+  async function startDrawDH(){
+    await readDrawDH();
+    if(!drawReadyDH(drawDH)){
+      alert("Prépare d’abord le tirage avec “Charger équipes”.");
+      return;
+    }
+
+    await updateDoc(DRAW_REF_DH(), {
+      status: "running",
+      revealed: 0,
+      revealedAtMs: [],
+      updatedAt: serverTimestamp(),
+      validatedAt: null
+    });
+
+    await readDrawDH();
+    wheel.textContent = "—";
+    wheelSub.textContent = "—";
+    renderCurrent();
+  }
+
   async function rouletteSpin(finalText, durationMs = 1300){
     const start = Date.now();
     wheelSub.textContent = "La roulette tourne…";
@@ -298,307 +679,73 @@
           resolve("done");
           return;
         }
-        wheel.textContent = fake[Math.floor(Math.random()*fake.length)] + " " + fake[Math.floor(Math.random()*fake.length)];
+        wheel.textContent =
+          fake[Math.floor(Math.random()*fake.length)] + " " +
+          fake[Math.floor(Math.random()*fake.length)];
         requestAnimationFrame(tick);
       };
       tick();
     });
   }
 
-  // ---- Draw model
-  // tirages_open/{scope} :
-  // {
-  //   scope:"dh",
-  //   status:"idle|running|pending_validation|published",
-  //   published:true/false,
-  //   teams:[{id,teamName,p1FirstName,p2FirstName,p1Rank,p2Rank,teamRank}],
-  //   seed1:{...}, seed2:{...},
-  //   hat1:[...], hat2:[...],
-  //   order:[id,...] // (hat1 first then hat2)
-  //   revealed: number,
-  //   updatedAt, createdAt, startedAt, publishedAt
-  // }
+  async function nextPickDH(){
+    await readDrawDH();
 
-  function computeFromDraw(draw){
-    const teams = Array.isArray(draw?.teams) ? draw.teams : [];
-    const byId = new Map(teams.map(t => [t.id, t]));
-    const seed1 = draw?.seed1 || null;
-    const seed2 = draw?.seed2 || null;
-    const order = Array.isArray(draw?.order) ? draw.order : [];
-    const revealed = Number(draw?.revealed || 0);
-
-    const revealedIds = order.slice(0, revealed);
-    const revealedTeams = revealedIds.map(id => byId.get(id)).filter(Boolean);
-
-    const montjoly = [];
-    const kourou   = [];
-
-    if(seed1) montjoly.push(seed1);
-    if(seed2) kourou.push(seed2);
-
-    // placement règle :
-    // - ordre[0] => Montjoly
-    // - ordre[1] => Kourou
-    // - puis alternance Montjoly/Kourou à partir ordre[2]
-    for(let i=0;i<revealedTeams.length;i++){
-      const t = revealedTeams[i];
-      if(i === 0) montjoly.push(t);
-      else if(i === 1) kourou.push(t);
-      else {
-        const j = i - 2;
-        (j % 2 === 0 ? montjoly : kourou).push(t);
-      }
-    }
-
-    return { byId, seed1, seed2, order, revealed, revealedTeams, montjoly, kourou };
-  }
-
-  function render(draw){
-    const total = Array.isArray(draw?.teams) ? draw.teams.length : 0;
-    countPill.textContent = `Équipes: ${total || "—"}`;
-
-    const st = draw?.status || "none";
-    statePill.textContent = `État: ${stateText(st)}`;
-
-    const isPublished = draw?.published === true || st === "published";
-    pubPill.style.display = isPublished ? "inline-block" : "none";
-
-    // buttons state
-    const hasUrn = !!(draw?.seed1 && draw?.seed2 && Array.isArray(draw?.order));
-    btnLoad.disabled = false;
-    btnStart.disabled = !(hasUrn && (st === "idle" || st === "none"));
-    btnNext.disabled  = !(st === "running");
-    btnPublish.disabled = !(st === "pending_validation" || st === "published" || (st === "running" && (draw?.revealed || 0) >= (draw?.order?.length || 0)));
-    btnReset.disabled = false;
-
-    // boxes
-    const seed1 = draw?.seed1 || null;
-    const seed2 = draw?.seed2 || null;
-    seedsBox.innerHTML = [
-      rowHtml(seed1 ? teamLabel(seed1) : "—", seed1 ? `TS1 • Rang équipe: ${seed1.teamRank ?? "—"}` : "", "TS1"),
-      rowHtml(seed2 ? teamLabel(seed2) : "—", seed2 ? `TS2 • Rang équipe: ${seed2.teamRank ?? "—"}` : "", "TS2")
-    ].join("");
-
-    const hat1 = Array.isArray(draw?.hat1) ? draw.hat1 : [];
-    const hat2 = Array.isArray(draw?.hat2) ? draw.hat2 : [];
-
-    hatsBox.innerHTML = `
-      ${rowHtml("🎩 Chapeau 1 (classés #3 et #4)", hat1.length ? hat1.map(t => teamLabel(t)).join(" • ") : "—", hat1.length ? `${hat1.length} équipe(s)` : "")}
-      ${rowHtml("🎩 Chapeau 2 (le reste)", hat2.length ? hat2.map(t => teamLabel(t)).join(" • ") : "—", hat2.length ? `${hat2.length} équipe(s)` : "")}
-    `;
-
-    const { revealedTeams, montjoly, kourou } = computeFromDraw(draw);
-
-    revealedBox.innerHTML = revealedTeams.length
-      ? revealedTeams.map((t,i)=>rowHtml(`#${i+1} — ${teamLabel(t)}`, "tirée", "révélée")).join("")
-      : `<p class="muted" style="margin:0;">En attente…</p>`;
-
-    montjolyBox.innerHTML = montjoly.length
-      ? montjoly.map((t,i)=>rowHtml(`#${i+1} — ${teamLabel(t)}`, "", (i===0 ? "TS1" : "Montjoly"))).join("")
-      : `<p class="muted" style="margin:0;">—</p>`;
-
-    kourouBox.innerHTML = kourou.length
-      ? kourou.map((t,i)=>rowHtml(`#${i+1} — ${teamLabel(t)}`, "", (i===0 ? "TS2" : "Kourou"))).join("")
-      : `<p class="muted" style="margin:0;">—</p>`;
-
-    // wheel default
-    if(st === "running") {
-      wheelSub.textContent = "Clique “Tirer la prochaine équipe”.";
-    } else if(st === "pending_validation") {
-      wheelSub.textContent = "Tirage terminé (tu peux publier).";
-    } else if(st === "published") {
-      wheelSub.textContent = "Tirage publié.";
-    } else {
-      wheelSub.textContent = "—";
-    }
-    if(wheel.textContent === "") wheel.textContent = "—";
-  }
-
-  // ---- admin actions
-  let cachedTeams = [];
-  let unsubDraw = null;
-  let currentDraw = null;
-
-  async function loadTeamsAndBuildUrn(){
-    statusEl.textContent = "Chargement équipes…";
-    wheel.textContent = "—";
-    wheelSub.textContent = "—";
-
-    const col = teamsColName();
-    if(!col){ alert("Scope invalide (dh ou dd)."); return; }
-
-    const snap = await getDocs(query(collection(db, col), orderBy("createdAt","asc")));
-    const rows = [];
-    snap.forEach(d=>{
-      const x = d.data() || {};
-      const isMain = (x.list === "main") && (x.stby !== true);
-      if(!isMain) return;
-
-      const t = {
-        id: d.id,
-        teamName: x.teamName || "",
-        p1FirstName: x.p1FirstName || "",
-        p2FirstName: x.p2FirstName || "",
-        p1Rank: x.p1Rank ?? null,
-        p2Rank: x.p2Rank ?? null
-      };
-      t.teamRank = teamRank(t);
-      rows.push(t);
-    });
-
-    if(rows.length < 4){
-      statusEl.textContent = `⚠️ ${rows.length} équipe(s) sur liste principale. Il en faut au moins 4.`;
-      cachedTeams = rows;
+    if(!drawDH || drawDH.status !== "running"){
+      alert("Le tirage messieurs n’est pas en cours.");
       return;
     }
 
-    // tri par teamRank asc, puis fallback stable
-    rows.sort((a,b)=>{
-      if(a.teamRank !== b.teamRank) return a.teamRank - b.teamRank;
-      return a.teamName.localeCompare(b.teamName, "fr");
-    });
-
-    cachedTeams = rows;
-
-    const seed1 = rows[0];
-    const seed2 = rows[1];
-
-    const rest = rows.slice(2);
-    const hat1 = rest.slice(0,2);     // équipes classées 3 et 4 (si dispo)
-    const hat2 = rest.slice(2);       // le reste
-
-    await setDoc(drawRef(), {
-      scope,
-      status: "idle",
-      published: false,
-      teams: rows.map(t=>({
-        id:t.id, teamName:t.teamName,
-        p1FirstName:t.p1FirstName, p2FirstName:t.p2FirstName,
-        p1Rank:t.p1Rank, p2Rank:t.p2Rank,
-        teamRank:t.teamRank
-      })),
-      seed1: seed1 ? { ...seed1 } : null,
-      seed2: seed2 ? { ...seed2 } : null,
-      hat1: hat1.map(t=>({ ...t })),
-      hat2: hat2.map(t=>({ ...t })),
-      order: [],
-      revealed: 0,
-      createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-      startedAt: null,
-      publishedAt: null
-    }, { merge:true });
-
-    statusEl.textContent = `✅ Urne prête : ${rows.length} équipes (TS1/TS2 + chapeaux).`;
-  }
-
-  function randomShuffle(arr){
-    const a = arr.slice();
-    const rand = (n)=>{
-      const u = new Uint32Array(1);
-      crypto.getRandomValues(u);
-      return u[0] % n;
-    };
-    for(let i=a.length-1;i>0;i--){
-      const j = rand(i+1);
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-  }
-
-  async function startDraw(){
-    const d = currentDraw;
-    if(!d?.seed1 || !d?.seed2 || !Array.isArray(d?.teams) || d.teams.length < 4){
-      alert("Urne non prête. Clique “Charger équipes (liste principale)”.");
-      return;
-    }
-
-    const hat1 = Array.isArray(d.hat1) ? d.hat1 : [];
-    const hat2 = Array.isArray(d.hat2) ? d.hat2 : [];
-
-    // ordre : hat1 (random, 0->Montjoly, 1->Kourou) + hat2 (random, alternance)
-    const orderHat1 = randomShuffle(hat1.map(t=>t.id));
-    const orderHat2 = randomShuffle(hat2.map(t=>t.id));
-    const order = [...orderHat1, ...orderHat2];
-
-    await updateDoc(drawRef(), {
-      status: "running",
-      order,
-      revealed: 0,
-      published: false,
-      startedAt: serverTimestamp(),
-      updatedAt: serverTimestamp(),
-      publishedAt: null
-    });
-
-    statusEl.textContent = "▶️ Tirage lancé. Clique “Tirer la prochaine équipe”.";
-    wheel.textContent = "—";
-    wheelSub.textContent = "La roulette est prête…";
-  }
-
-  async function nextPick(){
-    const d = currentDraw;
-    if(!d || d.status !== "running"){
-      alert("Le tirage n’est pas en cours.");
-      return;
-    }
-    const order = Array.isArray(d.order) ? d.order : [];
-    const revealed = Number(d.revealed || 0);
+    const order = Array.isArray(drawDH.order) ? drawDH.order : [];
+    const revealed = Number(drawDH.revealed || 0);
 
     if(revealed >= order.length){
-      alert("Toutes les équipes ont déjà été tirées.");
+      alert("Tout a déjà été tiré.");
       return;
     }
 
-    // team to reveal
-    const id = order[revealed];
-    const teams = Array.isArray(d.teams) ? d.teams : [];
-    const t = teams.find(x => x.id === id);
-
-    await rouletteSpin(teamLabel(t), 1300);
+    const token = order[revealed];
+    await rouletteSpin(tokenLabelDH(token), 1300);
 
     const newRevealed = revealed + 1;
+    const arr = Array.isArray(drawDH.revealedAtMs) ? drawDH.revealedAtMs.slice() : [];
+    arr.push(Date.now());
 
-    // if finished => pending_validation
-    const nextStatus = (newRevealed >= order.length) ? "pending_validation" : "running";
-
-    await updateDoc(drawRef(), {
+    await updateDoc(DRAW_REF_DH(), {
       revealed: newRevealed,
-      status: nextStatus,
+      revealedAtMs: arr,
       updatedAt: serverTimestamp()
     });
 
-    statusEl.textContent = (nextStatus === "pending_validation")
-      ? "🏁 Tirage fini — prêt à publier."
-      : `🎰 Tirage #${newRevealed} effectué.`;
-  }
+    await readDrawDH();
 
-  async function publishDraw(){
-    const d = currentDraw;
-    if(!d){ alert("Aucun tirage."); return; }
-
-    const order = Array.isArray(d.order) ? d.order : [];
-    const revealed = Number(d.revealed || 0);
-    if(order.length && revealed < order.length){
-      const ok = confirm("Le tirage n’est pas terminé.\n\nPublier quand même ?");
-      if(!ok) return;
-    }else{
-      const ok = confirm("Publier le tirage ?\n\nLe public verra l’état “Publié”.");
-      if(!ok) return;
+    if(newRevealed >= order.length){
+      await updateDoc(DRAW_REF_DH(), {
+        status: "pending_validation",
+        updatedAt: serverTimestamp()
+      });
+      await readDrawDH();
     }
 
-    await updateDoc(drawRef(), {
-      published: true,
-      status: "published",
-      publishedAt: serverTimestamp(),
+    renderCurrent();
+  }
+
+  async function validateDrawDH(){
+    const ok = confirm("Valider le tirage messieurs ?");
+    if(!ok) return;
+
+    await updateDoc(DRAW_REF_DH(), {
+      status: "validated",
+      validatedAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     });
 
-    statusEl.textContent = "🌍 Tirage publié.";
+    await readDrawDH();
+    renderCurrent();
   }
 
-  async function resetDraw(){
-    const ok1 = confirm("⚠️ Réinitialiser totalement le tirage ?\n\nCela efface l’urne + l’ordre + les révélations.");
+  async function resetDrawDH(){
+    const ok1 = confirm("⚠️ Réinitialiser le tirage messieurs ?");
     if(!ok1) return;
 
     const typed = prompt('Tape exactement : RESET');
@@ -607,74 +754,120 @@
       return;
     }
 
-    await setDoc(drawRef(), {
-      scope,
-      status: "none",
-      published: false,
-      teams: [],
-      seed1: null,
-      seed2: null,
-      hat1: [],
-      hat2: [],
+    await setDoc(DRAW_REF_DH(), {
+      scope: "open_bricorama_dh",
+      status: "idle",
       order: [],
       revealed: 0,
-      createdAt: serverTimestamp(),
+      revealedAtMs: [],
       updatedAt: serverTimestamp(),
-      startedAt: null,
-      publishedAt: null
+      validatedAt: null
     }, { merge:true });
 
+    await readDrawDH();
     wheel.textContent = "—";
     wheelSub.textContent = "—";
-    statusEl.textContent = "🧼 Tirage réinitialisé.";
+    renderCurrent();
   }
 
-  // buttons
-  btnLoad.onclick    = async (e)=>{ e.preventDefault(); await loadTeamsAndBuildUrn(); };
-  btnStart.onclick   = async (e)=>{ e.preventDefault(); await startDraw(); };
-  btnNext.onclick    = async (e)=>{ e.preventDefault(); await nextPick(); };
-  btnPublish.onclick = async (e)=>{ e.preventDefault(); await publishDraw(); };
-  btnReset.onclick   = async (e)=>{ e.preventDefault(); await resetDraw(); };
+  btnLoad.onclick = async (e)=>{
+    e.preventDefault();
+    if(currentScope === "dh"){
+      await prepareDHDraw();
+    } else {
+      cachedTeams = await loadTeams("dd");
+      renderCurrent();
+    }
+  };
+
+  btnStart.onclick = async (e)=>{
+    e.preventDefault();
+    if(currentScope === "dh"){
+      await startDrawDH();
+    }
+  };
+
+  btnNext.onclick = async (e)=>{
+    e.preventDefault();
+    if(currentScope === "dh"){
+      await nextPickDH();
+    }
+  };
+
+  btnValidate.onclick = async (e)=>{
+    e.preventDefault();
+    if(currentScope === "dh"){
+      await validateDrawDH();
+    }
+  };
+
+  btnReset.onclick = async (e)=>{
+    e.preventDefault();
+    if(currentScope === "dh"){
+      await resetDrawDH();
+    }
+  };
 
   btnPublic.onclick = (e)=>{
     e.preventDefault();
-    if(!isScopeOk()){ alert("Scope invalide."); return; }
-    // pages publiques : ../dh/tirage.html ou ../dd/tirage.html
-    window.location.href = `../${scope}/tirage.html`;
+    window.location.href = "../pages/tirage.html?scope=" + encodeURIComponent(currentScope);
   };
 
-  // ---- auth guard + realtime draw
-  onAuthStateChanged(auth, async (user)=>{
+  btnDH.onclick = async ()=>{
+    currentScope = "dh";
+    updateFilterButtons();
+    try{ history.replaceState(null, "", "tirage.html?scope=dh"); }catch(e){}
+    await loadCurrentScope();
+  };
+
+  btnDD.onclick = async ()=>{
+    currentScope = "dd";
+    updateFilterButtons();
+    try{ history.replaceState(null, "", "tirage.html?scope=dd"); }catch(e){}
+    await loadCurrentScope();
+  };
+
+  function showDenied(){
+    accessDenied.style.display = "block";
+    adminZone.style.display = "none";
+    adminUI.style.display = "none";
+    panel.style.display = "none";
+  }
+
+  function showAdmin(){
     accessDenied.style.display = "none";
-    pageContent.style.display = "none";
+    adminZone.style.display = "block";
+    adminUI.style.display = "block";
+    panel.style.display = "block";
+    updateFilterButtons();
+  }
 
-    if(!user) return;
-
-    const role = await getRoleByEmail(user.email);
-    if(role !== "admin"){
-      accessDenied.style.display = "block";
+  onAuthStateChanged(auth, async (user)=>{
+    if(!user){
+      showDenied();
       return;
     }
 
-    if(!isScopeOk()){
-      hint.textContent = "Ajoute ?scope=dh ou ?scope=dd dans l’URL.";
-      accessDenied.style.display = "none";
-      pageContent.style.display = "block";
-      statusEl.textContent = "⚠️ Scope manquant.";
-      return;
+    try{
+      const role = await getRoleByEmail(user.email);
+      if(role !== "admin"){
+        showDenied();
+        return;
+      }
+
+      showAdmin();
+      await loadCurrentScope();
+    }catch(err){
+      console.error(err);
+      showDenied();
     }
-
-    hint.textContent = (scope === "dh") ? "Tirage Double Messieurs" : "Tirage Double Dames";
-
-    pageContent.style.display = "block";
-    statusEl.textContent = "🟢 Admin prêt. 1) Charger équipes, 2) Lancer, 3) Tirer, 4) Publier.";
-
-    if(unsubDraw){ unsubDraw(); unsubDraw = null; }
-    unsubDraw = onSnapshot(drawRef(), (snap)=>{
-      currentDraw = snap.exists() ? (snap.data() || {}) : null;
-      render(currentDraw || {});
-    });
   });
+
+  document.getElementById("btnLogout").onclick = async (e)=>{
+    e.preventDefault();
+    await logout();
+    window.location.href = "../index.html";
+  };
 </script>
 
 </body>
