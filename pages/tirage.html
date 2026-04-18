@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Tirage — Open BT Bricorama</title>
-  <link rel="stylesheet" href="../assets/css/main.css?v=20260406-open-tirage-placeholder-v1" />
+  <link rel="stylesheet" href="../assets/css/main.css?v=20260418-open-tirage-v1" />
 
   <style>
     :root{
@@ -38,7 +38,6 @@
     }
 
     *{ box-sizing:border-box; }
-
     html{ scroll-behavior:smooth; }
 
     body{
@@ -311,6 +310,9 @@
       font-weight:600;
     }
 
+    /* =========================
+       PANELS
+    ========================= */
     .panel{
       background:var(--card);
       border:1px solid rgba(255,255,255,.35);
@@ -354,11 +356,31 @@
       letter-spacing:.06em;
     }
 
+    .status-box{
+      margin-top:10px;
+      padding:14px 16px;
+      border-radius:18px;
+      background:#f8fafc;
+      border:1px solid rgba(16,24,40,.06);
+      color:#475467;
+      font-size:14px;
+      line-height:1.5;
+    }
+
+    .muted{
+      color:var(--muted);
+    }
+
+    .top-actions{
+      display:grid;
+      gap:12px;
+      margin-top:14px;
+    }
+
     .switches{
       display:grid;
       grid-template-columns:1fr;
       gap:10px;
-      margin-top:12px;
     }
 
     .switch-btn{
@@ -383,37 +405,142 @@
       box-shadow:0 12px 22px rgba(31,122,58,.20);
     }
 
-    .placeholder-grid{
+    .action-row{
       display:grid;
+      gap:12px;
       grid-template-columns:1fr;
-      gap:14px;
-      margin-top:14px;
+      margin-top:12px;
     }
 
-    .placeholder-card{
-      border:1px solid rgba(16,24,40,.08);
-      border-radius:22px;
-      background:linear-gradient(180deg, rgba(255,255,255,.98), rgba(248,250,252,.96));
-      padding:18px;
-      box-shadow:0 8px 18px rgba(16,24,40,.05);
-    }
-
-    .placeholder-title{
-      margin:0 0 8px;
-      font-size:20px;
+    .btn{
+      appearance:none;
+      border:none;
+      min-height:54px;
+      border-radius:18px;
+      padding:14px 18px;
+      font-size:16px;
       font-weight:900;
+      cursor:pointer;
+      transition:transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+      box-shadow:0 10px 20px rgba(0,0,0,.08);
+    }
+
+    .btn:hover{
+      transform:translateY(-1px);
+    }
+
+    .btn-primary{
+      background:linear-gradient(135deg, #ffd400, #ffea73);
+      color:#111;
+    }
+
+    .btn-secondary{
+      background:#fff;
       color:#1c2430;
+      border:1px solid rgba(16,24,40,.08);
     }
 
-    .placeholder-text{
-      margin:0;
-      color:var(--muted);
-      line-height:1.6;
+    .btn.hidden{
+      display:none;
     }
 
-    .note{
+    .badge-line{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:8px;
+    }
+
+    .inline-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      min-height:38px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:#f8fafc;
+      border:1px solid rgba(16,24,40,.06);
+      font-size:13px;
+      font-weight:900;
+      color:#344054;
+    }
+
+    .roulette-panel{
+      display:none;
+    }
+
+    .roulette-wheel{
+      height:62px;
+      border-radius:16px;
+      border:1px solid #e6e6e6;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:1000;
+      font-size:17px;
+      letter-spacing:.2px;
+      background:linear-gradient(180deg,#fff,#fafafa);
+      padding:0 12px;
+      text-align:center;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.7);
+    }
+
+    .draw-grid{
+      display:grid;
+      gap:14px;
+      grid-template-columns:1fr;
+    }
+
+    .pool-grid{
+      display:grid;
+      gap:12px;
+      grid-template-columns:1fr;
+    }
+
+    .pool-card{
+      border:1px solid #eee;
+      border-radius:20px;
+      background:#fff;
+      padding:14px;
+      box-shadow:0 6px 16px rgba(0,0,0,.04);
+    }
+
+    .pool-title{
+      font-size:14px;
+      font-weight:1000;
+      opacity:.8;
+      margin-bottom:10px;
+      letter-spacing:.2px;
+    }
+
+    .pool-list{
+      display:grid;
+      gap:8px;
+    }
+
+    .pool-slot{
+      border:1px solid #f0f0f0;
+      border-radius:12px;
+      background:#fafafa;
+      padding:10px 12px;
+      font-weight:900;
+      font-size:14px;
+      line-height:1.25;
+      min-width:0;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .pool-slot.empty{
+      font-weight:700;
+      color:#777;
+      font-style:italic;
+    }
+
+    .summary-box{
       margin-top:14px;
-      padding:15px 16px;
+      padding:14px 16px;
       border-radius:18px;
       background:linear-gradient(135deg, rgba(255,212,0,.12), rgba(255,138,42,.06));
       border:1px solid rgba(255,196,0,.34);
@@ -455,16 +582,21 @@
         justify-content:center;
       }
 
+      .panel{
+        padding:24px;
+      }
+
       .switches{
         grid-template-columns:1fr 1fr;
       }
 
-      .placeholder-grid{
+      .action-row{
         grid-template-columns:1fr 1fr;
+        max-width:560px;
       }
 
-      .panel{
-        padding:24px;
+      .pool-grid.dh{
+        grid-template-columns:1fr 1fr;
       }
     }
   </style>
@@ -515,10 +647,10 @@
           </div>
 
           <div class="hero-content">
-            <h1 class="hero-title">Tirage du tournoi</h1>
+            <h1 class="hero-title">Tirage des tableaux</h1>
             <p class="hero-sub">
-              Cette page est en cours de préparation. La structure est déjà prête pour accueillir
-              plus tard le tirage du <strong>Double Messieurs</strong> et du <strong>Double Dames</strong>.
+              Retrouvez depuis une seule page le tirage du <strong>Double Messieurs</strong> et du
+              <strong>Double Dames</strong>, avec animation roulette et affichage progressif des poules.
             </p>
           </div>
         </div>
@@ -529,87 +661,658 @@
       <div class="panel">
         <div class="panel-head">
           <div>
-            <h2 class="panel-title">Tirage</h2>
+            <h2 class="panel-title">Choix du tableau</h2>
             <p class="panel-text">
-              Placeholder public. Le système est prêt pour une future intégration du tirage, des tableaux, des positions et des informations officielles.
+              Un seul écran pour suivre les deux tirages en direct.
             </p>
           </div>
-          <div class="panel-tag">Placeholder</div>
+          <div class="panel-tag">Open</div>
         </div>
 
-        <div class="switches" role="tablist" aria-label="Choix du tableau">
-          <button class="switch-btn" id="btnDH" type="button" aria-selected="true">👨 Double Messieurs</button>
-          <button class="switch-btn" id="btnDD" type="button" aria-selected="false">👩 Double Dames</button>
+        <div class="top-actions">
+          <div class="switches" role="tablist" aria-label="Choix du tableau">
+            <button class="switch-btn" id="btnDH" type="button" aria-selected="true">👨 Double Messieurs</button>
+            <button class="switch-btn" id="btnDD" type="button" aria-selected="false">👩 Double Dames</button>
+          </div>
+
+          <div class="status-box">
+            Tableau affiché : <strong id="catLabel">Double Messieurs</strong><br>
+            <span id="statusText">Chargement…</span>
+          </div>
+
+          <div class="badge-line">
+            <span class="inline-badge" id="modeBadge">—</span>
+            <span class="inline-badge" id="validatedAt">—</span>
+          </div>
+
+          <div class="action-row">
+            <button class="btn btn-primary hidden" id="btnReplay" type="button">▶️ Replay roulette</button>
+            <button class="btn btn-secondary hidden" id="btnStopReplay" type="button">⏹️ Stop replay</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section roulette-panel" id="panelRoulette">
+      <div class="panel">
+        <div class="panel-head" style="margin-bottom:12px;">
+          <div>
+            <h2 class="panel-title" id="drawTitle">🎲 Tirage</h2>
+            <p class="panel-text" id="drawExplain">Chargement…</p>
+          </div>
         </div>
 
-        <div class="note">
-          Tableau affiché actuellement : <strong id="catLabel">Double Messieurs</strong><br>
-          Cette page est volontairement en mode simple pour rendre le site fonctionnel tout de suite, tout en restant facile à faire évoluer ensuite.
+        <div class="roulette-wheel" id="wheel">—</div>
+        <p class="muted" id="wheelSub" style="margin:10px 0 0;">—</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <h2 class="panel-title">Poules</h2>
+            <p class="panel-text" id="poolExplain">
+              Composition des poules en attente.
+            </p>
+          </div>
+          <div class="panel-tag" id="formatTag">Format</div>
         </div>
 
-        <div class="placeholder-grid">
-          <div class="placeholder-card">
-            <h3 class="placeholder-title">🎾 Tableau</h3>
-            <p class="placeholder-text">
-              Ici pourra être affichée la structure du tableau avec les équipes positionnées, les têtes de série et les rencontres à venir.
-            </p>
+        <div class="pool-grid dh" id="poolGrid">
+          <div class="pool-card">
+            <div class="pool-title" id="poolATitle">Poule A</div>
+            <div id="poolAList" class="pool-list"></div>
           </div>
 
-          <div class="placeholder-card">
-            <h3 class="placeholder-title">🧩 Composition</h3>
-            <p class="placeholder-text">
-              Cette zone pourra détailler la composition du tirage, les parties hautes et basses de tableau ou les différentes poules si besoin.
-            </p>
+          <div class="pool-card" id="poolBCard">
+            <div class="pool-title" id="poolBTitle">Poule B</div>
+            <div id="poolBList" class="pool-list"></div>
           </div>
+        </div>
 
-          <div class="placeholder-card">
-            <h3 class="placeholder-title">📍 Positions</h3>
-            <p class="placeholder-text">
-              On pourra y intégrer ensuite les numéros de placement, les oppositions du premier tour et la lecture claire des chemins de progression.
-            </p>
-          </div>
-
-          <div class="placeholder-card">
-            <h3 class="placeholder-title">📣 Informations officielles</h3>
-            <p class="placeholder-text">
-              Cette zone pourra servir aux annonces liées au tirage : validation, horaire de publication, modifications ou confirmations de tableau.
-            </p>
-          </div>
+        <div class="summary-box" id="poolInfo">
+          En attente du tirage.
         </div>
       </div>
     </section>
 
   </main>
 
-  <script>
+  <script type="module">
+    import { db } from "../assets/js/firebase.js";
+    import { doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+    const DRAW_DOCS = {
+      DH: "open_bricorama_dh",
+      DD: "open_bricorama_dd"
+    };
+
+    const CAT_LABELS = {
+      DH: "Double Messieurs",
+      DD: "Double Dames"
+    };
+
+    let currentCat = "DH";
+    let currentDraw = null;
+    let unsubscribeDraw = null;
+
+    let shownCount = 0;
+    let revealedShown = [];
+    let liveAnimating = false;
+    let replayMode = false;
+    let replayAbort = false;
+
     const btnDH = document.getElementById("btnDH");
     const btnDD = document.getElementById("btnDD");
-    const catLabel = document.getElementById("catLabel");
+
+    const catLabelEl = document.getElementById("catLabel");
+    const statusText = document.getElementById("statusText");
+    const modeBadge = document.getElementById("modeBadge");
+    const validatedAtEl = document.getElementById("validatedAt");
+
+    const btnReplay = document.getElementById("btnReplay");
+    const btnStopReplay = document.getElementById("btnStopReplay");
+
+    const panelRoulette = document.getElementById("panelRoulette");
+    const drawTitle = document.getElementById("drawTitle");
+    const drawExplain = document.getElementById("drawExplain");
+    const wheel = document.getElementById("wheel");
+    const wheelSub = document.getElementById("wheelSub");
+
+    const formatTag = document.getElementById("formatTag");
+    const poolExplain = document.getElementById("poolExplain");
+    const poolGrid = document.getElementById("poolGrid");
+    const poolATitle = document.getElementById("poolATitle");
+    const poolBTitle = document.getElementById("poolBTitle");
+    const poolAList = document.getElementById("poolAList");
+    const poolBCard = document.getElementById("poolBCard");
+    const poolBList = document.getElementById("poolBList");
+    const poolInfo = document.getElementById("poolInfo");
+
+    function esc(s){
+      return (s ?? "").toString()
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;");
+    }
+
+    function fmtDate(ts){
+      try{
+        const d = ts?.toDate ? ts.toDate() : null;
+        if(!d) return "";
+        return d.toLocaleString("fr-FR", {
+          year:"numeric", month:"long", day:"numeric",
+          hour:"2-digit", minute:"2-digit"
+        });
+      }catch{
+        return "";
+      }
+    }
+
+    function teamLabel(t){
+      if(!t) return "—";
+      const tn = t.teamName || "Équipe";
+      const p1 = t.p1FirstName || "?";
+      const p2 = t.p2FirstName || "?";
+      return `${tn} (${p1} / ${p2})`;
+    }
+
+    function teamNameOnly(t){
+      return (t && t.teamName) ? t.teamName : "—";
+    }
+
+    function poolSlotHtml(team, index){
+      if(!team){
+        return `<div class="pool-slot empty">Place ${index + 1} en attente</div>`;
+      }
+      return `<div class="pool-slot">${esc(teamNameOnly(team))}</div>`;
+    }
+
+    function parseToken(token){
+      const s = String(token || "");
+
+      if(s.startsWith("POOLA:")) return { type:"poolA", value:s.slice(6) };
+      if(s.startsWith("POOLB:")) return { type:"poolB", value:s.slice(6) };
+      if(s.startsWith("POOL:"))  return { type:"pool",  value:s.slice(5) };
+
+      return { type:"unknown", value:s };
+    }
+
+    function computeLists(draw){
+      const order = Array.isArray(draw?.order) ? draw.order : [];
+      const revealed = Number(draw?.revealed || 0);
+
+      return {
+        revealedTokens: order.slice(0, revealed),
+        remainingTokens: order.slice(revealed)
+      };
+    }
+
+    function drawHasData(draw){
+      return !!(
+        draw &&
+        Array.isArray(draw.order) &&
+        draw.order.length > 0
+      );
+    }
+
+    function buildDHState(draw, revealedTokens){
+      const pool = Array.isArray(draw?.pool) ? draw.pool : [];
+      const poolById = new Map(pool.map(x => [x.id, x]));
+
+      const state = {
+        poolA: [],
+        poolB: []
+      };
+
+      for(const tok of revealedTokens){
+        const p = parseToken(tok);
+
+        if(p.type === "poolA"){
+          const team = poolById.get(p.value);
+          if(team && !state.poolA.some(x => x.id === team.id)) state.poolA.push(team);
+        }
+
+        if(p.type === "poolB"){
+          const team = poolById.get(p.value);
+          if(team && !state.poolB.some(x => x.id === team.id)) state.poolB.push(team);
+        }
+      }
+
+      return state;
+    }
+
+    function buildDDState(draw, revealedTokens){
+      const pool = Array.isArray(draw?.pool) ? draw.pool : [];
+      const poolById = new Map(pool.map(x => [x.id, x]));
+
+      const state = {
+        pool: []
+      };
+
+      for(const tok of revealedTokens){
+        const p = parseToken(tok);
+
+        if(p.type === "pool"){
+          const team = poolById.get(p.value);
+          if(team && !state.pool.some(x => x.id === team.id)) state.pool.push(team);
+        }
+      }
+
+      return state;
+    }
+
+    function getStageInfo(cat, draw, revealedTokens){
+      const total = Array.isArray(draw?.order) ? draw.order.length : 0;
+      const revealed = revealedTokens.length;
+
+      if(cat === "DH"){
+        if(revealed < total){
+          return {
+            title: "🎲 Tirage des poules — Double Messieurs",
+            explain: "Les équipes sont révélées une à une dans les poules A et B.",
+            poolExplainText: `Répartition progressive des 6 équipes dans 2 poules de 3.`
+          };
+        }
+
+        return {
+          title: "✅ Tirage terminé — Double Messieurs",
+          explain: "Les deux poules de 3 sont maintenant entièrement définies.",
+          poolExplainText: `Composition finale des 2 poules de 3.`
+        };
+      }
+
+      if(revealed < total){
+        return {
+          title: "🎲 Tirage de la poule — Double Dames",
+          explain: "Les équipes sont révélées une à une dans la poule unique.",
+          poolExplainText: `Répartition progressive des 4 équipes dans la poule unique.`
+        };
+      }
+
+      return {
+        title: "✅ Tirage terminé — Double Dames",
+        explain: "La poule de 4 est maintenant entièrement définie.",
+        poolExplainText: `Composition finale de la poule unique de 4.`
+      };
+    }
+
+    function tokenToRouletteLabel(cat, draw, token){
+      const p = parseToken(token);
+      const poolById = new Map((draw?.pool || []).map(x => [x.id, x]));
+
+      if(cat === "DH"){
+        if(p.type === "poolA"){
+          return `Poule A → ${teamLabel(poolById.get(p.value))}`;
+        }
+        if(p.type === "poolB"){
+          return `Poule B → ${teamLabel(poolById.get(p.value))}`;
+        }
+      }
+
+      if(cat === "DD"){
+        if(p.type === "pool"){
+          return `Poule unique → ${teamLabel(poolById.get(p.value))}`;
+        }
+      }
+
+      return "—";
+    }
+
+    function renderDH(draw, revealedTokens){
+      const state = buildDHState(draw, revealedTokens);
+
+      poolGrid.classList.add("dh");
+      formatTag.textContent = "2 poules de 3";
+      poolATitle.textContent = "Poule A";
+      poolBTitle.textContent = "Poule B";
+      poolBCard.style.display = "block";
+
+      poolAList.innerHTML = [
+        poolSlotHtml(state.poolA[0], 0),
+        poolSlotHtml(state.poolA[1], 1),
+        poolSlotHtml(state.poolA[2], 2)
+      ].join("");
+
+      poolBList.innerHTML = [
+        poolSlotHtml(state.poolB[0], 0),
+        poolSlotHtml(state.poolB[1], 1),
+        poolSlotHtml(state.poolB[2], 2)
+      ].join("");
+
+      const placed = state.poolA.length + state.poolB.length;
+
+      if(placed === 0){
+        poolInfo.textContent = "En attente du lancement du tirage Double Messieurs.";
+      } else if(placed < 6){
+        poolInfo.textContent = `Répartition en cours… (${placed}/6 équipes placées)`;
+      } else {
+        poolInfo.textContent = "✅ Double Messieurs : poules A et B entièrement définies.";
+      }
+    }
+
+    function renderDD(draw, revealedTokens){
+      const state = buildDDState(draw, revealedTokens);
+
+      poolGrid.classList.remove("dh");
+      formatTag.textContent = "1 poule de 4";
+      poolATitle.textContent = "Poule unique";
+      poolBCard.style.display = "none";
+
+      poolAList.innerHTML = [
+        poolSlotHtml(state.pool[0], 0),
+        poolSlotHtml(state.pool[1], 1),
+        poolSlotHtml(state.pool[2], 2),
+        poolSlotHtml(state.pool[3], 3)
+      ].join("");
+
+      poolBList.innerHTML = "";
+
+      const placed = state.pool.length;
+
+      if(placed === 0){
+        poolInfo.textContent = "En attente du lancement du tirage Double Dames.";
+      } else if(placed < 4){
+        poolInfo.textContent = `Répartition en cours… (${placed}/4 équipes placées)`;
+      } else {
+        poolInfo.textContent = "✅ Double Dames : poule unique entièrement définie.";
+      }
+    }
+
+    function renderDraw(cat, draw, revealedTokens){
+      const stage = getStageInfo(cat, draw, revealedTokens);
+      drawTitle.textContent = stage.title;
+      drawExplain.textContent = stage.explain;
+      poolExplain.textContent = stage.poolExplainText;
+
+      if(cat === "DH"){
+        renderDH(draw, revealedTokens);
+      } else {
+        renderDD(draw, revealedTokens);
+      }
+    }
+
+    function updateStatus(cat, draw){
+      const st = draw?.status || "idle";
+      const revealed = Number(draw?.revealed || 0);
+      const total = Array.isArray(draw?.order) ? draw.order.length : 0;
+
+      if(replayMode){
+        modeBadge.textContent = "🎥 Mode REPLAY";
+      } else if(st === "running"){
+        modeBadge.textContent = "🟢 En direct";
+      } else if(st === "validated"){
+        modeBadge.textContent = "✅ Validé";
+      } else if(st === "pending_validation"){
+        modeBadge.textContent = "🏁 En attente validation";
+      } else if(drawHasData(draw)){
+        modeBadge.textContent = "📥 Tirage prêt";
+      } else {
+        modeBadge.textContent = "⏳ Non prêt";
+      }
+
+      const validated = fmtDate(draw?.validatedAt);
+      validatedAtEl.textContent = validated ? `🗓️ ${validated}` : "🗓️ —";
+
+      if(!draw){
+        statusText.textContent = `⏳ ${CAT_LABELS[cat]} : tirage non prêt.`;
+        return;
+      }
+
+      if(st === "idle"){
+        statusText.textContent = drawHasData(draw)
+          ? `📥 ${CAT_LABELS[cat]} : tirage prêt, en attente du lancement.`
+          : `⏳ ${CAT_LABELS[cat]} : tirage non prêt côté admin.`;
+        return;
+      }
+
+      if(st === "running"){
+        statusText.textContent = `🎰 ${CAT_LABELS[cat]} : tirage en cours… (${revealed}/${total})`;
+        return;
+      }
+
+      if(st === "pending_validation"){
+        statusText.textContent = `🏁 ${CAT_LABELS[cat]} : tirage terminé, en attente de validation.`;
+        return;
+      }
+
+      if(st === "validated"){
+        statusText.textContent = `✅ ${CAT_LABELS[cat]} : tirage validé.`;
+        return;
+      }
+
+      statusText.textContent = `ℹ️ ${CAT_LABELS[cat]} : statut ${st}.`;
+    }
+
+    async function rouletteSpin(finalText, durationMs = 1300){
+      const start = Date.now();
+      wheelSub.textContent = replayMode ? "Replay en cours…" : "La roulette tourne…";
+      const fake = ["🌪️","🎾","🔥","🍀","⚡️","🎲","🏖️"];
+
+      return new Promise((resolve) => {
+        const tick = () => {
+          if(replayAbort){
+            resolve("aborted");
+            return;
+          }
+
+          const t = Date.now() - start;
+          if(t >= durationMs){
+            wheel.textContent = finalText;
+            wheelSub.textContent = "✅ Révélé";
+            resolve("done");
+            return;
+          }
+
+          wheel.textContent =
+            fake[Math.floor(Math.random()*fake.length)] + " " +
+            fake[Math.floor(Math.random()*fake.length)];
+
+          requestAnimationFrame(tick);
+        };
+        tick();
+      });
+    }
+
+    async function applyLiveRevealAnimation(cat, draw){
+      if(replayMode) return;
+      if(liveAnimating) return;
+
+      const st = draw?.status || "idle";
+      panelRoulette.style.display = "block";
+
+      const { revealedTokens } = computeLists(draw);
+
+      renderDraw(cat, draw, revealedShown);
+      updateStatus(cat, draw);
+
+      if(st !== "running" && st !== "pending_validation" && st !== "validated"){
+        wheel.textContent = "—";
+        wheelSub.textContent = "—";
+        return;
+      }
+
+      if(revealedTokens.length <= shownCount){
+        return;
+      }
+
+      liveAnimating = true;
+
+      while(shownCount < revealedTokens.length){
+        const token = revealedTokens[shownCount];
+
+        await rouletteSpin(tokenToRouletteLabel(cat, draw, token), 1300);
+
+        revealedShown.push(token);
+        shownCount++;
+
+        renderDraw(currentCat, currentDraw, revealedShown);
+        updateStatus(currentCat, currentDraw);
+      }
+
+      liveAnimating = false;
+    }
+
+    async function doReplay(cat, draw){
+      if(!draw || draw.status !== "validated"){
+        alert("Replay disponible uniquement quand le tirage est validé.");
+        return;
+      }
+
+      replayMode = true;
+      replayAbort = false;
+
+      btnReplay.classList.add("hidden");
+      btnStopReplay.classList.remove("hidden");
+
+      shownCount = 0;
+      revealedShown = [];
+      wheel.textContent = "—";
+      wheelSub.textContent = "Replay en cours…";
+
+      panelRoulette.style.display = "block";
+      renderDraw(cat, draw, revealedShown);
+      updateStatus(cat, draw);
+
+      const revealedTokens = (draw.order || []).slice(0, Number(draw.revealed || 0));
+
+      for(let i = 0; i < revealedTokens.length; i++){
+        if(replayAbort) break;
+
+        const token = revealedTokens[i];
+        await rouletteSpin(tokenToRouletteLabel(cat, draw, token), 1300);
+
+        revealedShown.push(token);
+        shownCount = revealedShown.length;
+
+        renderDraw(cat, draw, revealedShown);
+        updateStatus(cat, draw);
+      }
+
+      btnStopReplay.classList.add("hidden");
+      btnReplay.classList.remove("hidden");
+
+      replayMode = false;
+      replayAbort = false;
+
+      wheelSub.textContent = "✅ Replay terminé";
+
+      updateStatus(currentCat, currentDraw);
+      renderDraw(currentCat, currentDraw, revealedShown);
+    }
+
+    function updateCatButtons(){
+      btnDH.setAttribute("aria-selected", currentCat === "DH" ? "true" : "false");
+      btnDD.setAttribute("aria-selected", currentCat === "DD" ? "true" : "false");
+      catLabelEl.textContent = CAT_LABELS[currentCat];
+    }
+
+    function resetVisualState(){
+      shownCount = 0;
+      revealedShown = [];
+      liveAnimating = false;
+      replayMode = false;
+      replayAbort = false;
+
+      btnReplay.classList.add("hidden");
+      btnStopReplay.classList.add("hidden");
+
+      wheel.textContent = "—";
+      wheelSub.textContent = "—";
+      panelRoulette.style.display = "block";
+    }
+
+    function subscribeDraw(cat){
+      if(unsubscribeDraw){
+        unsubscribeDraw();
+        unsubscribeDraw = null;
+      }
+
+      currentDraw = null;
+      resetVisualState();
+      updateStatus(cat, null);
+
+      const ref = doc(db, "tirages", DRAW_DOCS[cat]);
+
+      unsubscribeDraw = onSnapshot(ref, async (snap) => {
+        currentDraw = snap.exists() ? (snap.data() || {}) : null;
+
+        if(!currentDraw){
+          renderDraw(cat, { order: [] }, []);
+          updateStatus(cat, null);
+          return;
+        }
+
+        updateStatus(cat, currentDraw);
+
+        if(currentDraw.status === "validated"){
+          if(!replayMode) btnReplay.classList.remove("hidden");
+        } else {
+          btnReplay.classList.add("hidden");
+          btnStopReplay.classList.add("hidden");
+        }
+
+        const { revealedTokens } = computeLists(currentDraw);
+
+        renderDraw(cat, currentDraw, revealedShown);
+
+        if(!replayMode && currentDraw.status === "idle"){
+          shownCount = 0;
+          revealedShown = [];
+          wheel.textContent = "—";
+          wheelSub.textContent = "—";
+          renderDraw(cat, currentDraw, revealedShown);
+          updateStatus(cat, currentDraw);
+          return;
+        }
+
+        if(!replayMode && (currentDraw.status === "pending_validation" || currentDraw.status === "validated")){
+          revealedShown = revealedTokens.slice(0);
+          shownCount = revealedShown.length;
+          renderDraw(cat, currentDraw, revealedShown);
+          updateStatus(cat, currentDraw);
+          return;
+        }
+
+        if(!replayMode){
+          await applyLiveRevealAnimation(cat, currentDraw);
+        }
+      }, (err) => {
+        console.error(err);
+        statusText.textContent = `🔴 Erreur de connexion au tirage ${CAT_LABELS[cat]}.`;
+        drawTitle.textContent = "🎲 Tirage";
+        drawExplain.textContent = "Une erreur de connexion empêche l’affichage du tirage.";
+      });
+    }
 
     function setCategory(cat){
-      const isDH = cat === "DH";
-      btnDH.setAttribute("aria-selected", isDH ? "true" : "false");
-      btnDD.setAttribute("aria-selected", isDH ? "false" : "true");
-      catLabel.textContent = isDH ? "Double Messieurs" : "Double Dames";
-
-      try{
-        localStorage.setItem("open_tirage_cat", cat);
-      }catch(e){}
+      currentCat = cat;
+      updateCatButtons();
+      subscribeDraw(cat);
+      try{ localStorage.setItem("open_tirage_cat", cat); }catch(e){}
     }
 
     btnDH.addEventListener("click", ()=> setCategory("DH"));
     btnDD.addEventListener("click", ()=> setCategory("DD"));
 
+    btnReplay.addEventListener("click", async (e)=>{
+      e.preventDefault();
+      await doReplay(currentCat, currentDraw);
+    });
+
+    btnStopReplay.addEventListener("click", (e)=>{
+      e.preventDefault();
+      replayAbort = true;
+    });
+
     try{
       const savedCat = localStorage.getItem("open_tirage_cat");
-      if(savedCat === "DD"){
-        setCategory("DD");
-      }else{
-        setCategory("DH");
-      }
-    }catch(e){
-      setCategory("DH");
-    }
+      if(savedCat === "DD") currentCat = "DD";
+    }catch(e){}
+
+    updateCatButtons();
+    subscribeDraw(currentCat);
   </script>
 
 </body>
